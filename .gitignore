@@ -2,7 +2,7 @@
 *.slo
 *.lo
 *.o
-*.out 
+*.out
 
 # Compiled Dynamic libraries
 *.so
@@ -16,5 +16,6 @@
 #OS X
 .DS_Store
 
-# My Stuff
+# Misc Files
 as2/images/test
+*.pdf
