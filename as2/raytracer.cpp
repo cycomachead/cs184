@@ -3,15 +3,15 @@
 #undef Success
 #include "lib/Eigen/Core"
 
-#include <cstidint>
-// #include <cmath>
+#include <cstdint>
+#include <cmath>
 // #include <cstdlib>
 #include <iostream>
 
 using namespace std;
 
 // GLOBAL VARIABLES
-CImg output;
+// cimg_library::CImg output;
 
 class vec {
     float x;
@@ -24,7 +24,7 @@ class Scene {
     int width;
     int height;
     vec cam;
-    vec[4] = corners;
+    vec corners[4];
 };
 
 
@@ -36,5 +36,5 @@ int main(int argc, const char ** argv) {
 }
 
 void argParse(int argc, const char ** argv) {
-    
+
 }
