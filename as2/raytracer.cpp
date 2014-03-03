@@ -1,12 +1,14 @@
+#include <cstdint>
+#include <cmath>
+#include <cstdlib>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+
 #include "lib/CImg.h"
 // X11 and Eigen don't play nicely...
 #undef Success
 #include "lib/Eigen/Core"
-
-#include <cstdint>
-#include <cmath>
-// #include <cstdlib>
-#include <iostream>
 
 using namespace std;
 
