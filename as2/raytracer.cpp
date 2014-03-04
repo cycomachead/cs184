@@ -8,7 +8,7 @@
 #include "lib/CImg.h"
 // X11 and Eigen don't play nicely...
 #undef Success
-#include "lib/Eigen/Core"
+#include "lib/Eigen/Eigen"
 
 using namespace std;
 
