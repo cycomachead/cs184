@@ -29,32 +29,32 @@ public:
 
     string comment = "#";
 
-    // string commands[] = {
-    //     {"size", 2},
-    //     {"maxdepth", 1},
-    //     {"output", 1},
-    //     {"camera", 3},
-    //     {"sphere", 4},
-    //     {"maxverts", 1},
-    //     {"maxvertnorms", 1},
-    //     {"vertex", 3},
-    //     {"vertexnormal", 6},
-    //     {"tri", 3},
-    //     {"trinormal", 3},
-    //     {"translate", 3},
-    //     {"rotate", 4},
-    //     {"scale", 3},
-    //     {"pushTransform", 0},
-    //     {"popTransform", 0},
-    //     {"direction", 6},
-    //     {"point", 6},
-    //     {"attenuation", 3},
-    //     {"ambient", 3},
-    //     {"diffuse", 3},
-    //     {"specular", 3},
-    //     {"shininess", 1},
-    //     {"emission", 3}
-    // };
+    vector<tuple<string, int>> commands = {
+        {"size", 2},
+        {"maxdepth", 1},
+        {"output", 1},
+        {"camera", 3},
+        {"sphere", 4},
+        {"maxverts", 1},
+        {"maxvertnorms", 1},
+        {"vertex", 3},
+        {"vertexnormal", 6},
+        {"tri", 3},
+        {"trinormal", 3},
+        {"translate", 3},
+        {"rotate", 4},
+        {"scale", 3},
+        {"pushTransform", 0},
+        {"popTransform", 0},
+        {"direction", 6},
+        {"point", 6},
+        {"attenuation", 3},
+        {"ambient", 3},
+        {"diffuse", 3},
+        {"specular", 3},
+        {"shininess", 1},
+        {"emission", 3}
+    };
 
 
     void parse() {
