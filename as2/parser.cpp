@@ -9,6 +9,7 @@
 #include <fstream>
 //#include <cstring>
 #include <string>
+#include <map>
 #include <vector>
 #include <math.h>
 #include <stdlib.h>
@@ -29,11 +30,11 @@ public:
 
     string comment = "#";
 
-    vector<tuple<string, int>> commands = {
+    map<string, int> commands = {
         {"size", 2},
         {"maxdepth", 1},
-        {"output", 1},
-        {"camera", 3},
+        {"output", 1}, // String
+        {"camera", 10},
         {"sphere", 4},
         {"maxverts", 1},
         {"maxvertnorms", 1},
@@ -66,7 +67,7 @@ public:
 
         string line;
         while(getline(file, line)) {
-            cout << line << endl;
+            
         }
 
         file.clear();
@@ -82,6 +83,15 @@ Parser::Parser(string s) {
 }
 
 Parser::Parser() { }
+
+
+vector<string> split(const string& input, const string& regex) {
+    // passing -1 as the submatch index parameter performs splitting
+    std::sregex_token_iterator
+        first{input.begin(), input.end(), regex, -1},
+        last;
+    return {first, last};
+}
 
 int main(int argc, char** argv) {
     if (argc > 1) {
