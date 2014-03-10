@@ -21,6 +21,48 @@ int LOGGING = 0;
 string COMMANDS;
 
 
+class Color: public Vector3f { 
+private:
+    Vector3f data;
+    
+public:
+    Color() {}
+    
+    Color(Vector3f d) {
+        data = d;
+    }
+    
+    Color(float r, float g, float b) {
+        data(0) = r;
+        data(1) = g;
+        data(2) = b;
+    }
+    
+    float r() {
+        return data(0);
+    }
+    
+    float g() {
+        return data(1);
+    }
+    
+    float b() {
+        return data(2);
+    }
+    
+    void setR(float d) {
+        data(0) = d;
+    }
+    
+    void setG(float d) {
+        data(1) = d;
+    }
+    
+    void setB(float d) {
+        data(2) = d;
+    }
+};
+
 class Scene {
 public:
     int width;
@@ -30,23 +72,44 @@ public:
    
 };
 
-class Sampler {
-    /*       
-    Methods:
-        bool getSample(Sample* sample);
-    Notes:
-        It will generate (x,y) of a screen sample and return true. Next time it 
-        gets called, it will generate another sample for the next pixel. 
-        It will return false when all the samples from all the pixels
-        are generated. (In our case, we generate 1 sample per pixel, at 
-        the pixel sample. Later on, if we want to do multi-sample per pixel, 
-        we need to modify this class.
-    */
+class Ray {
+// Members:
+//      Point pos
+//      Vector dir
+//      float t_min, t_max
+// Notes:
+// It represent the ray ray(t) = pos + t*dir, where t_min <= t <= t_max
+    
+    
+};
 
+class Sample {
+/*
+Notes:
+    It will generate (x,y) of a screen sample and return true. Next time it 
+    gets called, it will generate another sample for the next pixel. 
+    It will return false when all the samples from all the pixels
+    are generated. (In our case, we generate 1 sample per pixel, at 
+    the pixel sample. Later on, if we want to do multi-sample per pixel, 
+    we need to modify this class.
+*/
+
+public:
+    bool getSample(Sample* sample);
 
 };
 
-class Camera {};
+class Camera {
+/*
+Methods:
+Notes:
+            Create a ray starting from the camera that passes through the
+            corresponding pixel (sample.x, sample.y) on the image plane.
+            (from last week discussion, and also section 10.1 in Shirley’s book)    
+*/
+public:
+     void generateRay(Sample& sample, Ray* ray);
+};
 
 class Raytracer {};
 
@@ -60,7 +123,6 @@ private:
     
 public:
     Film() {
-        
     }
     
     Film(char const* name, int w, int h) {
@@ -118,7 +180,6 @@ void argParse(int argc, const char** argv) {
         }
     } catch (...) {
         cerr << "Exception Occurred while trying to process arguments" << endl;
-        //cerr << "\tMessage: " << e.what() << endl;
         cerr << "Exiting";
         exit (EXIT_FAILURE);
     }
@@ -139,16 +200,7 @@ Point
             Notes:
                         Constructor from 3 floats
                         Support +,- with vector
-           
-Ray
-Members:
-                        Point pos
-                        Vector dir
-                        float t_min, t_max
- 
-            Notes:
-It represent the ray ray(t) = pos + t*dir, where t_min <= t <= t_max
- 
+
 Matrix
 Members:
                         float mat[4][4]
@@ -281,14 +333,6 @@ void getBRDF(LocalGeo& local, BRDF* brdf) {
                         Class for storing material. For this example, it just returns a constant
                         material regardless of what local is. Later on, when we want to support
                         texture mapping, this need to be modified.
- 
-Camera
-            Methods:
-                        void generateRay(Sample& sample, Ray* ray);
-            Notes:
-                        Create a ray starting from the camera that passes through the
-                        corresponding pixel (sample.x, sample.y) on the image plane.
-                        (from last week discussion, and also section 10.1 in Shirley’s book)
  
 RayTracer
             Methods:
