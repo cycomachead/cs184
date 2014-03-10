@@ -15,8 +15,11 @@ using namespace std;
 using namespace Eigen;
 // using namespace pngwriter;
 
-
 // GLOBAL VARIABLES
+// Stupid logging global because lazy.
+int LOGGING = 0;
+string COMMANDS;
+
 
 class Scene {
 public:
@@ -27,27 +30,77 @@ public:
    
 };
 
+class Sampler {
+    /*       
+    Methods:
+        bool getSample(Sample* sample);
+    Notes:
+        It will generate (x,y) of a screen sample and return true. Next time it 
+        gets called, it will generate another sample for the next pixel. 
+        It will return false when all the samples from all the pixels
+        are generated. (In our case, we generate 1 sample per pixel, at 
+        the pixel sample. Later on, if we want to do multi-sample per pixel, 
+        we need to modify this class.
+    */
+
+
+};
+
+class Camera {};
+
+class Raytracer {};
+
+class Primitive {};
+
+class Film {
+private:
+    vector<unsigned char> image;
+    int width, height;
+    char const* filename;
+    
+public:
+    Film() {
+        
+    }
+    
+    Film(char const* name, int w, int h) {
+        filename = name;
+        width = w;
+        height = h;
+    }
+    
+    void addPixel(Vector3f color) {
+        image.push_back(color(0));
+        image.push_back(color(1));
+        image.push_back(color(2));
+        image.push_back(255); // Alpha Channel
+    }
+    
+    void writeImage() {
+        unsigned error = lodepng::encode(filename, image, width, height);
+        
+        if (error and LOGGING > 0) { // if there's an error, display it
+            cerr << "encoder error " << error << ":\n\t";
+            cerr << lodepng_error_text(error) << endl;
+            cerr << "\n debug info:";
+            cerr << "\n Vector:\t" << image.size();
+            cerr << "\n Expected Size:\t" << width * height * 4;
+        }
+    }
+};
+
 
 void argParse(int argc, const char ** argv);
 
 
 int main(int argc, const char ** argv) {
-    char const* file = "argh.png";
-    vector<unsigned char> img;    
-    
-    unsigned error = lodepng::encode("WTF.png", img, 300, 300);
-
-    if (error) { // if there's an error, display it
-        cerr << "encoder error " << error << ":\n\t";
-        cerr << lodepng_error_text(error) << endl;
-        cerr << "\n debug info:";
-        cerr << "\n Vector:\t" << img.size();
-    }
 
     return 0;
 }
 
 void argParse(int argc, const char ** argv) {
+    // Basically, all I care about is getting the filename to parse
+    // Then the parser will take care of the dirty work.
 
 }
 
@@ -209,14 +262,6 @@ void getBRDF(LocalGeo& local, BRDF* brdf) {
                         material regardless of what local is. Later on, when we want to support
                         texture mapping, this need to be modified.
  
-Sampler
-            Methods:
-                        bool getSample(Sample* sample);
-            Notes:
-                        It will generate (x,y) of a screen sample and return true.
-Next time it gets called, it will generate another sample for the next pixel. It will return false when all the samples from all the pixels
-are generated. (In our case, we generate 1 sample per pixel, at the pixel sample. Later on, if we want to do multi-sample per pixel, we need to modify this class.
- 
 Camera
             Methods:
                         void generateRay(Sample& sample, Ray* ray);
@@ -277,17 +322,7 @@ Light
                         point light source and directional light source.
 For directional light, the origin of the ray is the same, and the ray points to the light direction, however, t_max is infinity.
   
-Film
-            Methods:
-                        // Will write the color to (sample.x, sample.y) on the image
-                        void commit(Sample& sample, Color& color)
-                        // Output image to a file
-                        void writeImage();
-            Notes:
-                        Can be implemented just by a 2D array of Color (Later on, we can
-                        implement more complicated things such as multi-sample per pixel, or
-post processing, eg. tone mapping in this class)
- 
+
 Scene
             Methods:
                         // This is the main rendering loop
