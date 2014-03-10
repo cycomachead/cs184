@@ -90,18 +90,28 @@ public:
 };
 
 
-void argParse(int argc, const char ** argv);
+void argParse(int argc, const char** argv);
 
 
-int main(int argc, const char ** argv) {
-
+int main(int argc, const char** argv) {
+    argParse(argc, argv);
     return 0;
 }
 
-void argParse(int argc, const char ** argv) {
+void argParse(int argc, const char** argv) {
     // Basically, all I care about is getting the filename to parse
     // Then the parser will take care of the dirty work.
-
+    int arg = 1;
+    while (arg < argc) {
+        if (strncmp(argv[arg], "file", 5)) {
+            COMMANDS = (string) argv[arg + 1];
+            cout << COMMANDS << endl;
+        } else if (strncmp(argv[arg], "log", 4)) {
+            LOGGING = atoi(argv[arg + 1]);
+            cout << LOGGING << endl;
+        }
+        arg += 2;
+    }
 }
 
 /**
