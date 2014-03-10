@@ -28,9 +28,7 @@ private:
 public:
     Color() {}
     
-    Color(Vector3f d) {
-        data = d;
-    }
+    Color(Vector3f d) { data = d; }
     
     Color(float r, float g, float b) {
         data(0) = r;
@@ -38,29 +36,17 @@ public:
         data(2) = b;
     }
     
-    float r() {
-        return data(0);
-    }
+    float r() { return data(0); }
     
-    float g() {
-        return data(1);
-    }
+    float g() { return data(1); }
     
-    float b() {
-        return data(2);
-    }
+    float b() { return data(2); }
     
-    void setR(float d) {
-        data(0) = d;
-    }
+    void setR(float d) { data(0) = d; }
     
-    void setG(float d) {
-        data(1) = d;
-    }
+    void setG(float d) { data(1) = d; }
     
-    void setB(float d) {
-        data(2) = d;
-    }
+    void setB(float d) { data(2) = d; }
 };
 
 class Scene {
