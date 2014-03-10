@@ -1,17 +1,21 @@
-CC  = clang
+CC  = clang -g -xc++
+c++ = -std=c++11
 X11 = -I/opt/X11/include
-STD = -std=c++11 -stdlib=libc++ -lc++
+STD = -lm -lstdc++ -DOSX -Ilib -stdlib=libc++ -lc++
+PNG = -DNO_FREETYPE
+LIB = lib/lodepng.h lib/lodepng.cpp
 
+# 
 
 all: rt
 
 default: rt parser
 
 rt:
-	$(CC) raytracer.cpp $(X11) $(STD)
+	$(CC) $(c++) raytracer.cpp $(LIB) $(X11) $(STD)
 
 parser:
 	$(CC) parser.cpp $(X11) $(STD)
 
 clean:
-	rm -f *.out *.o
+	rm -rf *.out *.o *.dSYM
