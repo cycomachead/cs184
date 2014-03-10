@@ -88,7 +88,7 @@ Parser::Parser() { }
 vector<string> split(const string& input, const string& regex) {
     // passing -1 as the submatch index parameter performs splitting
     std::sregex_token_iterator
-        first{input.begin(), input.end(), regex, -1},
+        first{ input.begin(), input.end(), regex, -1},
         last;
     return {first, last};
 }
