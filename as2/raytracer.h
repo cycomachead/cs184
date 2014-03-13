@@ -13,6 +13,7 @@
 
 // Image File Writing
 #include "lib/lodepng.h"
+#include "lib/lodepng.cpp"
 
 // X11 and Eigen don't play nicely...
 #undef Success
@@ -57,6 +58,11 @@ extern int LOGGING;
  */
 // Assists in parsing command args.
 void argParse(int, const char**);
+
+// THIS IS A TERRIBLE IDEA BUT I'M DOING IT ANYWAY
+// RUNNING OUT OF TIMEEEEEEEEEE :'(
+using namespace std;
+using namespace Eigen;
 
 // close out include guard.
 #endif

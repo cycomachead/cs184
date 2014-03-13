@@ -4,7 +4,7 @@ INC = -I/opt/X11/include -Ilib
 STD = -stdlib=libc++ -lc++ -lm -lstdc++ -DOSX
 # PNG = -DNO_FREETYPE
 ERR = -Wno-deprecated-register
-LIB = lib/lodepng.h lib/lodepng.cpp scene.cpp
+LIB = # lib/lodepng.h lib/lodepng.cpp #scene.cpp
 # -Weverything
 
 #

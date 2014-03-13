@@ -1,10 +1,8 @@
 // Michael Ball CS184 Ray Tracer
 // This file has all my includes.
 #include "raytracer.h"
-#include "scene.cpp"
-
-using namespace std;
-using namespace Eigen;
+#include "scene.h"
+#include "film.h"
 
 // The main thing controlling the work.
 Scene scene;
