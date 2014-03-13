@@ -14,8 +14,7 @@ all: rt
 default: rt
 
 rt:
-	$(CC) $(c++) raytracer.cpp $(LIB) $(INC) $(STD) $(ERR) -o rt.out
-
+	$(CC) $(c++) main.cpp $(LIB) $(INC) $(STD) $(ERR) -o raytracer
 parser:
 	$(CC) parser.cpp $(INC) $(STD)
 
