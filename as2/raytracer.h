@@ -20,32 +20,30 @@
 #include "lib/Eigen/Eigen"
 
 // Class Includes
-class Color;
-class Scene;
-class Ray;
-class Sampler;
+// SUGGESTED LIST FROM DESIGN NOTE
+class AggregatePrimitive;
+class BRDF;
 class Camera;
-class Raytracer;
-class Primitive;
+class Color;
+class DirectionalLight;
 class Film;
+class GeometricPrimitive;
+class Intersection;
+class Light;
+class LocalGeo;
+class Material; // Not needed now
+class Matrix;   // Likely not needed
 class Normal;
 class Point;
-class Matrix;
-class Transformation;
-class Color;
-class BRDF;
-class Sample;
-class LocalGeo;
-class Shape;
-class Primitive;
-class Intersection;
-class GeometricPrimitive;
-class AggregatePrimitive;
-class Material; // Not needed now
-class RayTracer;
-class Light;
 class PointLight;
-class DirectionalLight;
+class Primitive;
+class Ray;
+class RayTracer;
+class Sample;
+class Sampler;
+class Scene;
+class Shape;
+class Transformation;
 
 
 // GLOBAL VARIABLES

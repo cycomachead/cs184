@@ -1,5 +1,8 @@
 // Basic utilities for the raytracer
+#ifndef SIMPLE_H
+#define SIMPLE_H
 
+#include "raytracer.h"
 
 class Color: public Vector3f {
 private:
@@ -29,6 +32,14 @@ public:
     void setB(float d) { data(2) = d; }
 };
 
+class Point : public Vector3f {
+// Members:
+//             float x, y, z
+// Notes:
+//             Constructor from 3 floats
+//             Support +,- with vector
+};
+
 class Ray {
 // Members:
 //      Point pos
@@ -40,70 +51,158 @@ class Ray {
 
 };
 
-class Sampler {
-/*
-Notes:
-    It will generate (x,y) of a screen sample and return true. Next time it
-    gets called, it will generate another sample for the next pixel.
-    It will return false when all the samples from all the pixels
-    are generated. (In our case, we generate 1 sample per pixel, at
-    the pixel sample. Later on, if we want to do multi-sample per pixel,
-    we need to modify this class.
-*/
-
+class Sample {
 public:
-    bool getSample(Sample* sample);
-
+    Sample() {
+        
+    }
 };
 
-class Camera {
-/*
+
+/**
+Normal
+Members:
+                        float x, y, z
+            Notes:
+                        Constructor from 3 floats
+                        Support +, -
+                        Note: Need to be normalized after operations (Be careful for 0 vector)
+
+Matrix
+Members:
+                        float mat[4][4]
+
+            Notes:
+                        Support creation of rotation, translation, scaling matrices
+                        May support matrix inversion if needed
+Also could support SVD, or other matrix decomposition, for future extension
+
+Transformation
+Members:
+            // Storing matrix m and its inverse transpose, minvt (for transforming normal)
+                        Matrix m, minvt
+Notes:
+                        Support Point, Vector, Normal, Ray, LocalGeo transformation by
+operator * overloading
+
+Color
+            Members:
+                        float r, g, b
+            Notes:
+                        Support +,- with other color
+                        Support scalar *, /
+                        May support conversion from xyz
+
+
+Sample
+Members:
+                        float x, y; // Store screen coordinate
+
+LocalGeo
+Members:
+                        Point pos
+                        Normal normal
+            Notes:
+                        Store the local geometry at the intersection point. May need to store
+                        other quantities (eg. texture coordinate) in a more complicated
+raytracer.
+
+More Classes
+Shape
+            Methods:
+                        // Test if ray intersects with the shape or not (in object space), if so,
+// return intersection point and normal
+                        bool intersect(Ray& ray, float* thit, LocalGeo* local)
+
+                        // Same as intersect, but just return whether there is any intersection or
+// not
+                        bool intersectP(Ray& ray)
+
+            Notes:
+                        // Triangle and Sphere are probably best implemented here
+                        // The intersection with the ray at t outside the range [t_min, t_max]
+                        // should return false.
+
+Primitive
+            Methods:
+                        bool intersect(Ray& ray, float* thit, Intersection* in)
+                        bool intersectP(Ray& ray)
+                        void getBRDF(LocalGeo& local, BRDF* brdf);
+
+            Notes:
+                        Abstract class for primitives in the scene
+
+Intersection
+            Members:
+                        LocalGeo localGeo
+                        Primitive* primitive
+
+GeometricPrimitive
+            Members:
+                        Transformation objToWorld, worldToObj;
+                        Shape* shape;
+                        Material* mat;
+
+            Methods:
+                        bool intersect(Ray& ray, float* thit, Intersection* in)  {
+                                    Ray oray = worldToObj*ray;
+                                    LocalGeo olocal;
+                                    if (!shape->intersect(oray, thit, &olocal))  return false;
+                                    in->primitive = this;
+                                    in->local = objToWorld*olocal;
+                                    return true;
+                        }
+
+                        bool intersectP(Ray& ray) {
+                                    Ray oray = worldToObj*ray;
+                                    return shape->intersectP(oray);
+}
+
+                        void getBRDF(LocalGeo& local, BRDF* brdf) {
+                                    material->getBRDF(local, brdf);
+}
+
+
+AggregatePrimitive
+            Methods:
+                        AggregatePrimitive(vector<Primitive*> list);
+                        bool intersect(Ray& ray, float* thit, Intersection* in)
+                        bool intersectP(Ray& ray)
+void getBRDF(LocalGeo& local, BRDF* brdf) {
+            exit(1);
+            // This should never get called, because in->primitive will
+            // never be an aggregate primitive
+}
+
+            Notes:
+                        Constructor store the STL vector of pointers to primitives.
+                        Intersect just loops through all the primitives in the list and
+call the intersect routine. Compare thit and return that of the nearest one (because we want the first hit).
+ Also, the in->primitive should be set to the pointer to that primitive.
+                        When you implement acceleration structure, it will replace this class.
+
+Material
+            Members:
+                        BRDF constantBRDF;
+            Methods:
+void getBRDF(LocalGeo& local, BRDF* brdf) {
+            return constantBRDF;
+}
+            Notes:
+                        Class for storing material. For this example, it just returns a constant
+                        material regardless of what local is. Later on, when we want to support
+                        texture mapping, this need to be modified.
+
+Light
 Methods:
+    void generateLightRay(LocalGeo& local, Ray* lray, Color* lcolor);
 Notes:
-            Create a ray starting from the camera that passes through the
-            corresponding pixel (sample.x, sample.y) on the image plane.
-            (from last week discussion, and also section 10.1 in Shirley’s book)
+    This is an abstract class that will generate a ray starting from
+    the position stored in local to the position of the light source.
+    You might want to consider creating 2 derived classes for
+    point light source and directional light source.
+    For directional light, the origin of the ray is the same, and the ray
+    points to the light direction, however, t_max is infinity.
+
 */
-public:
-     void generateRay(Sample& sample, Ray* ray);
-};
-
-class Raytracer {};
-
-class Primitive {};
-
-class Film {
-private:
-    vector<unsigned char> image;
-    int width, height;
-    char const* filename;
-
-public:
-    Film() {
-    }
-
-    Film(char const* name, int w, int h) {
-        filename = name;
-        width = w;
-        height = h;
-    }
-
-    void addPixel(Vector3f color) {
-        image.push_back(color(0));
-        image.push_back(color(1));
-        image.push_back(color(2));
-        image.push_back(255); // Alpha Channel
-    }
-
-    void writeImage() {
-        unsigned error = lodepng::encode(filename, image, width, height);
-
-        if (error and LOGGING > 0) { // if there's an error, display it
-            cerr << "encoder error " << error << ":\n\t";
-            cerr << lodepng_error_text(error) << endl;
-            cerr << "\n debug info:";
-            cerr << "\n Vector:\t" << image.size();
-            cerr << "\n Expected Size:\t" << width * height * 4;
-        }
-    }
-};
+#endif

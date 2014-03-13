@@ -1,3 +1,9 @@
+//
+//
+#ifndef FILM_H
+#define FILM_H
+
+
 #include "raytracer.h"
 
 class Film {
@@ -10,7 +16,7 @@ public:
     Film() {
     }
 
-    Film(char const* name, int w, int h) {
+    Film(int w, int h, char const* name) {
         filename = name;
         width = w;
         height = h;
@@ -35,3 +41,5 @@ public:
         }
     }
 };
+
+#endif
