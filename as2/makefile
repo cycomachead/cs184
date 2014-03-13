@@ -3,8 +3,8 @@ c++ = -xc++ -std=c++11
 INC = -I/opt/X11/include -Ilib
 STD = -stdlib=libc++ -lc++ -lm -lstdc++ -DOSX
 # PNG = -DNO_FREETYPE
-LIB = lib/lodepng.h lib/lodepng.cpp
-ERR =
+ERR = -Wno-deprecated-register
+LIB = lib/lodepng.h lib/lodepng.cpp scene.cpp
 # -Weverything
 
 #
