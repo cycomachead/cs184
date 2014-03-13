@@ -21,29 +21,29 @@
 
 // Class Includes
 // SUGGESTED LIST FROM DESIGN NOTE
-class AggregatePrimitive;
-class BRDF;
+// class AggregatePrimitive;
+// class BRDF;
 class Camera;
 class Color;
-class DirectionalLight;
-class Film;
-class GeometricPrimitive;
-class Intersection;
-class Light;
-class LocalGeo;
-class Material; // Not needed now
-class Matrix;   // Likely not needed
-class Normal;
+// // class DirectionalLight;
+// class Film;
+// class GeometricPrimitive;
+// class Intersection;
+// class Light;
+// class LocalGeo;
+// class Material; // Not needed now
+// class Matrix;   // Likely not needed
+// class Normal;
 class Point;
-class PointLight;
-class Primitive;
+// class PointLight;
+// class Primitive;
 class Ray;
 class RayTracer;
 class Sample;
 class Sampler;
 class Scene;
-class Shape;
-class Transformation;
+// class Shape;
+// class Transformation;
 
 
 // GLOBAL VARIABLES

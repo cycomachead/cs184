@@ -7,10 +7,18 @@
 
 class Sampler {
 public:
-    bool getSample(Sample* sample);
+    // bool getSample(Sample* sample);
 
+    Sampler() {
+        
+    }
+    
     Sampler(int width, int height) {
 
+    }
+
+    bool generateSample(Sample* sample) {
+        return true;
     }
 
 /*

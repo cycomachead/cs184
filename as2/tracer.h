@@ -5,12 +5,18 @@ class RayTracer {
 public:
     int maxDepth = 5;
 
+    RayTracer() {
+        
+    }
+    
     RayTracer(int depth) {
         maxDepth = depth;
     }
 
-/*
     void trace(Ray& ray, int depth, Color* color) {
+
+    }
+/*
         if (depth exceed some threshold) {
             //Make the color black and return
         }

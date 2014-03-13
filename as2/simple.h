@@ -9,7 +9,9 @@ private:
     Vector3f data;
 
 public:
-    Color() {}
+    Color() { 
+    
+    }
 
     Color(Vector3f d) { data = d; }
 
@@ -30,6 +32,18 @@ public:
     void setG(float d) { data(1) = d; }
 
     void setB(float d) { data(2) = d; }
+
+    void max() { // Re-write later.
+        if (data(0) > 255) {
+            data(0) = 255;
+        }
+        if (data(1) > 255) {
+            data(1) = 255;
+        }
+        if (data(2) > 255) {
+            data(2) = 255;
+        }
+    }
 };
 
 class Point : public Vector3f {
@@ -38,23 +52,34 @@ class Point : public Vector3f {
 // Notes:
 //             Constructor from 3 floats
 //             Support +,- with vector
+public:
+    Point() : Vector3f() {
+        // empty parent constructor
+    }
+
+    Point(float f1, float f2, float f3) : Vector3f(f1, f2, f3) {
+        // empty parent constructor
+    }
+
 };
 
 class Ray {
-// Members:
-//      Point pos
-//      Vector dir
-//      float t_min, t_max
-// Notes:
-// It represent the ray ray(t) = pos + t*dir, where t_min <= t <= t_max
+public:
+    Point pos;
+    Vector3f dir;
+    float t_min, t_max;
 
+// Represents the ray ray(t) = pos + t*dir, where t_min <= t <= t_max
+    Ray() {
 
+    }
 };
 
 class Sample {
 public:
+    int x, y;
     Sample() {
-        
+
     }
 };
 

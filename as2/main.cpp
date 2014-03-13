@@ -25,6 +25,8 @@ int main(int argc, const char** argv) {
         scene.loadScene(SCENE);
     }
 
+    Point a(1.0, 2.0, 3.9);
+    float x = a(2);
     scene.render();
     return 0;
 }

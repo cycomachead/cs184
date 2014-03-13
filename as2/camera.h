@@ -23,11 +23,20 @@ public:
           lookAt,
           up;
 
-    Camera(Point from, Point at, Point up, float f) {
-
+    Camera() {
+        
     }
 
-    void generateRay(Sample& sample, Ray* ray);
+    Camera(Point from, Point at, Point u, float f) {
+        lookFrom = from;
+        lookAt = at;
+        up = u;
+        fov = f;
+    }
+
+    void generateRay(Sample& sample, Ray* ray) {
+
+    }
 };
 
 #endif

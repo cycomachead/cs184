@@ -20,36 +20,44 @@ public:
 
     string output = "raytracer_out.png";
 
-    // Vector4f corners[4];
+//     vector<Shape> shapes;
+//     vector<Primitive> primitives;
+//     vector<Light> lights;
+
+    Camera camera;
+    Color color;
+    Film film;
+    Ray ray;
+    Sample sample;
+    Sampler sampler;
+    RayTracer tracer;
+
+    Scene() { 
+    }
 
     void loadScene(int sceneNo) {
-
         initialize();
     }
 
     void loadScene(string filename) {
         // Parse the file and load in what's in the file.
-
         initialize();
     }
 
     void initialize() {
-        RayTracer tracer = RayTracer(maxDepth);
-        Sampler sampler  = Sampler(width, height);
-        Film film        = Film(width, height, output.c_str());
-        Camera camera    = Camera(lookFrom, lookAt, up, fov);
+        tracer  = RayTracer(maxDepth);
+        sampler = Sampler(width, height);
+        film    = Film(width, height, output.c_str());
+        camera  = Camera(lookFrom, lookAt, up, fov);
     }
 
     void render() {
-        Sample sample;
-        /*
-        while (!sampler.generateSample(sample) {
-            camera.generateRay(sample, ray);
-            tracer.trace(ray, color);
+        while (!sampler.generateSample(&sample)) {
+            camera.generateRay(sample, &ray);
+            tracer.trace(ray, 1, &color);
             film.commit(sample, color);
         }
         film.writeImage();
-        */
     }
 
 };
