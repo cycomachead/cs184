@@ -34,7 +34,7 @@ class Color;
 // class Material; // Not needed now
 // class Matrix;   // Likely not needed
 // class Normal;
-class Point;
+// class Point;
 // class PointLight;
 // class Primitive;
 class Ray;

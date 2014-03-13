@@ -9,8 +9,8 @@ private:
     Vector3f data;
 
 public:
-    Color() { 
-    
+    Color() {
+
     }
 
     Color(Vector3f d) { data = d; }
@@ -46,32 +46,40 @@ public:
     }
 };
 
-class Point : public Vector3f {
-// Members:
-//             float x, y, z
-// Notes:
-//             Constructor from 3 floats
-//             Support +,- with vector
-public:
-    Point() : Vector3f() {
-        // empty parent constructor
-    }
+typedef Eigen::Vector3f Point;
 
-    Point(float f1, float f2, float f3) : Vector3f(f1, f2, f3) {
-        // empty parent constructor
-    }
-
-};
+// class Point : public Vector3f {
+// // Members:
+// //             float x, y, z
+// // Notes:
+// //             Constructor from 3 floats
+// //             Support +,- with vector
+// public:
+//     Point() : Vector3f() {
+//         // empty parent constructor
+//     }
+//
+//     Point(float f1, float f2, float f3) : Vector3f(f1, f2, f3) {
+//         // empty parent constructor
+//     }
+//
+// };
 
 class Ray {
 public:
     Point pos;
     Vector3f dir;
-    float t_min, t_max;
+    float tMin, tMax;
 
 // Represents the ray ray(t) = pos + t*dir, where t_min <= t <= t_max
     Ray() {
+    }
 
+    Ray(Point p, Vector3f d, float min, float max) {
+        pos = p;
+        dir = d;
+        tMin = min;
+        tMax = max;
     }
 };
 

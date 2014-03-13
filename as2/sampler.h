@@ -9,17 +9,41 @@ class Sampler {
 public:
     // bool getSample(Sample* sample);
 
-    Sampler() {
-        
-    }
-    
-    Sampler(int width, int height) {
+    int width, height,
+        currX, currY;
+    bool done = false;
 
+    Sampler() {
+
+    }
+
+    Sampler(int w, int h) {
+        width = w;
+        height = h;
+        currX = 0;
+        currY = 0;
+        done = false;
     }
 
     bool generateSample(Sample* sample) {
-        return true;
+        if (done) {
+            return true;
+        }
+        sample->x = currX;
+        sample->y = currY;
+        if (currX < width - 1) {
+            currX += 1;
+        } else { // if (currX == width - 1) {
+            if (currY < height - 1) {
+                currY += 1;
+                currX = 0;
+            } else {
+                done = true;
+            }
+        }
+        return false;
     }
+
 
 /*
 Notes:

@@ -20,4 +20,5 @@
 # Misc Files
 as2/images/test
 *.pdf
+as2/*.png
 raytracer

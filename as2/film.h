@@ -12,8 +12,8 @@ public:
     char const* filename;
     vector<unsigned char> image;
 
-    Film() { 
-    
+    Film() {
+
     }
 
     Film(int w, int h, char const* name) {
@@ -42,11 +42,14 @@ public:
 
     void commit(Sample sample, Color color) {
         // the vector is a linear ordering of all pixels.
-        // (final.b * 255) > 255 ? 255 : (final.b * 255)
 
-        int pos = 4 * ((sample.x * width*height) + sample.y);
+        int pos = 4 * ((sample.x * width) + sample.y);
         color *= 255;
         color.max();
+        if (LOGGING > 5) {
+            cout << "PIXEL TO BE WRITTEN:\tX:" << sample.x << " Y: " << sample.y;
+            cout << " POS: " << pos << endl;
+        }
         image.at(pos + 0) = color.r();
         image.at(pos + 1) = color.g();
         image.at(pos + 2) = color.b();
