@@ -44,13 +44,13 @@ public:
         fovY = f;
         pixelWidth = w;
         pixelHeight = h;
-        
-        
+
+
         aspect =  pixelWidth/pixelHeight;
         height = 2 * tan(M_PI/180 * .5 * fovY);
         width = height * aspect;
-        
-        
+
+
         z = lookAt - lookFrom;
         x = z.cross(up);
         y = x.cross(z);
@@ -63,7 +63,7 @@ public:
 
         centerX = pixelWidth/2.0 + 0.5; // 0.5 == pixel centers
         centerY = pixelHeight/2.0 + 0.5;
-        
+
         // ORIGINCAL FORMULA
         // deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX)
         // CAN I FACTOR???

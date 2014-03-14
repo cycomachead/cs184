@@ -1,25 +1,37 @@
+//
+//
+
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
+
+#include "raytracer.h"
+#include "scene.h"
+#include "objects.h"
+
 
 class RayTracer {
 public:
     int maxDepth = 5;
+    Scene* scene;
 
     RayTracer() {
-        
+        // empty constructor
     }
-    
-    RayTracer(int depth) {
+
+    RayTracer(int depth, Scene* s) {
         maxDepth = depth;
+        scene = s;
     }
 
-    void trace(Ray& ray, int depth, Color* color) {
+    Color trace(Ray& ray, int depth) {
+        if (depth == maxDepth) {
+            return Color(0.0f, 0.0f, 0.0f);
+        }
 
+        return Color(1.0f, 1.0f, 0.0f);
     }
 /*
-        if (depth exceed some threshold) {
-            //Make the color black and return
-        }
+
         if (!primitive.intersect(ray, &thit, &in) {
             // No intersection
             // Make the color black and return

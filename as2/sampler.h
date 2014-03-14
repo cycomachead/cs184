@@ -7,14 +7,12 @@
 
 class Sampler {
 public:
-    // bool getSample(Sample* sample);
-
     int width, height,
-        currX, currY;
+        currX, currY, x, y;
     bool done = false;
 
     Sampler() {
-
+        // empty constructor
     }
 
     Sampler(int w, int h) {
@@ -25,15 +23,16 @@ public:
         done = false;
     }
 
-    bool generateSample(Sample* sample) {
-        if (done) {
-            return true;
-        }
-        sample->x = currX;
-        sample->y = currY;
+    bool isDone() {
+        return done;
+    }
+
+    Sample generateSample() {
+        x = currX;
+        y = currY;
         if (currX < width - 1) {
             currX += 1;
-        } else { // if (currX == width - 1) {
+        } else { // (currX == width - 1)
             if (currY < height - 1) {
                 currY += 1;
                 currX = 0;
@@ -41,7 +40,7 @@ public:
                 done = true;
             }
         }
-        return false;
+        return Sample(x, y);
     }
 
 

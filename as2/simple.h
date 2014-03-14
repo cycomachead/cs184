@@ -88,10 +88,17 @@ public:
 };
 
 class Sample {
+    // currently a sample just stores X,Y values which are updated on each ray
+    // generation. It's just a way of keeping track of the current place.
 public:
     int x, y;
     Sample() {
+        // empty constructor
+    }
 
+    Sample(int x1, int y1) {
+        x = x1;
+        y = y1;
     }
 };
 
@@ -161,13 +168,7 @@ Shape
                         // should return false.
 
 Primitive
-            Methods:
-                        bool intersect(Ray& ray, float* thit, Intersection* in)
-                        bool intersectP(Ray& ray)
-                        void getBRDF(LocalGeo& local, BRDF* brdf);
 
-            Notes:
-                        Abstract class for primitives in the scene
 
 Intersection
             Members:

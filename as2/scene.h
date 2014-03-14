@@ -6,6 +6,8 @@
 #include "raytracer.h"
 
 #include "simple.h"
+#include "objects.h"
+#include "lights.h"
 #include "tracer.h"
 
 class Scene {
@@ -20,9 +22,9 @@ public:
 
     string output = "raytracer_out.png";
 
-//     vector<Shape> shapes;
-//     vector<Primitive> primitives;
-//     vector<Light> lights;
+    vector<Shape> shapes;
+    vector<Primitive> primitives;
+    vector<Light> lights;
 
     Camera camera;
     Color color;
@@ -33,6 +35,7 @@ public:
     RayTracer tracer;
 
     Scene() {
+        // empty constructor
     }
 
     void loadScene(int sceneNo) {
@@ -45,16 +48,17 @@ public:
     }
 
     void initialize() {
-        tracer  = RayTracer(maxDepth);
+        tracer  = RayTracer(maxDepth, this);
         sampler = Sampler(width, height);
         film    = Film(width, height, output.c_str());
         camera  = Camera(lookFrom, lookAt, up, fov, width, height);
     }
 
     void render() {
-        while (!sampler.generateSample(&sample)) {
-            ray = camera.generateRay(sample);
-            tracer.trace(ray, 1, &color);
+        while (!sampler.isDone()) {
+            sample = sampler.generateSample();
+            ray    = camera.generateRay(sample);
+            color  = tracer.trace(ray, 1);
             film.commit(sample, color);
         }
         film.writeImage();
