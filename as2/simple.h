@@ -47,6 +47,10 @@ public:
 };
 
 typedef Eigen::Vector3f Point;
+// TODO: try to get these to work...
+// #define x() (0)
+// #define y() (1)
+// #define z() (2)
 
 // class Point : public Vector3f {
 // // Members:

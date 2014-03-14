@@ -20,56 +20,74 @@ corresponding pixel (sample.x, sample.y) on the image plane.
 
 public:
 
-    float fov;
+    float centerX, centerY, fovY; // FOV in horizontal direction
 
-    int width, height;
+    int pixelWidth, pixelHeight;
 
-    Point lookFrom, lookAt, up;
+    Point lookFrom, lookAt, up, deltaX, deltaY ,  dirConst;
 
-    Point XInc, YInc, UL, UR, DL, DR;
+    // Potentially useful for different ways of defining a camera
+    // Point center, UL, UR, DL, DR;
 
     Vector3f x, y, z;
 
 
     Camera() {
-
+        // empty constructor
     }
 
-    Camera(Point from, Point at, Point u, float f) {
+    Camera(Point from, Point at, Point u, float f, int w, int h) {
+        float width, height, aspect;
         lookFrom = from;
         lookAt = at;
         up = u;
-        fov = f;
-        float vTheta = fov/2;
-        float h = 2*tan(M_PI*vTheta/180);
-        float aspectRatio =  width/height;
-        float w = h*aspectRatio;
-        //float hTheta = inverseTangent(w/2)
+        fovY = f;
+        pixelWidth = w;
+        pixelHeight = h;
+        
+        
+        aspect =  pixelWidth/pixelHeight;
+        height = 2 * tan(M_PI/180 * .5 * fovY);
+        width = height * aspect;
+        
+        
         z = lookAt - lookFrom;
+        x = z.cross(up);
+        y = x.cross(z);
+        x.normalize(); // Is normalization necessary? Some suggest it....
+        y.normalize();
         z.normalize();
-        x = z.cross(up)
-        x.normalize();
-        y = x.cross(z)
-        y.normalize(); //normalizing to be safe
 
-        Point center = lookFrom + z;
-        UL = center+(y*(h/2)) - x*(w/2);
-        UR = center+(y*(h/2)) + x*(w/2);
-        DL = center-(y*(h/2)) - x*(w/2);
-        DR = center - y*(h/2) + x*(w/2);
+        deltaX = x * width / pixelWidth;
+        deltaY = y * height / pixelHeight;
 
-        XInc = x*w/width;
-        YInc = y*h/height;
+        centerX = pixelWidth/2.0 + 0.5; // 0.5 == pixel centers
+        centerY = pixelHeight/2.0 + 0.5;
+        
+        // ORIGINCAL FORMULA
+        // deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX)
+        // CAN I FACTOR???
+        // dirConst = deltaY * -1 * centerY + z + deltaX * -1 * centerX;
 
     }
 
+    // modify poiter parameter.
     void generateRay(Sample& sample, Ray* ray) {
         ray->pos  = lookFrom;
         ray->tMin = 0.0f;
         ray->tMax = FLT_MAX;
         // The only interesting calculation:
         // (dir is a vector3f)
-        ray->dir  =  YInc*(sample.y - height/2.0 + 0.5) + z+ XInc*(sample.x - width/2.0 + 0.5);
+        ray->dir  = deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX);
+    }
+
+    // same function but return a new ray
+    Ray generateRay(Sample& sample) {
+        return Ray(
+            lookFrom,
+            deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX),
+            0.0f,
+            FLT_MAX);
     }
 };
 

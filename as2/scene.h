@@ -32,7 +32,7 @@ public:
     Sampler sampler;
     RayTracer tracer;
 
-    Scene() { 
+    Scene() {
     }
 
     void loadScene(int sceneNo) {
@@ -48,12 +48,12 @@ public:
         tracer  = RayTracer(maxDepth);
         sampler = Sampler(width, height);
         film    = Film(width, height, output.c_str());
-        camera  = Camera(lookFrom, lookAt, up, fov);
+        camera  = Camera(lookFrom, lookAt, up, fov, width, height);
     }
 
     void render() {
         while (!sampler.generateSample(&sample)) {
-            camera.generateRay(sample, &ray);
+            ray = camera.generateRay(sample);
             tracer.trace(ray, 1, &color);
             film.commit(sample, color);
         }
