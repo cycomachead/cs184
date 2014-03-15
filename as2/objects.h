@@ -3,25 +3,40 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
+#include "common.h"
+#include "simple.h"
+
+
+class Intersection {
+/*
+    LocalGeo localGeo
+    Primitive* primitive
+*/
+public:
+    Intersection() {
+        // empty contructor
+    }
+};
+
+
 class Primitive {
 /*
-Methods:
-            bool intersect(Ray& ray, float* thit, Intersection* in)
-            bool intersectP(Ray& ray)
-            void getBRDF(LocalGeo& local, BRDF* brdf);
-
 Notes:
-            Abstract class for primitives in the scene
+        Abstract class for primitives in the scene
 */
 public:
     Primitive() {
         // empty constructor
     }
+
+    bool intersect(Ray& ray, float* thit, Intersection* in);
+    bool intersect(Ray& ray);
+    void getBRDF(LocalGeo& local, BRDF* brdf);
 };
 
-/*
 
-GeometricPrimitive
+class GeometricPrimitive : public Primitive {
+/*
 Members:
             Transformation objToWorld, worldToObj;
             Shape* shape;
@@ -45,9 +60,16 @@ Methods:
         void getBRDF(LocalGeo& local, BRDF* brdf) {
                     material->getBRDF(local, brdf);
         }
+*/
+public:
+    GeometricPrimitive() {
+        // empty constructor
+    }
+};
 
 
-AggregatePrimitive
+class AggregatePrimitive : public Primitive {
+/*
 Methods:
             AggregatePrimitive(vector<Primitive*> list);
             bool intersect(Ray& ray, float* thit, Intersection* in)
@@ -66,6 +88,11 @@ Notes:
     the pointer to that primitive. When you implement acceleration structure,
     it will replace this class.
 */
+public:
+    AggregatePrimitive() {
+        // empty constructor
+    }
+};
 
 
 class Shape {
@@ -76,14 +103,4 @@ public:
 };
 
 
-class Intersection {
-/*
-    LocalGeo localGeo
-    Primitive* primitive
-*/
-public:
-    Intersection() {
-        // empty contructor
-    }
-};
 #endif

@@ -1,9 +1,12 @@
 // Michael Ball CS184 Ray Tracer
 // This file has all my includes.
 
-#include "raytracer.h"
+#include "common.h"
+
 #include "simple.h"
+
 #include "camera.h"
+#include "objects.h"
 #include "scene.h"
 #include "film.h"
 #include "sampler.h"

@@ -3,11 +3,13 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "raytracer.h"
+#include "common.h"
 
-#include "simple.h"
-#include "objects.h"
-#include "lights.h"
+#include "sampler.h"
+// #include "objects.h"
+// #include "lights.h"
+#include "film.h"
+#include "camera.h"
 #include "tracer.h"
 
 class Scene {
@@ -20,11 +22,11 @@ public:
 
     Point lookFrom, lookAt, up;
 
-    string output = "raytracer_out.png";
+    string output = "z_image_out.png";
 
-    vector<Shape> shapes;
-    vector<Primitive> primitives;
-    vector<Light> lights;
+    vector<Shape*> shapes;
+    vector<Primitive*> primitives;
+    vector<Light*> lights;
 
     Camera camera;
     Color color;
@@ -48,7 +50,7 @@ public:
     }
 
     void initialize() {
-        tracer  = RayTracer(maxDepth, this);
+        tracer  = RayTracer(maxDepth);
         sampler = Sampler(width, height);
         film    = Film(width, height, output.c_str());
         camera  = Camera(lookFrom, lookAt, up, fov, width, height);
@@ -64,6 +66,10 @@ public:
         film.writeImage();
     }
 
+    vector<Primitive*> getPrims() {
+        return primitives;
+    }
 };
 
+extern Scene scene;
 #endif

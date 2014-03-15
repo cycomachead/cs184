@@ -4,7 +4,7 @@
 #define FILM_H
 
 
-#include "raytracer.h"
+#include "common.h"
 
 class Film {
 public:
@@ -44,19 +44,28 @@ public:
         // the vector is a linear ordering of all pixels.
 
         int pos = 4 * ((sample.x * width) + sample.y);
-        color *= 255;
+        color.scale();
         color.max();
         if (LOGGING > 5) {
             cout << "PIXEL TO BE WRITTEN:\tX:" << sample.x << " Y: " << sample.y;
-            cout << " POS: " << pos << endl;
-        }
-        image.at(pos + 0) = color.r();
-        image.at(pos + 1) = color.g();
-        image.at(pos + 2) = color.b();
+            cout << " POS: " << pos << "\tR:" << color.r() << " G: ";
+            cout << color.g() << " B: " << color.b() << endl;
+         }
+        image.at(pos + 0) = (const char) color.r();
+        image.at(pos + 1) = (const char) color.g();
+        image.at(pos + 2) = (const char) color.b();
         image.at(pos + 3) = 255;
     }
 
     void writeImage() {
+        if (LOGGING > 8) {
+            cout << "IMAGE VECTOR\n";
+            for( int i = 0; i < image.size(); i += 4 ) {
+                cout << "[" << (int) image.at(i) << ' ' << (int) image.at(i + 1);
+                cout << " "<< (int) image.at(i + 2) << ' ';
+                cout  << (int) image.at(i + 3) << "] ";
+            }
+        }
         unsigned error = lodepng::encode(filename, image, width, height);
 
         if (error and LOGGING > 0) { // if there's an error, display it

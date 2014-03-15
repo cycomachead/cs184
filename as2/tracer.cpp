@@ -1,35 +1,45 @@
 //
 //
+#include <cfloat>
+#include "common.h"
+#include "tracer.h"
 
-#ifndef RAYTRACER_H
-#define RAYTRACER_H
-
-#include "raytracer.h"
+#include "simple.h"
 #include "scene.h"
 #include "objects.h"
+#include "lights.h"
 
-
-class RayTracer {
-public:
-    int maxDepth = 5;
-    Scene* scene;
-
-    RayTracer() {
-        // empty constructor
-    }
-
-    RayTracer(int depth, Scene* s) {
-        maxDepth = depth;
-        scene = s;
-    }
-
-    Color trace(Ray& ray, int depth) {
-        if (depth == maxDepth) {
-            return Color(0.0f, 0.0f, 0.0f);
+Color RayTracer::trace(Ray& ray, int depth) {
+    if (depth == maxDepth) {
+        if (LOGGING > 6) {
+            cout << "Max Depth Reached";
         }
-
-        return Color(1.0f, 1.0f, 0.0f);
+        return Color(0.0f, 0.0f, 0.0f);
     }
+
+    float tHit, smallestTime = FLT_MAX;
+    vector<Primitive*> prims = scene.getPrims();
+    Intersection ins, closestInt;
+    Primitive* closestPrim;
+    bool found = false;
+
+    for(int i = 0; i < prims.size(); i += 1) {
+         if (prims.at(i)->intersect(ray, &tHit, &ins)) {
+             if (tHit < smallestTime) {
+                 smallestTime = tHit;
+                 closestPrim = prims.at(i);
+                 closestInt = ins;
+                 found = true;
+             }
+         }
+    }
+
+    if (not found) {
+        return Color(1.0f, 1.0f, 0.0f); // FIXME
+    }
+
+    return Color(0.0f, 0.0f, 0.0f);
+}
 /*
 
         if (!primitive.intersect(ray, &thit, &in) {
@@ -66,7 +76,3 @@ exactly on the surface, or the intersection routine may return
 intersection point at the starting point of the ray. (This apply to light
 ray generation as well)
 */
-
-};
-
-#endif

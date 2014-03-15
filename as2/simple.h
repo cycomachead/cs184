@@ -2,15 +2,27 @@
 #ifndef SIMPLE_H
 #define SIMPLE_H
 
-#include "raytracer.h"
+#ifndef egn_h
+#define egn_h
+#undef Success
+#include "lib/Eigen/Eigen"
+#endif
 
 class Color: public Vector3f {
+/*
+Members:
+            float r, g, b
+Notes:
+            Support +,- with other color
+            Support scalar *, /
+            May support conversion from xyz
+*/
 private:
     Vector3f data;
 
 public:
     Color() {
-
+        // empty constructor
     }
 
     Color(Vector3f d) { data = d; }
@@ -44,9 +56,12 @@ public:
             data(2) = 255;
         }
     }
+
+    void scale() {
+        data = data * 255;
+    }
 };
 
-typedef Eigen::Vector3f Point;
 // TODO: try to get these to work...
 // #define x() (0)
 // #define y() (1)
@@ -71,7 +86,7 @@ typedef Eigen::Vector3f Point;
 
 class Ray {
 public:
-    Point pos;
+    Vector3f pos;
     Vector3f dir;
     float tMin, tMax;
 
@@ -79,7 +94,7 @@ public:
     Ray() {
     }
 
-    Ray(Point p, Vector3f d, float min, float max) {
+    Ray(Vector3f p, Vector3f d, float min, float max) {
         pos = p;
         dir = d;
         tMin = min;
@@ -129,27 +144,15 @@ Notes:
                         Support Point, Vector, Normal, Ray, LocalGeo transformation by
 operator * overloading
 
-Color
-            Members:
-                        float r, g, b
-            Notes:
-                        Support +,- with other color
-                        Support scalar *, /
-                        May support conversion from xyz
-
-
-Sample
-Members:
-                        float x, y; // Store screen coordinate
 
 LocalGeo
 Members:
-                        Point pos
-                        Normal normal
-            Notes:
-                        Store the local geometry at the intersection point. May need to store
-                        other quantities (eg. texture coordinate) in a more complicated
-raytracer.
+        Point pos
+        Normal normal
+Notes:
+        Store the local geometry at the intersection point. May need to store
+        other quantities (eg. texture coordinate) in a more complicated
+        raytracer.
 
 More Classes
 Shape
@@ -167,58 +170,6 @@ Shape
                         // The intersection with the ray at t outside the range [t_min, t_max]
                         // should return false.
 
-Primitive
-
-
-Intersection
-            Members:
-                        LocalGeo localGeo
-                        Primitive* primitive
-
-GeometricPrimitive
-            Members:
-                        Transformation objToWorld, worldToObj;
-                        Shape* shape;
-                        Material* mat;
-
-            Methods:
-                        bool intersect(Ray& ray, float* thit, Intersection* in)  {
-                                    Ray oray = worldToObj*ray;
-                                    LocalGeo olocal;
-                                    if (!shape->intersect(oray, thit, &olocal))  return false;
-                                    in->primitive = this;
-                                    in->local = objToWorld*olocal;
-                                    return true;
-                        }
-
-                        bool intersectP(Ray& ray) {
-                                    Ray oray = worldToObj*ray;
-                                    return shape->intersectP(oray);
-}
-
-                        void getBRDF(LocalGeo& local, BRDF* brdf) {
-                                    material->getBRDF(local, brdf);
-}
-
-
-AggregatePrimitive
-            Methods:
-                        AggregatePrimitive(vector<Primitive*> list);
-                        bool intersect(Ray& ray, float* thit, Intersection* in)
-                        bool intersectP(Ray& ray)
-void getBRDF(LocalGeo& local, BRDF* brdf) {
-            exit(1);
-            // This should never get called, because in->primitive will
-            // never be an aggregate primitive
-}
-
-            Notes:
-                        Constructor store the STL vector of pointers to primitives.
-                        Intersect just loops through all the primitives in the list and
-call the intersect routine. Compare thit and return that of the nearest one (because we want the first hit).
- Also, the in->primitive should be set to the pointer to that primitive.
-                        When you implement acceleration structure, it will replace this class.
-
 Material
             Members:
                         BRDF constantBRDF;
@@ -230,17 +181,6 @@ void getBRDF(LocalGeo& local, BRDF* brdf) {
                         Class for storing material. For this example, it just returns a constant
                         material regardless of what local is. Later on, when we want to support
                         texture mapping, this need to be modified.
-
-Light
-Methods:
-    void generateLightRay(LocalGeo& local, Ray* lray, Color* lcolor);
-Notes:
-    This is an abstract class that will generate a ray starting from
-    the position stored in local to the position of the light source.
-    You might want to consider creating 2 derived classes for
-    point light source and directional light source.
-    For directional light, the origin of the ray is the same, and the ray
-    points to the light direction, however, t_max is infinity.
 
 */
 #endif

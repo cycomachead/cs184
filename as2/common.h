@@ -13,11 +13,13 @@
 
 // Image File Writing
 #include "lib/lodepng.h"
-#include "lib/lodepng.cpp"
 
 // X11 and Eigen don't play nicely...
+#ifndef egn_h
+#define egn_h
 #undef Success
 #include "lib/Eigen/Eigen"
+#endif
 
 // Class Includes
 // SUGGESTED LIST FROM DESIGN NOTE
@@ -31,7 +33,7 @@ class GeometricPrimitive;
 class Intersection;
 class Light;
 class LocalGeo;
-// class Material; // Not needed now
+class Material;
 // class Matrix;   // Likely not needed
 // class Normal;   // Do I need this?
 // class Point;    // Use Vector3f instead.
@@ -44,11 +46,14 @@ class Sampler;
 class Scene;
 class Shape;
 class Transformation;
+typedef Eigen::Vector3f Point;
+
 
 
 // GLOBAL VARIABLES
 // Stupid logging global because lazy.
 extern int LOGGING;
+extern Scene scene;
 
 
 /*
