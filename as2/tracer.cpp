@@ -26,6 +26,9 @@ Color RayTracer::trace(Ray& ray, int depth) {
     for(int i = 0; i < prims.size(); i += 1) {
          if (prims.at(i)->intersect(ray, &tHit, &ins)) {
              if (tHit < smallestTime) {
+                 if (LOGGING > 3) {
+                     cout << "Primitive Found";
+                 }
                  smallestTime = tHit;
                  closestPrim = prims.at(i);
                  closestInt = ins;
@@ -36,6 +39,8 @@ Color RayTracer::trace(Ray& ray, int depth) {
 
     if (not found) {
         return Color(1.0f, 1.0f, 0.0f); // FIXME
+    } else {
+        return Color(0.0f, 0.0f, 1.0f);
     }
 
     return Color(0.0f, 0.0f, 0.0f);
@@ -51,13 +56,13 @@ Color RayTracer::trace(Ray& ray, int depth) {
 
         // There is an intersection, loop through all light source
         for (i = 0; i < #lights; i++) {
-        lights[i].generateLightRay(in.local, &lray, &lcolor);
+            lights[i].generateLightRay(in.local, &lray, &lcolor);
 
-        // Check if the light is blocked or not
-        if (!primitive->intersectP(lray))
-        // If not, do shading calculation for this light source
-        *color += shading(in.local, brdf, lray, lcolor);
-}
+            // Check if the light is blocked or not
+            if (!primitive->intersectP(lray))
+            // If not, do shading calculation for this light source
+            *color += shading(in.local, brdf, lray, lcolor);
+        }
 
     // Handle mirror reflection
     if (brdf.kr > 0) {

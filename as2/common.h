@@ -34,9 +34,9 @@ class Intersection;
 class Light;
 class LocalGeo;
 class Material;
-// class Matrix;   // Likely not needed
-// class Normal;   // Do I need this?
-// class Point;    // Use Vector3f instead.
+// class Matrix;   // Likely not needed |
+// class Normal;   // Do I need this?   v
+// class Point;    // Use Eigen instead?.
 class PointLight;
 class Primitive;
 class Ray;
@@ -46,6 +46,9 @@ class Sampler;
 class Scene;
 class Shape;
 class Transformation;
+// Types to make using the design note easy.
+typedef Eigen::Matrix4f Matrix;
+typedef Eigen::Vector3f Normal;
 typedef Eigen::Vector3f Point;
 
 
