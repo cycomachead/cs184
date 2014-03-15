@@ -24,10 +24,13 @@ public:
         // empty constructor
     }
 
+    static Transformation identity();
+
     Ray operator* (Ray r);
     LocalGeo operator* (LocalGeo lg);
     // Point operator* (Point p);
     Vector3f operator* (Normal n);
+    //Vector3f operator* (Vector3f n);
 };
 
 
@@ -44,22 +47,21 @@ public:
 
 
 class Primitive {
-/*
-Notes:
-        Abstract class for primitives in the scene
-*/
-public:
+    /* NOTE: This class is abstract. Implementers are:
+    GEOMETRIC and AGGREGATE Primitives. */
+protected:
     Primitive() {
         // empty constructor
     }
-
-    bool intersect(Ray& ray, float* thit, Intersection* in);
-    bool intersect(Ray& ray);
-    void getBRDF(LocalGeo& local, BRDF* brdf);
+public:
+    // = 0 makes the class abstract virtual.
+    virtual bool intersect(Ray& ray, float* thit, Intersection* in) = 0;
+    virtual bool intersectP(Ray& ray) = 0;
+    virtual void getBRDF(LocalGeo& local, BRDF* brdf) = 0;
 };
 
 
-class GeometricPrimitive : public Primitive {
+class GeometricPrimitive : virtual public Primitive {
 public:
 
     Transformation objToWorld, worldToObj;
@@ -68,6 +70,18 @@ public:
 
     GeometricPrimitive() {
         // empty constructor
+    }
+
+    GeometricPrimitive(Shape* s, Transformation t) {
+        shape = s;
+        objToWorld = t;
+        // FIXME
+    }
+
+    GeometricPrimitive(Shape* s) {
+        // Constructor w/ no transformation is the default transformation...
+        shape = s;
+        // FIXME
     }
 
     bool intersect(Ray& ray, float* thit, Intersection* in);
@@ -94,6 +108,7 @@ public:
     }
 
     AggregatePrimitive(vector<Primitive*> list);
+
     bool intersect(Ray& ray, float* thit, Intersection* in);
     bool intersectP(Ray& ray);
 
@@ -106,24 +121,18 @@ public:
 
 
 class Shape {
-public:
+protected:
     Shape() {
         // empty constructor
     }
-
+public:
     // Test if ray intersects with the shape or not (in object space),
     // if so, return intersection point and normal
-    bool intersect(Ray& ray, float* tHit, LocalGeo* local) {
-        cerr << "ERROR: Function shouldn't be called.";
-        return false;
-    }
+    virtual bool intersect(Ray& ray, float* tHit, LocalGeo* local) =0;
 
     // Same as intersect, but just return whether there is any intersection or
     // not
-    bool intersectP(Ray& ray){
-        cerr << "ERROR: Function shouldn't be called.";
-        return false;
-    }
+    virtual bool intersectP(Ray& ray) =0;
 
 // Triangle and Sphere are probably best implemented here
 // The intersection with the ray at t outside the range [t_min, t_max]

@@ -63,7 +63,7 @@ public:
             for( int i = 0; i < image.size(); i += 4 ) {
                 cout << "[" << (int) image.at(i) << ' ' << (int) image.at(i + 1);
                 cout << " "<< (int) image.at(i + 2) << ' ';
-                cout  << (int) image.at(i + 3) << "] ";
+                cout  << (int) image.at(i + 3) << "] " << endl;
             }
         }
         unsigned error = lodepng::encode(filename, image, width, height);

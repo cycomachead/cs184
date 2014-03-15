@@ -6,17 +6,17 @@
 //***************************************************************************//
 // PRIMITIVES //
 //***************************************************************************//
-bool Primitive::intersect(Ray& r, float* t, Intersection* i) {
-    cerr << "ERROR: This shouldn't be called." << endl;
-    return false;
-}
-bool Primitive::intersect(Ray& ray) {
-    cerr << "ERROR: This shouldn't be called." << endl;
-    return false;
-}
-void Primitive::getBRDF(LocalGeo& local, BRDF* brdf) {
-    cerr << "ERROR: This shouldn't be called." << endl;
-}
+// bool Primitive::intersect(Ray& r, float* t, Intersection* i) {
+//     cerr << "ERROR: Primitive intersect shouldn't be called." << endl;
+//     return false;
+// }
+// bool Primitive::intersect(Ray& ray) {
+//     cerr << "ERROR: Primitive intersectP shouldn't be called." << endl;
+//     return false;
+// }
+// void Primitive::getBRDF(LocalGeo& local, BRDF* brdf) {
+//     cerr << "ERROR: Primitive getBRDF shouldn't be called." << endl;
+// }
 
 
 //***************************************************************************//
@@ -28,6 +28,7 @@ void Primitive::getBRDF(LocalGeo& local, BRDF* brdf) {
 // GEOMETRICPRIMITIVES //
 //***************************************************************************//
 bool GeometricPrimitive::intersect(Ray& ray, float* thit, Intersection* in)  {
+    // From the design note
     Ray oray = worldToObj*ray;
     LocalGeo olocal;
     if (!shape->intersect(oray, thit, &olocal)) {
@@ -39,6 +40,7 @@ bool GeometricPrimitive::intersect(Ray& ray, float* thit, Intersection* in)  {
 }
 
 bool GeometricPrimitive::intersectP(Ray& ray) {
+    // From the design note
     Ray oray = worldToObj*ray;
     return shape->intersectP(oray);
 }
@@ -117,7 +119,9 @@ bool Sphere::intersect(Ray& ray, float* tHit, LocalGeo* local) {
 }
 
 bool Sphere::intersectP(Ray& ray) {
-    return false;
+    float* uselessF;
+    LocalGeo* uselessLocal;
+    return intersect(ray, uselessF, uselessLocal);
 }
 
 //***************************************************************************//
@@ -150,8 +154,14 @@ LocalGeo Transformation::operator* (LocalGeo local) {
     return result;
 }
 
+Transformation Transformation::identity() {
+    Transformation t;
+    t.m << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+    t.minvt = t.m;
+}
+
 //***************************************************************************//
-//  TRANSFORMATION AND MATRICIES AND SUCH //
+//  Materials and other random things //
 //***************************************************************************//
 void Material::getBRDF(LocalGeo& local, BRDF* brdf) {
     // empty function

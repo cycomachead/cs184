@@ -5,7 +5,9 @@
 
 class BRDF {
 public:
-    BRDF();
+    BRDF() {
+        // empty constructor
+    }
 // Storing information enough for shading (it is not the actual BRDF function
 // in the rendering equation that will be covered later in the semester)
 // Members:

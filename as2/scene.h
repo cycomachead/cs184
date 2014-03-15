@@ -6,8 +6,8 @@
 #include "common.h"
 
 #include "sampler.h"
-// #include "objects.h"
-// #include "lights.h"
+#include "objects.h"
+#include "lights.h"
 #include "film.h"
 #include "camera.h"
 #include "tracer.h"
@@ -22,11 +22,12 @@ public:
 
     Point lookFrom, lookAt, up;
 
-    string output = "z_image_out.png";
+    string output = "z_image_out.png"; // FIXME
 
     vector<Shape*> shapes;
     vector<Primitive*> primitives;
     vector<Light*> lights;
+    // Transformations vector / stack?
 
     Camera camera;
     Color color;
@@ -40,31 +41,13 @@ public:
         // empty constructor
     }
 
-    void loadScene(int sceneNo) {
-        initialize();
-    }
+    void loadScene(int sceneNo);
 
-    void loadScene(string filename) {
-        // Parse the file and load in what's in the file.
-        initialize();
-    }
+    void loadScene(string filename);
 
-    void initialize() {
-        tracer  = RayTracer(maxDepth);
-        sampler = Sampler(width, height);
-        film    = Film(width, height, output.c_str());
-        camera  = Camera(lookFrom, lookAt, up, fov, width, height);
-    }
+    void initialize();
 
-    void render() {
-        while (!sampler.isDone()) {
-            sample = sampler.generateSample();
-            ray    = camera.generateRay(sample);
-            color  = tracer.trace(ray, 1);
-            film.commit(sample, color);
-        }
-        film.writeImage();
-    }
+    void render();
 
     vector<Primitive*> getPrims() {
         return primitives;

@@ -26,7 +26,7 @@ Color RayTracer::trace(Ray& ray, int depth) {
     for(int i = 0; i < prims.size(); i += 1) {
          if (prims.at(i)->intersect(ray, &tHit, &ins)) {
              if (tHit < smallestTime) {
-                 if (LOGGING > 3) {
+                 if (LOGGING > 2) {
                      cout << "Primitive Found";
                  }
                  smallestTime = tHit;
