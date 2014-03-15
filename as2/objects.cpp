@@ -6,6 +6,18 @@
 //***************************************************************************//
 // PRIMITIVES //
 //***************************************************************************//
+bool Primitive::intersect(Ray& r, float* t, Intersection* i) {
+    cerr << "ERROR: This shouldn't be called." << endl;
+    return false;
+}
+bool Primitive::intersect(Ray& ray) {
+    cerr << "ERROR: This shouldn't be called." << endl;
+    return false;
+}
+void Primitive::getBRDF(LocalGeo& local, BRDF* brdf) {
+    cerr << "ERROR: This shouldn't be called." << endl;
+}
+
 
 //***************************************************************************//
 // AGGREGATEPRIMITIVES //
@@ -15,7 +27,6 @@
 //***************************************************************************//
 // GEOMETRICPRIMITIVES //
 //***************************************************************************//
-
 bool GeometricPrimitive::intersect(Ray& ray, float* thit, Intersection* in)  {
     Ray oray = worldToObj*ray;
     LocalGeo olocal;
@@ -105,6 +116,10 @@ bool Sphere::intersect(Ray& ray, float* tHit, LocalGeo* local) {
     return true;
 }
 
+bool Sphere::intersectP(Ray& ray) {
+    return false;
+}
+
 //***************************************************************************//
 //  TRANSFORMATION AND MATRICIES AND SUCH //
 //***************************************************************************//
@@ -128,9 +143,19 @@ Ray Transformation::operator* (Ray r) {
     return result;
 }
 
-LocalGeo Transformation::operator* (LocalGeo lg){
+LocalGeo Transformation::operator* (LocalGeo local) {
     LocalGeo result;
-    result.pos = (*this) * lg.pos;
-    result.normal = (*this) * lg.normal;
+    result.pos = (*this) * local.pos;
+    result.normal = (*this) * local.normal;
     return result;
 }
+
+//***************************************************************************//
+//  TRANSFORMATION AND MATRICIES AND SUCH //
+//***************************************************************************//
+void Material::getBRDF(LocalGeo& local, BRDF* brdf) {
+    // empty function
+}
+
+
+

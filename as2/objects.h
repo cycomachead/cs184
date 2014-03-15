@@ -113,11 +113,17 @@ public:
 
     // Test if ray intersects with the shape or not (in object space),
     // if so, return intersection point and normal
-    bool intersect(Ray& ray, float* tHit, LocalGeo* local);
+    bool intersect(Ray& ray, float* tHit, LocalGeo* local) {
+        cerr << "ERROR: Function shouldn't be called.";
+        return false;
+    }
 
     // Same as intersect, but just return whether there is any intersection or
     // not
-    bool intersectP(Ray& ray);
+    bool intersectP(Ray& ray){
+        cerr << "ERROR: Function shouldn't be called.";
+        return false;
+    }
 
 // Triangle and Sphere are probably best implemented here
 // The intersection with the ray at t outside the range [t_min, t_max]
