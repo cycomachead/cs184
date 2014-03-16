@@ -17,12 +17,11 @@ Notes:
             Support scalar *, /
             May support conversion from xyz
 */
-private:
-    Vector3f data;
-
 public:
+    Vector3f data;
+    
     Color() {
-        // empty constructor
+        Color(0.0f, 0.0f, 0.0f);
     }
 
     Color(Vector3f d) { data = d; }
@@ -59,6 +58,32 @@ public:
 
     void scale() {
         data = data * 255;
+    }
+    
+    Color operator+(Color other) {
+        return Color(this->data + other.data);
+    }
+    
+    Color operator-(Color &other) {
+        return Color(this->data + other.data);
+    }
+    
+    Color operator*(float other) {
+        return Color(this->data * other);
+    }
+    
+    Color operator*(Color other) {
+        return Color(this->data(0) * other.data(0),
+                     this->data(1) * other.data(1),
+                     this->data(2) * other.data(2));
+    }
+    
+    Color operator/(float other) {
+        return Color(this->data / other);
+    }
+    
+    bool operator>(int i) {
+        return (data(0) > i) || (data(1) > i) || (data(2) > i);
     }
 };
 

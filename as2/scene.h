@@ -17,7 +17,7 @@ public:
     float fov;
 
     int width = 640,
-        height = 640,
+        height = 480,
         maxDepth = 5;
 
     Point lookFrom, lookAt, up;

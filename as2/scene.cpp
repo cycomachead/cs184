@@ -33,6 +33,9 @@ void Scene::loadScene(int sceneNo) {
         geoPrimitive->thing = sphere;
         geoPrimitive->objToWorld = Transformation::identity();
         geoPrimitive->worldToObj = Transformation::identity();
+        BRDF* b = new BRDF();
+        b->ka = Color(0.5f, 0.1f, 0.2f);
+        geoPrimitive->brdf = b;
         primitives.push_back(geoPrimitive);
     }
     initialize();

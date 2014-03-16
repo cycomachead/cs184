@@ -27,17 +27,12 @@ http://www.cse.ohio-state.edu/~parent/classes/681/Lectures/08.RTgeometryHO.pdf
 
     // http://stackoverflow.com/questions/13078243/ray-tracing-camera
     // camera_position = lookFrom;
+    // SO MUCH MORE CLEAR THAN XYZ!! :)
     camera_direction = lookAt - lookFrom;
     camera_direction.normalize(); // Z-Vector
     up.normalize();
     camera_right = camera_direction.cross(up); // X-Vector
     camera_up = camera_right.cross(camera_direction); // Y-Vector
-    
-    // z = lookAt - lookFrom;
-//     z.normalize();
-//     up.normalize();
-//     x = z.cross(up);
-//     y = x.cross(z);
 
     deltaX = camera_right * (width / pixelWidth);
     deltaY = camera_up * (height / pixelHeight);
@@ -56,7 +51,6 @@ http://www.cse.ohio-state.edu/~parent/classes/681/Lectures/08.RTgeometryHO.pdf
     // deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX)
     // CAN I FACTOR???
     // dirConst = deltaY * -1 * centerY + z + deltaX * -1 * centerX;
-
 }
 
 // modify poiter parameter.

@@ -35,7 +35,13 @@ bool GeometricPrimitive::intersectP(Ray& ray) {
 }
 
 void GeometricPrimitive::getBRDF(LocalGeo& local, BRDF* brdf) {
-    mat->getBRDF(local, brdf);
+    *brdf = this->brdf;
+    //mat->getBRDF(local, brdf);
+}
+
+BRDF* GeometricPrimitive::getBRDF() {
+    return this->brdf;
+    //mat->getBRDF(local, brdf);
 }
 
 //***************************************************************************//

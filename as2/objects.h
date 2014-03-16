@@ -73,6 +73,7 @@ public:
     virtual bool intersect(Ray& ray, float* thit, Intersection* in) = 0;
     virtual bool intersectP(Ray& ray) = 0;
     virtual void getBRDF(LocalGeo& local, BRDF* brdf) = 0;
+    virtual BRDF* getBRDF() = 0;
 };
 
 
@@ -105,6 +106,8 @@ public:
     bool intersectP(Ray& ray);
 
     void getBRDF(LocalGeo& local, BRDF* brdf);
+    
+    BRDF* getBRDF();
     
     Shape* getShape() {
         return this->thing;
