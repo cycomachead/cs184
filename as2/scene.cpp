@@ -14,6 +14,7 @@ void Scene::render() {
     while (!sampler.isDone()) {
         sample = sampler.generateSample();
         ray    = camera.generateRay(sample);
+        cout << "RAY GENERATED" << endl;
         color  = tracer.trace(ray, 1);
         film.commit(sample, color);
     }
@@ -23,20 +24,17 @@ void Scene::render() {
 
 Sphere* sphere;
 void Scene::loadScene(int sceneNo) {
-    lookFrom << 0, 0, 4;
-    lookAt << 0, 0, 0;
-    up << 0, 1, 0;
-    fov = 90;
+    lookFrom << 0, -4, 4;
+    lookAt << 0, -1, 0;
+    up << 0, 1, 1;
+    fov = 45;
     if (sceneNo == 0) {
-        sphere = new Sphere(0, 0, 0, 1);
-        cout << "WHAT THE FUCK " << sphere << endl;
+        sphere = new Sphere(1.5, -.8 ,0.65, .4);
         GeometricPrimitive* geoPrimitive = new GeometricPrimitive();
         geoPrimitive->thing = sphere;
         geoPrimitive->objToWorld = Transformation::identity();
         geoPrimitive->worldToObj = Transformation::identity();
         primitives.push_back(geoPrimitive);
-        cout << "SHAPPPE?: " << (*geoPrimitive).getShape() << endl;
-        cout << "WHAT THE FUCK " << sphere << endl;
     }
     initialize();
 }

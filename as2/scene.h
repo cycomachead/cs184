@@ -16,8 +16,8 @@ class Scene {
 public:
     float fov;
 
-    int width = 100,
-        height = 100,
+    int width = 640,
+        height = 480,
         maxDepth = 5;
 
     Point lookFrom, lookAt, up;

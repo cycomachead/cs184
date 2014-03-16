@@ -43,10 +43,10 @@ public:
     void commit(Sample sample, Color color) {
         // the vector is a linear ordering of all pixels.
 
-        int pos = 4 * ((sample.x * width) + sample.y);
+        int pos = 4 * ((sample.y * width) + sample.x);
         color.scale();
         color.max();
-        if (LOGGING > 5) {
+        if (LOGGING > 12) {
             cout << "PIXEL TO BE WRITTEN:\tX:" << sample.x << " Y: " << sample.y;
             cout << " POS: " << pos << "\tR:" << color.r() << " G: ";
             cout << color.g() << " B: " << color.b() << endl;
@@ -58,7 +58,7 @@ public:
     }
 
     void writeImage() {
-        if (LOGGING > 8) {
+        if (LOGGING > 10) {
             cout << "IMAGE VECTOR\n";
             for( int i = 0; i < image.size(); i += 4 ) {
                 cout << "[" << (int) image.at(i) << ' ' << (int) image.at(i + 1);

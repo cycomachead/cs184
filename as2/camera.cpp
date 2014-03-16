@@ -8,6 +8,10 @@
 #include "film.h"
 
 Camera::Camera(Point from, Point at, Point u, float f, int w, int h) {
+/*
+http://run.usc.edu/cs480-s11/lec15-ray-tracing/15-ray-tracing-6up.pdf
+http://www.cse.ohio-state.edu/~parent/classes/681/Lectures/08.RTgeometryHO.pdf
+*/
     float width, height, aspect;
     lookFrom = from;
     lookAt = at;
@@ -17,7 +21,7 @@ Camera::Camera(Point from, Point at, Point u, float f, int w, int h) {
     pixelHeight = h;
 
 
-    aspect =  pixelWidth/pixelHeight;
+    aspect =  (float)pixelWidth/(float)pixelHeight;
     height = 2 * tan(M_PI/180 * .5 * fovY);
     width = height * aspect;
 
@@ -34,6 +38,9 @@ Camera::Camera(Point from, Point at, Point u, float f, int w, int h) {
 
     if (LOGGING > 4) {
         cout << "CAMERA DATA:\n\tx:\n" << deltaX << "\n\ty:\n" << deltaY << endl;
+        cout << "WIDTH: " << width << "\tHEIGHT: " << height << "\t ASPECT: ";
+        cout << aspect << endl << "CENTER X:" << centerX << "\tCENTER Y";
+        cout << centerY << endl;
     }
 
     // ORIGINCAL FORMULA
@@ -55,10 +62,9 @@ void Camera::generateRay(Sample& sample, Ray* ray) {
 
 // same function but return a new ray
 Ray Camera::generateRay(Sample& sample) {
-    Vector3f v = deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX);
     return Ray(
         lookFrom,
-        v,
+        deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX),
         0.0f,
         FLT_MAX);
 }

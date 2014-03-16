@@ -28,13 +28,13 @@ Color RayTracer::trace(Ray& ray, int depth) {
     bool found = false;
 
     for(int i = 0; i < prims.size(); i += 1) {
-        if (LOGGING > 5) {
+        if (LOGGING > 11) {
             cout << "Checking Primitive: " << i << endl;
         }
 
         p = prims.at(i);
         if (p->intersect(ray, &tHit, &ins)) {
-            if (LOGGING > 4) {
+            if (LOGGING > 5) {
                 cout << "Primitive Found: \ttHit:" << tHit << endl;
             }
             if (tHit < smallestTime) {
