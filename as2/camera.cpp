@@ -25,15 +25,16 @@ Camera::Camera(Point from, Point at, Point u, float f, int w, int h) {
     z = lookAt - lookFrom;
     x = z.cross(up);
     y = x.cross(z);
-    x.normalize(); // Is normalization necessary? Some suggest it....
-    y.normalize();
-    z.normalize();
 
-    deltaX = x * width / pixelWidth;
-    deltaY = y * height / pixelHeight;
+    deltaX = x * (width / pixelWidth);
+    deltaY = y * (height / pixelHeight);
 
     centerX = pixelWidth/2.0 + 0.5; // 0.5 == pixel centers
     centerY = pixelHeight/2.0 + 0.5;
+
+    if (LOGGING > 4) {
+        cout << "CAMERA DATA:\n\tx:\n" << deltaX << "\n\ty:\n" << deltaY << endl;
+    }
 
     // ORIGINCAL FORMULA
     // deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX)
@@ -54,9 +55,10 @@ void Camera::generateRay(Sample& sample, Ray* ray) {
 
 // same function but return a new ray
 Ray Camera::generateRay(Sample& sample) {
+    Vector3f v = deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX);
     return Ray(
         lookFrom,
-        deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX),
+        v,
         0.0f,
         FLT_MAX);
 }

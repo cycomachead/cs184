@@ -21,12 +21,22 @@ void Scene::render() {
 }
 ///////////////////////////////////////////////////////////////////////////////
 
-
+Sphere* sphere;
 void Scene::loadScene(int sceneNo) {
+    lookFrom << 0, 0, 4;
+    lookAt << 0, 0, 0;
+    up << 0, 1, 0;
+    fov = 90;
     if (sceneNo == 0) {
-        Sphere* sphere = new Sphere(0, 0, 0, 2);
-        GeometricPrimitive* geoPrimitive = new GeometricPrimitive(sphere);
+        sphere = new Sphere(0, 0, 0, 1);
+        cout << "WHAT THE FUCK " << sphere << endl;
+        GeometricPrimitive* geoPrimitive = new GeometricPrimitive();
+        geoPrimitive->thing = sphere;
+        geoPrimitive->objToWorld = Transformation::identity();
+        geoPrimitive->worldToObj = Transformation::identity();
         primitives.push_back(geoPrimitive);
+        cout << "SHAPPPE?: " << (*geoPrimitive).getShape() << endl;
+        cout << "WHAT THE FUCK " << sphere << endl;
     }
     initialize();
 }

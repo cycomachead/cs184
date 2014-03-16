@@ -1,6 +1,7 @@
 CC  = clang
 c++ = -xc++ -std=c++11
-INC = -I/opt/X11/include -Ilib
+INC = -I/opt/X11/include #-Ilib
+# Necessary for C++11 on 10.8 machines.
 STD = -stdlib=libc++ -lstdc++ #-lm -DOSX -lc++
 # PNG = -DNO_FREETYPE
 ERR = -Wno-deprecated-register

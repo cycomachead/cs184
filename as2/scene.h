@@ -24,7 +24,7 @@ public:
 
     string output = "z_image_out.png"; // FIXME
 
-    vector<Shape*> shapes;
+    vector<Shape*> shapes; // Is this necessary?
     vector<Primitive*> primitives;
     vector<Light*> lights;
     // Transformations vector / stack?

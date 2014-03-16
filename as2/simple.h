@@ -121,66 +121,20 @@ public:
 /**
 Normal
 Members:
-                        float x, y, z
-            Notes:
-                        Constructor from 3 floats
-                        Support +, -
-                        Note: Need to be normalized after operations (Be careful for 0 vector)
+    float x, y, z
+Notes:
+    Constructor from 3 floats
+    Support +, -
+    Note: Need to be normalized after operations (Be careful for 0 vector)
 
 Matrix
 Members:
-                        float mat[4][4]
+    float mat[4][4]
 
-            Notes:
-                        Support creation of rotation, translation, scaling matrices
-                        May support matrix inversion if needed
-Also could support SVD, or other matrix decomposition, for future extension
-
-Transformation
-Members:
-            // Storing matrix m and its inverse transpose, minvt (for transforming normal)
-                        Matrix m, minvt
 Notes:
-                        Support Point, Vector, Normal, Ray, LocalGeo transformation by
-operator * overloading
-
-
-LocalGeo
-Members:
-        Point pos
-        Normal normal
-Notes:
-        Store the local geometry at the intersection point. May need to store
-        other quantities (eg. texture coordinate) in a more complicated
-        raytracer.
-
-More Classes
-Shape
-            Methods:
-                        // Test if ray intersects with the shape or not (in object space), if so,
-// return intersection point and normal
-                        bool intersect(Ray& ray, float* thit, LocalGeo* local)
-
-                        // Same as intersect, but just return whether there is any intersection or
-// not
-                        bool intersectP(Ray& ray)
-
-            Notes:
-                        // Triangle and Sphere are probably best implemented here
-                        // The intersection with the ray at t outside the range [t_min, t_max]
-                        // should return false.
-
-Material
-            Members:
-                        BRDF constantBRDF;
-            Methods:
-void getBRDF(LocalGeo& local, BRDF* brdf) {
-            return constantBRDF;
-}
-            Notes:
-                        Class for storing material. For this example, it just returns a constant
-                        material regardless of what local is. Later on, when we want to support
-                        texture mapping, this need to be modified.
+    Support creation of rotation, translation, scaling matrices
+    May support matrix inversion if needed
+    Also could support SVD, or other matrix decomposition, for future extension
 
 */
 #endif

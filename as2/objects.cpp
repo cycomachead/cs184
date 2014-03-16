@@ -5,20 +5,7 @@
 
 //***************************************************************************//
 // PRIMITIVES //
-//***************************************************************************//
-// bool Primitive::intersect(Ray& r, float* t, Intersection* i) {
-//     cerr << "ERROR: Primitive intersect shouldn't be called." << endl;
-//     return false;
-// }
-// bool Primitive::intersect(Ray& ray) {
-//     cerr << "ERROR: Primitive intersectP shouldn't be called." << endl;
-//     return false;
-// }
-// void Primitive::getBRDF(LocalGeo& local, BRDF* brdf) {
-//     cerr << "ERROR: Primitive getBRDF shouldn't be called." << endl;
-// }
-
-
+// NOTHING SHOULD BE DEFINED HERE.
 //***************************************************************************//
 // AGGREGATEPRIMITIVES //
 //***************************************************************************//
@@ -31,7 +18,9 @@ bool GeometricPrimitive::intersect(Ray& ray, float* thit, Intersection* in)  {
     // From the design note
     Ray oray = worldToObj*ray;
     LocalGeo olocal;
-    if (!shape->intersect(oray, thit, &olocal)) {
+    // thit already a pointer.
+    
+    if (!getShape()->intersect(oray, thit, &olocal)) {
         return false;
     }
     in->primitive = this;
@@ -42,7 +31,7 @@ bool GeometricPrimitive::intersect(Ray& ray, float* thit, Intersection* in)  {
 bool GeometricPrimitive::intersectP(Ray& ray) {
     // From the design note
     Ray oray = worldToObj*ray;
-    return shape->intersectP(oray);
+    return getShape()->intersectP(oray);
 }
 
 void GeometricPrimitive::getBRDF(LocalGeo& local, BRDF* brdf) {
@@ -51,6 +40,9 @@ void GeometricPrimitive::getBRDF(LocalGeo& local, BRDF* brdf) {
 
 //***************************************************************************//
 // SHAPES //
+// NOTHING SHOULD BE DEFINED HERE.
+//***************************************************************************//
+// SPHERES //
 //***************************************************************************//
 Sphere::Sphere(float x, float y, float z, float rad) {
     center(0) = x;
@@ -60,7 +52,6 @@ Sphere::Sphere(float x, float y, float z, float rad) {
 }
 
 bool Sphere::intersect(Ray& ray, float* tHit, LocalGeo* local) {
-
     // Quadratic Formula
     float a, b, c, disc, discRt, q;
     // (p-c)
@@ -85,6 +76,7 @@ bool Sphere::intersect(Ray& ray, float* tHit, LocalGeo* local) {
         q = (-b + discRt)/2.0;
     }
 
+    // FIXME:
     // compute t0 and t1
     float t0 = q / a;
     float t1 = c / q;
@@ -125,19 +117,13 @@ bool Sphere::intersectP(Ray& ray) {
 }
 
 //***************************************************************************//
+// TRIANGLES //
+//***************************************************************************//
+
+//***************************************************************************//
 //  TRANSFORMATION AND MATRICIES AND SUCH //
 //***************************************************************************//
 // These few were weird and suggested by the design note for multiplications.
-Vector3f Transformation::operator* (Normal v){
-    Vector4f v4(v(0), v(1), v(2), 0);
-    v4 = m * v4;
-    Vector3f result;
-    result(0) = v4(0);
-    result(1) = v4(1);
-    result(2) = v4(2);
-    result.normalize();
-    return result;
-}
 Ray Transformation::operator* (Ray r) {
     Ray result;
     result.pos = (*this) * r.pos;
@@ -154,10 +140,37 @@ LocalGeo Transformation::operator* (LocalGeo local) {
     return result;
 }
 
+// Point Transformation::operator* (Point p) {
+//     return (*this) * (Vector3f) p;
+// }
+
+Vector3f Transformation::operator* (Vector3f v) {
+    Vector4f v4 = m * Vector4f(v(0), v(1), v(2), 0);
+    // v4 = m * v4;
+    Vector3f result;
+    result(0) = v4(0);
+    result(1) = v4(1);
+    result(2) = v4(2);
+    // result.normalize();
+    return result;
+}
+
+// Vector3f Transformation::operator* (Normal v) {
+//     Vector4f v4(v(0), v(1), v(2), 0);
+//     v4 = m * v4;
+//     Vector3f result;
+//     result(0) = v4(0);
+//     result(1) = v4(1);
+//     result(2) = v4(2);
+//     result.normalize();
+//     return result;
+// }
+
 Transformation Transformation::identity() {
     Transformation t;
-    t.m << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+    t.m = Matrix<float, 4, 4>::Identity();
     t.minvt = t.m;
+    return t;
 }
 
 //***************************************************************************//

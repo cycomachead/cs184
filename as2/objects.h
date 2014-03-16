@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "simple.h"
+#include "brdf.h"
 
 class LocalGeo {
 public:
@@ -20,19 +21,33 @@ public:
 // Storing matrix m and its inverse transpose, minvt (for transforming normal)
 // Support Point, Vector, Normal, Ray, LocalGeo transformation by * overloading
     Matrix4f m, minvt;
+    
     Transformation() {
-        // empty constructor
+        m = Matrix<float, 4, 4>::Identity();
+        minvt = Matrix<float, 4, 4>::Identity();
     }
-
+    
+    Transformation(Matrix m1) {
+        this->m = m1;
+        this->minvt = m1.inverse();
+    }
+    
+    Matrix4f getM() {
+        return m;
+    }
+    
+    Matrix4f getInv() {
+        return minvt;
+    }
+    
     static Transformation identity();
 
-    Ray operator* (Ray r);
-    LocalGeo operator* (LocalGeo lg);
-    // Point operator* (Point p);
-    Vector3f operator* (Normal n);
-    //Vector3f operator* (Vector3f n);
+    LocalGeo operator*(LocalGeo lg);
+    Ray      operator*(Ray r);
+    //Point    operator*(Point p);
+    //Vector3f operator*(Normal n);
+    Vector3f operator*(Vector3f n);
 };
-
 
 
 class Intersection {
@@ -65,23 +80,24 @@ class GeometricPrimitive : virtual public Primitive {
 public:
 
     Transformation objToWorld, worldToObj;
-    Shape* shape;
+    Shape* thing;
     Material* mat;
+    BRDF* brdf;
 
     GeometricPrimitive() {
         // empty constructor
     }
 
-    GeometricPrimitive(Shape* s, Transformation t) {
-        shape = s;
-        objToWorld = t;
+    GeometricPrimitive(Shape* s, Transformation tr) {
+        thing = s;
+        this->objToWorld = tr;
+        this->worldToObj = tr;
         // FIXME
     }
 
     GeometricPrimitive(Shape* s) {
         // Constructor w/ no transformation is the default transformation...
-        shape = s;
-        // FIXME
+        GeometricPrimitive(s, Transformation::identity());
     }
 
     bool intersect(Ray& ray, float* thit, Intersection* in);
@@ -89,6 +105,10 @@ public:
     bool intersectP(Ray& ray);
 
     void getBRDF(LocalGeo& local, BRDF* brdf);
+    
+    Shape* getShape() {
+        return this->thing;
+    }
 };
 
 
@@ -121,11 +141,10 @@ public:
 
 
 class Shape {
-protected:
+public:
     Shape() {
         // empty constructor
     }
-public:
     // Test if ray intersects with the shape or not (in object space),
     // if so, return intersection point and normal
     virtual bool intersect(Ray& ray, float* tHit, LocalGeo* local) =0;
@@ -162,9 +181,20 @@ public:
     }
 };
 
-
 class Material {
+/*
+Methods:
+    void getBRDF(LocalGeo& local, BRDF* brdf) {
+        return constantBRDF;
+    }
+Notes:
+    Class for storing material. For this example, it just returns a constant
+    material regardless of what local is. Later on, when we want to support
+    texture mapping, this need to be modified.
+*/
 public:
+    BRDF constantBRDF;
+
     Material() {
         // empty constructor
     }

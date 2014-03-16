@@ -10,6 +10,8 @@
 #include "lights.h"
 
 Color RayTracer::trace(Ray& ray, int depth) {
+    // FIXME
+    // cout << " TRACER: POS:\n" << ray.pos << "\n\tDIR:\n" << ray.dir << endl;
     if (depth == maxDepth) {
         if (LOGGING > 6) {
             cout << "Max Depth Reached";
@@ -17,24 +19,31 @@ Color RayTracer::trace(Ray& ray, int depth) {
         return Color(0.0f, 0.0f, 0.0f);
     }
 
-    float tHit, smallestTime = FLT_MAX;
+    float tHit = FLT_MAX, smallestTime = FLT_MAX;
+
     vector<Primitive*> prims = scene.getPrims();
+
     Intersection ins, closestInt;
-    Primitive* closestPrim;
+    Primitive *p, *closestPrim; //WHY DOESNT Prim* x,y; work????
     bool found = false;
 
     for(int i = 0; i < prims.size(); i += 1) {
-         if (prims.at(i)->intersect(ray, &tHit, &ins)) {
-             if (tHit < smallestTime) {
-                 if (LOGGING > 2) {
-                     cout << "Primitive Found";
-                 }
-                 smallestTime = tHit;
-                 closestPrim = prims.at(i);
-                 closestInt = ins;
-                 found = true;
-             }
-         }
+        if (LOGGING > 5) {
+            cout << "Checking Primitive: " << i << endl;
+        }
+
+        p = prims.at(i);
+        if (p->intersect(ray, &tHit, &ins)) {
+            if (LOGGING > 4) {
+                cout << "Primitive Found: \ttHit:" << tHit << endl;
+            }
+            if (tHit < smallestTime) {
+                smallestTime = tHit;
+                closestPrim = p;
+                closestInt = ins;
+                found = true;
+            }
+        }
     }
 
     if (not found) {
