@@ -46,7 +46,7 @@ public:
         int pos = 4 * ((sample.y * width) + sample.x);
         color.scale();
         color.max();
-        if (LOGGING > 12) {
+        if (LOGGING > 15) {
             cout << "PIXEL TO BE WRITTEN:\tX:" << sample.x << " Y: " << sample.y;
             cout << " POS: " << pos << "\tR:" << color.r() << " G: ";
             cout << color.g() << " B: " << color.b() << endl;
@@ -58,7 +58,7 @@ public:
     }
 
     void writeImage() {
-        if (LOGGING > 10) {
+        if (LOGGING > 16) {
             cout << "IMAGE VECTOR\n";
             for( int i = 0; i < image.size(); i += 4 ) {
                 cout << "[" << (int) image.at(i) << ' ' << (int) image.at(i + 1);

@@ -25,13 +25,22 @@ http://www.cse.ohio-state.edu/~parent/classes/681/Lectures/08.RTgeometryHO.pdf
     height = 2 * tan(M_PI/180 * .5 * fovY);
     width = height * aspect;
 
+    // http://stackoverflow.com/questions/13078243/ray-tracing-camera
+    // camera_position = lookFrom;
+    camera_direction = lookAt - lookFrom;
+    camera_direction.normalize(); // Z-Vector
+    up.normalize();
+    camera_right = camera_direction.cross(up); // X-Vector
+    camera_up = camera_right.cross(camera_direction); // Y-Vector
+    
+    // z = lookAt - lookFrom;
+//     z.normalize();
+//     up.normalize();
+//     x = z.cross(up);
+//     y = x.cross(z);
 
-    z = lookAt - lookFrom;
-    x = z.cross(up);
-    y = x.cross(z);
-
-    deltaX = x * (width / pixelWidth);
-    deltaY = y * (height / pixelHeight);
+    deltaX = camera_right * (width / pixelWidth);
+    deltaY = camera_up * (height / pixelHeight);
 
     centerX = pixelWidth/2.0 + 0.5; // 0.5 == pixel centers
     centerY = pixelHeight/2.0 + 0.5;
@@ -64,7 +73,7 @@ void Camera::generateRay(Sample& sample, Ray* ray) {
 Ray Camera::generateRay(Sample& sample) {
     return Ray(
         lookFrom,
-        deltaY * (sample.y - centerY) + z + deltaX * (sample.x - centerX),
+        deltaY * (sample.y - centerY) + camera_direction + deltaX * (sample.x - centerX),
         0.0f,
         FLT_MAX);
 }

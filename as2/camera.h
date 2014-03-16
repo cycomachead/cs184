@@ -26,7 +26,7 @@ public:
     // Point center, UL, UR, DL, DR;
 
     Vector3f x, y, z;
-
+    Vector3f camera_up, camera_right, camera_position, camera_direction;
 
     Camera() {
         // empty constructor
