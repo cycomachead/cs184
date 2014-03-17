@@ -12,11 +12,22 @@
 #define COLOR_BLACK Color(0.0f, 0.0f, 0.0f)
 
 Color shading(LocalGeo local, BRDF *brdf, Ray lray, Color lcolor, Vector3f view) {
+    cout << "SHADING 1" << endl;
     Vector3f norm = lray.dir;
+    cout << "SHADING 2" << endl;
+
     norm.normalize();
+    cout << "SHADING 3" << endl;
+
     Vector3f shadow = norm * -1 + local.normal * 2 * norm.dot(local.normal);
+    cout << "SHADING 4" << endl;
+
     Color c = brdf->kd * lcolor * max(norm.dot(local.normal), 0.0f);
+    cout << "SHADING 5" << endl;
+
     c = c + brdf->ks * lcolor * pow(max(shadow.dot(view), 0.0f), brdf->p);
+    cout << "SHADING 6" << endl;
+
     return c;
 }
 
@@ -52,7 +63,8 @@ Color RayTracer::trace(Ray& ray, int depth) {
         if (LOGGING > 11) {
             cout << "Checking Primitive: " << i << endl;
         }
-
+        
+        
         p = scene.primitives.at(i);
         if (p->intersect(ray, &tHit, &ins)) {
             if (LOGGING > 5) {
@@ -75,9 +87,6 @@ Color RayTracer::trace(Ray& ray, int depth) {
     BRDF* brdf = closestPrim->getBRDF();
     // Handle the Ambient Color term. 
     Color retClr = brdf->ka;
-    // if (retClr.r() == 0.5f) {
-//         cout << "TRACER COLOR: " << retClr.g() << endl;
-//     }
     Ray lray;
     Color lcolor;
     Vector3f view = ray.dir * -1;
@@ -99,12 +108,16 @@ Color RayTracer::trace(Ray& ray, int depth) {
         for (int i = 0; i < scene.primitives.size(); i += 1) {
             p = scene.primitives.at(i);
             // FIXME -- is comparing addresses safe here????
+            cout << "CAN GET PRIM... " << i << endl;
+            cout << "P " << p << " CLOEST " << closestPrim << endl;
             if (p != closestPrim and p->intersectP(lray)) {
                 blocked = true;
             }
         }
+        cout << "PRE BLOCKING" << endl;
         if (!blocked) { // If not, do shading calculation for this light source
             retClr = retClr + shading(closestInt.localGeo, brdf, lray, lcolor, view);
+            cout << "ADDED SHADING" << endl;
         }
     }
     

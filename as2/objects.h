@@ -77,6 +77,7 @@ public:
     virtual bool intersectP(Ray& ray) = 0;
     virtual void getBRDF(LocalGeo& local, BRDF* brdf) = 0;
     virtual BRDF* getBRDF() = 0;
+    virtual Shape* getShape() = 0;
 };
 
 
@@ -93,7 +94,7 @@ public:
     }
 
     GeometricPrimitive(Shape* s, Transformation tr) {
-        thing = s;
+        this->thing = s;
         this->objToWorld = tr;
         this->worldToObj = tr;
         // FIXME

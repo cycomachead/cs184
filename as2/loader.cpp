@@ -18,6 +18,8 @@ void loadX(string file) {
     ifstream inpfile(file.c_str());
     if(!inpfile.is_open()) {
         cout << "Unable to open file" << endl;
+        cerr << "EXITING" << endl;
+        exit(1);
     } else {
         string line;
         //MatrixStack mst;
@@ -85,7 +87,8 @@ void loadX(string file) {
                 float z = atof(splitline[1].c_str());
                 float r = atof(splitline[4].c_str());
                 Sphere* s = new Sphere(x, y, z, r);
-                GeometricPrimitive* geo = new GeometricPrimitive(s);
+                GeometricPrimitive* geo = new GeometricPrimitive();
+                geo->thing = s;
                 geo->brdf = new BRDF(currentB.ka, currentB.kd, currentB.kr, currentB.ks, currentB.p);
                 geo->setTransform(currentT);
                 scene.primitives.push_back(geo);
@@ -95,46 +98,45 @@ void loadX(string file) {
                 //   Store current top of matrix stack
             }
       
-      // maxverts number
-      //  Deﬁnes a maximum number of vertices for later triangle speciﬁcations. 
-      //  It must be set before vertices are deﬁned.
-      else if(!splitline[0].compare("maxverts")) {
-        // Care if you want
-        // Here, either declare array size
-        // Or you can just use a STL vector, in which case you can ignore this
-      }
+            // maxverts number
+            // Deﬁnes a maximum number of vertices for later triangle specs. 
+            // It must be set before vertices are deﬁned.
+            else if(!splitline[0].compare("maxverts")) {
+                // Care if you want
+                // Here, either declare array size Or you can just use
+                // a STL vector, in which case you can ignore this
+            }
       
-      // maxvertnorms number
-      //  Deﬁnes a maximum number of vertices with normals for later speciﬁcations.
-      //  It must be set before vertices with normals are deﬁned.
-      else if(!splitline[0].compare("maxvertnorms")) {
-        // Care if you want
-      }
+            // maxvertnorms number
+            //  Deﬁnes a maximum number of vertices with normals for later speciﬁcations.
+            //  It must be set before vertices with normals are deﬁned.
+            else if(!splitline[0].compare("maxvertnorms")) {
+                // Care if you want
+            }
       
-      // vertex x y z
-      //  Deﬁnes a vertex at the given location.
-      //  The vertex is put into a pile, starting to be numbered at 0.
-      else if(!splitline[0].compare("vertex")) {
-          Point p(atof(splitline[1].c_str()),
-                  atof(splitline[2].c_str()),
-                  atof(splitline[3].c_str()));
-          verticies.push_back(p);
-        // Create a new vertex with these 3 values, store in some array
-      }
+            // vertex x y z
+            //  Deﬁnes a vertex at the given location.
+            //  The vertex is put into a pile, starting to be numbered at 0.
+            else if(!splitline[0].compare("vertex")) {
+                Point p(atof(splitline[1].c_str()),
+                        atof(splitline[2].c_str()),
+                        atof(splitline[3].c_str()));
+                verticies.push_back(p);
+                // Create a new vertex with these 3 values, store in some array
+            }
       
-      //vertexnormal x y z nx ny nz
-      //  Similar to the above, but deﬁne a surface normal with each vertex.
-      //  The vertex and vertexnormal set of vertices are completely independent
-      //  (as are maxverts and maxvertnorms).
-      else if(!splitline[0].compare("vertexnormal")) {
-        // x: atof(splitline[1].c_str()),
-        // y: atof(splitline[2].c_str()),
-        // z: atof(splitline[3].c_str()));
-        // nx: atof(splitline[4].c_str()),
-        // ny: atof(splitline[5].c_str()),
-        // nz: atof(splitline[6].c_str()));
-        // Create a new vertex+normal with these 6 values, store in some array
-      }
+            //vertexnormal x y z nx ny nz
+            //  Similar to the above, but deﬁne a surface normal with each vertex.
+            //  The vertex and vertexnormal set of vertices are completely independent
+            else if(!splitline[0].compare("vertexnormal")) {
+                // x: atof(splitline[1].c_str()),
+                // y: atof(splitline[2].c_str()),
+                // z: atof(splitline[3].c_str()));
+                // nx: atof(splitline[4].c_str()),
+                // ny: atof(splitline[5].c_str()),
+                // nz: atof(splitline[6].c_str()));
+                // Create a new vertex+normal, store in some array
+            }
       
       //tri v1 v2 v3
       //  Create a triangle out of the vertices involved (which have previously been speciﬁed with
@@ -148,8 +150,9 @@ void loadX(string file) {
           Point b = verticies.at(v2);
           Point c = verticies.at(v3);
           Triangle *t = new Triangle(a, b, c);
-          GeometricPrimitive* geo = new GeometricPrimitive(t);
+          GeometricPrimitive* geo = new GeometricPrimitive();
           // FIXME -- hacky pointer problems?
+          geo->thing = t;
           geo->brdf = new BRDF(currentB.ka, currentB.kd, currentB.kr, currentB.ks, currentB.p);
           geo->setTransform(currentT);
           scene.primitives.push_back(geo);
@@ -235,7 +238,8 @@ void loadX(string file) {
                   atof(splitline[5].c_str()),
                   atof(splitline[6].c_str()));
         // add light to scene...
-          scene.lights.push_back(new dLight(c, p));
+          Light* l = new dLight(c, p);
+          scene.lights.push_back(l);
       }
       //point x y z r g b
       //  The location of a point source and the color, as in OpenGL.
@@ -247,7 +251,8 @@ void loadX(string file) {
                   atof(splitline[5].c_str()),
                   atof(splitline[6].c_str()));
         // add light to scene...
-          scene.lights.push_back(new pLight(c, p));
+          Light* l = new pLight(c, p);
+          scene.lights.push_back(l);
       }
       // attenuation const linear quadratic
       //  Sets the constant, linear and quadratic attenuations 
