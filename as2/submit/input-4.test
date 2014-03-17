@@ -1,0 +1,53 @@
+# Test Scene 3
+# Intended to show transforms
+# I know it's not the most exciting of scenes...
+
+size 640 480 
+output submit/image-4.png
+ 
+camera 0 0 4 0 -1 0 0 1 1 45
+
+ambient .5 0 0
+diffuse .4 0 0
+specular .4 0 0
+shininess 5
+
+sphere 0 0 0 .6
+
+ambient .03 .06 .03
+diffuse  .4 0 .4
+specular .4 0 .4
+shininess 5
+
+sphere 1 1 1 .6
+
+ambient 0 .06 0
+diffuse  0 .6 0
+specular 0 .6 0
+shininess 5
+
+sphere 1 0 1 .6
+
+ambient .1 0 0
+diffuse  .1 0 0
+specular .1 0 0
+shininess 5
+
+sphere 0 1 1 .6
+
+ambient 0 0 .5
+diffuse  0 0 .5
+specular 0 0 .5
+shininess 5
+
+sphere 0 0 1 .6
+
+ambient .5 .5 .5
+diffuse  .5 .5 .5
+specular .5 .5 .5
+shininess 5
+
+directional 3 3 3 .5 .1 .1
+point -3 -3 -3 .5 .1 .1
+
+

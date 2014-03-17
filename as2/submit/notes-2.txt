@@ -1,0 +1,13 @@
+time ./raytracer -file submit/scene2.test -log 3
+Parameters:	LOGGING: 3	COMMANDS: images/scene2.test	SCENE: 0
+Loading Scene: images/scene2.test
+PARSING FILE...
+RENDERING...
+
+real	1m16.613s
+user	1m16.512s
+sys	0m0.078s
+
+DEMONSTRATES:
+Lights, Shading, Spheres and Triangles
+Transformations are ignored in the file... :'(

@@ -1,0 +1,5 @@
+* __Image 1:__
+    * TIME: ~9s to generate 800x800 png
+    * Uses `scene 1` with 1 sphere (with BRDF), and 1 point light 
+    * COMMAND: `./raytracer`
+    * Demonstrates: Sharing, spheres, point lights, writing to file

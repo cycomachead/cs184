@@ -27,7 +27,11 @@ __COMMAND LINE FLAGS:__
     * `./raytracer -log 0 -scene 0`
 
 ## IMPLEMENTED:
+I've implemented everything EXCEPT transformations... :(
 
+I was at a conference the week before the midterm, and spent the two weeks 
+before prepping for our demo and so I didn't have a partner and thus my 
+assignment is a bit incomplete.
 
 ## NOTES:
 
