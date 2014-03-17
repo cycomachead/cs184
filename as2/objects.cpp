@@ -58,7 +58,7 @@ Sphere::Sphere(float x, float y, float z, float rad) {
 }
 
 bool Sphere::intersect(Ray& ray, float* tHit, LocalGeo* local) {
-    
+
     // Quadratic Formula
     float a, b, c, disc, discRt, q;
     // (p-c)
@@ -118,9 +118,49 @@ bool Sphere::intersect(Ray& ray, float* tHit, LocalGeo* local) {
 }
 
 bool Sphere::intersectP(Ray& ray) {
-    float* uselessF;
-    LocalGeo* uselessLocal;
-    return intersect(ray, uselessF, uselessLocal);
+    // Quadratic Formula
+    float a, b, c, disc, discRt, q;
+    // (p-c)
+    Vector3f pc = ( ray.pos - center );
+
+    // INTERSECTION: (p-c) dot (p-c) = r^2
+    // helpful: http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection
+    a = ray.dir.dot(ray.dir);
+    b = 2 * ray.pos.dot(ray.dir);
+    c =  pc.dot(pc) - (r * r);
+    disc = b * b - 4 * a * c;
+
+    if (disc < 0) {
+        return false;
+    }
+
+    discRt = sqrt(disc);
+    if (b < 0) {
+        q = (-b - discRt)/2.0;
+    }
+    else {
+        q = (-b + discRt)/2.0;
+    }
+
+    // FIXME:
+    // compute t0 and t1
+    float t0 = q / a;
+    float t1 = c / q;
+
+    // make sure t0 is smaller than t1
+    if (t0 > t1) { // if t0 is bigger than t1 swap
+        float temp = t0;
+        t0 = t1;
+        t1 = temp;
+    }
+
+    // if t1 is less than zero, the object is in the ray's negative direction
+    // and consequently the ray misses the sphere
+    if (t1 < 0) {
+        return false;
+    }
+
+    return true;
 }
 
 //***************************************************************************//
@@ -128,40 +168,40 @@ bool Sphere::intersectP(Ray& ray) {
 //***************************************************************************//
 bool Triangle::intersect(Ray& ray, float* tHit, LocalGeo* local) {
 //http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-9-ray-triangle-intersection/ray-triangle-intersection-geometric-solution/
-    
+
     // WHY IS THIS BUGGY??????
     /*
     Vector3f u = b - a;
     Vector3f v = c - a;
     Vector3f w = a - c;
-    
+
     Vector3f norm = u.cross(v);
     float dp = norm.dot(ray.dir);
-    
+
     if (dp == 0) {
         return false;
     }
-    
-    float t = norm.dot((a - ray.pos) / dp);   
-    
+
+    float t = norm.dot((a - ray.pos) / dp);
+
     if (t < 0 ) { // Suggested is < 0... t < ray.tMin || t > ray.tMax
         return false;
     }
-    
+
     Point p = ray.pos + ray.dir * t;
 
     bool edge1 = norm.dot(u.cross(p - a)) < 0;
     bool edge2 = norm.dot(v.cross(p - b)) < 0;
     bool edge3 = norm.dot(w.cross(p - c)) < 0;
-    
+
     if (edge1 && edge2 && edge3) {
         *tHit = t;
         (*local).normal = norm;
         (*local).pos = p;
-        
+
         return true;
     }
-    
+
     return false;
     */
     // compute plane's normal
@@ -170,11 +210,11 @@ bool Triangle::intersect(Ray& ray, float* tHit, LocalGeo* local) {
     B = c - a;
     // no need to normalize
     Vector3f N = A.cross(B); // N
- 
+
     //
     // Step 1: finding P
     //
- 
+
     // check if ray and plane are parallel ?
     float NdotRayDirection = N.dot(ray.dir);
     if (NdotRayDirection == 0) {
@@ -183,22 +223,22 @@ bool Triangle::intersect(Ray& ray, float* tHit, LocalGeo* local) {
 
     // compute d parameter using equation 2
     float d = N.dot(a);
-    
+
     // compute t (equation 3)
     float t = -(N.dot(ray.pos) + d) / NdotRayDirection;
     // check if the triangle is in behind the ray
     if (t < 0) {
-        return false; // the triangle is behind 
+        return false; // the triangle is behind
     }
     // compute the intersection point using equation 1
     Point P = ray.pos + t * ray.dir;
- 
+
     //
     // Step 2: inside-outside test
     //
- 
+
     Vector3f C; // vector perpendicular to triangle's plane
- 
+
     // edge 0
     Vector3f edge0 = b - a;
     Vector3f VP0 = P - a;
@@ -206,26 +246,26 @@ bool Triangle::intersect(Ray& ray, float* tHit, LocalGeo* local) {
     if (N.dot(C) < 0) {
         return false; // P is on the right side
     }
- 
+
     // edge 1
     Vector3f edge1 = c - b;
     Vector3f VP1 = P - b;
     C = edge1.cross(VP1);
     if (N.dot(C) < 0)
         return false; // P is on the right side
- 
+
     // edge 2
     Vector3f edge2 = a - c;
     Vector3f VP2 = P - c;
     C = edge2.cross(VP2);
     if (N.dot(C) < 0)
         return false; // P is on the right side;
- 
- 
+
+
     *tHit = t;
     (*local).normal = N;
     (*local).pos = P;
-    
+
     return true; // this ray hits the triangle
 }
 
@@ -235,11 +275,11 @@ bool Triangle::intersectP(Ray& ray) {
     B = c - a;
     // no need to normalize
     Vector3f N = A.cross(B); // N
- 
+
     //
     // Step 1: finding P
     //
- 
+
     // check if ray and plane are parallel ?
     float NdotRayDirection = N.dot(ray.dir);
     if (NdotRayDirection == 0) {
@@ -248,22 +288,22 @@ bool Triangle::intersectP(Ray& ray) {
 
     // compute d parameter using equation 2
     float d = N.dot(a);
-    
+
     // compute t (equation 3)
     float t = -(N.dot(ray.pos) + d) / NdotRayDirection;
     // check if the triangle is in behind the ray
     if (t < 0) {
-        return false; // the triangle is behind 
+        return false; // the triangle is behind
     }
     // compute the intersection point using equation 1
     Point P = ray.pos + t * ray.dir;
- 
+
     //
     // Step 2: inside-outside test
     //
- 
+
     Vector3f C; // vector perpendicular to triangle's plane
- 
+
     // edge 0
     Vector3f edge0 = b - a;
     Vector3f VP0 = P - a;
@@ -271,14 +311,14 @@ bool Triangle::intersectP(Ray& ray) {
     if (N.dot(C) < 0) {
         return false; // P is on the right side
     }
- 
+
     // edge 1
     Vector3f edge1 = c - b;
     Vector3f VP1 = P - b;
     C = edge1.cross(VP1);
     if (N.dot(C) < 0)
         return false; // P is on the right side
- 
+
     // edge 2
     Vector3f edge2 = a - c;
     Vector3f VP2 = P - c;

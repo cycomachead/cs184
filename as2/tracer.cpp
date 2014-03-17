@@ -52,8 +52,8 @@ Color RayTracer::trace(Ray& ray, int depth) {
         if (LOGGING > 11) {
             cout << "Checking Primitive: " << i << endl;
         }
-        
-        
+
+
         p = scene.primitives.at(i);
         if (p->intersect(ray, &tHit, &ins)) {
             if (LOGGING > 5) {
@@ -74,14 +74,14 @@ Color RayTracer::trace(Ray& ray, int depth) {
 
     // Obtain the brdf at intersection point
     BRDF* brdf = closestPrim->getBRDF();
-    // Handle the Ambient Color term. 
+    // Handle the Ambient Color term.
     Color retClr = brdf->ka;
     Ray lray;
     Color lcolor;
     Vector3f view = ray.dir * -1;
     view.normalize(); // For LIGHTS AND REFLECTION
     // closestPrim->getBRDF(closestInt.localGeo, &brdf);
-     
+
     // There is an intersection, loop through all light source
     // SCENE MEMBER: vector<Light*> lights;
     for (int i = 0; i < scene.lights.size(); i++) {
@@ -105,15 +105,14 @@ Color RayTracer::trace(Ray& ray, int depth) {
             retClr = retClr + shading(closestInt.localGeo, brdf, lray, lcolor, view);
         }
     }
-    
+
     // Handle mirror reflection
     if (brdf->kr > 0) {
         lray = createReflectRay(closestInt.localGeo, ray, view);
-
         // Make a recursive call to trace the reflected ray
         retClr = retClr + (brdf->kr * trace(lray, depth + 1));
     }
-    
+
     return retClr;
 }
 

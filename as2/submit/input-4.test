@@ -2,52 +2,63 @@
 # Intended to show transforms
 # I know it's not the most exciting of scenes...
 
-size 640 480 
+size 1000 1000
 output submit/image-4.png
- 
-camera 0 0 4 0 -1 0 0 1 1 45
 
-ambient .5 0 0
+camera 3 3 3 0 0 0 0 1 0 45
+
+ambient .3 0 0
 diffuse .4 0 0
 specular .4 0 0
-shininess 5
+# emission .4 0 0
+shininess 200
 
-sphere 0 0 0 .6
+sphere 0 0 0 1.4
 
-ambient .03 .06 .03
-diffuse  .4 0 .4
-specular .4 0 .4
-shininess 5
+#ambient .03 .06 .03
+#diffuse  .4 0 .4
+#specular .4 0 .4
+#emission .4 0 .4
+#shininess 5
 
-sphere 1 1 1 .6
+#sphere 1 1 1 .3
 
-ambient 0 .06 0
-diffuse  0 .6 0
-specular 0 .6 0
-shininess 5
+#ambient 0 .06 0
+#diffuse  0 .3 0
+#specular 0 .3 0
+#emission 0 .2 0
+#shininess 5
 
-sphere 1 0 1 .6
+#sphere 1 0 1 .3
 
-ambient .1 0 0
-diffuse  .1 0 0
-specular .1 0 0
-shininess 5
+#ambient .01 0 0
+#diffuse  .1 0 0
+#specular .1 0 0
+#emission .1 0 0
+#shininess 5
 
-sphere 0 1 1 .6
+#sphere 0 1 1 .3
 
-ambient 0 0 .5
-diffuse  0 0 .5
-specular 0 0 .5
-shininess 5
+#ambient 0 0 .05
+#diffuse  0 0 .5
+#specular 0 0 .5
+#emission 0 0 .5
+#shininess 5
 
-sphere 0 0 1 .6
+#sphere 0 0 1 .3
 
-ambient .5 .5 .5
-diffuse  .5 .5 .5
-specular .5 .5 .5
-shininess 5
+#ambient .05 .05 .05
+#diffuse  .5 .5 .5
+#specular .5 .5 .5
+#emission .5 .5 .5
+#shininess 5
 
-directional 3 3 3 .5 .1 .1
+# sphere 1 0 0 .3
+
+directional .3 .3 .3 1 1 1
+
 point -3 -3 -3 .5 .1 .1
+
+point 500 -500 1000 .8 .8 .8
 
 

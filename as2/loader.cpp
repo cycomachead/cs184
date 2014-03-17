@@ -294,7 +294,7 @@ void loadX(string file) {
           currentB.p = atof(splitline[1].c_str());
         // Update current properties
       }
-      //emission r g b NOTE: EMISSIVE == REFLECTIVE (at least in my world)
+      //emission r g b NOTE: EMISSION == REFLECTIVE (at least in my world)
       //  gives the emissive color of the surface.
       else if(!splitline[0].compare("emission")) {
           currentB.kr = Color(atof(splitline[1].c_str()),
