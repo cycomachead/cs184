@@ -47,8 +47,8 @@ public:
         color.scale();
         color.max();
         if (LOGGING > 15) {
-            cout << "PIXEL TO BE WRITTEN:\tX:" << sample.x << " Y: " << sample.y;
-            cout << " POS: " << pos << "\tR:" << color.r() << " G: ";
+            cout << "PIXEL:\t(" << sample.x << ", " << sample.y << ") POS: ";
+            cout << pos << "\tR: " << color.r() << " G: ";
             cout << color.g() << " B: " << color.b() << endl;
          }
         image.at(pos + 0) = (const char) color.r();

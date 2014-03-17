@@ -25,13 +25,21 @@ public:
         this->ks = s;
         this->p = p1;
     }
+    
+    // BRDF(BRDF &b) {
+    //     this->ka = b.ka;
+    //     this->kd = b.kd;
+    //     this->kr = b.kr;
+    //     this->ks = b.ks;
+    //     this->p  = b.p;
+    // }
 // Storing information enough for shading (it is not the actual BRDF function
 // in the rendering equation that will be covered later in the semester)
 // Members:
     // kd, ks, ka are diffuse, specular and ambient component respectively
     // kr is the mirror reflection coefficient
     
-    BRDF operator=(BRDF *other) {
+    BRDF operator=(BRDF *other) { // FIXME...
         return BRDF(other->ka, other->kd, other->kr, other->ks, other->p);
     }
     

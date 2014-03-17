@@ -9,7 +9,7 @@
 
 class LocalGeo {
 public:
-    Point pos;
+    Vector3f pos;
     Normal normal;
     LocalGeo() {
         // empty constructor
@@ -23,6 +23,7 @@ public:
     Matrix4f m, minvt;
     
     Transformation() {
+        // init all empty transforms to identities.
         m = Matrix<float, 4, 4>::Identity();
         minvt = Matrix<float, 4, 4>::Identity();
     }
@@ -47,6 +48,8 @@ public:
     //Point    operator*(Point p);
     //Vector3f operator*(Normal n);
     Vector3f operator*(Vector3f n);
+    
+    Transformation inverse();
 };
 
 
@@ -111,6 +114,12 @@ public:
     
     Shape* getShape() {
         return this->thing;
+    }
+    
+    void setTransform(Transformation t) {
+        this->objToWorld = t;
+        this->worldToObj.m = t.minvt; // WHY DOESNT t.inverse() work??
+        this->worldToObj.minvt = t.m;
     }
 };
 
@@ -179,9 +188,20 @@ public:
 
 class Triangle : public Shape {
 public:
+    Point a, b, c;
     Triangle() {
         // empty constructor
     }
+    
+    Triangle(Point x, Point y, Point z) {
+        a = x;
+        b = y;
+        c = z;
+    }
+    
+    bool intersect(Ray& ray, float* tHit, LocalGeo* local);
+    bool intersectP(Ray& ray);
+
 };
 
 class Material {

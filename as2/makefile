@@ -6,7 +6,7 @@ STD = -stdlib=libc++ -lstdc++ #-lm -DOSX -lc++
 # PNG = -DNO_FREETYPE
 ERR = -Wno-deprecated-register
 SOURCES = main.cpp tracer.cpp camera.cpp objects.cpp brdf.cpp scene.cpp \
-		lib/lodepng.cpp
+		lib/lodepng.cpp lights.cpp #loader.cpp
 OBJECTS = $(SOURCES:cpp=o)
 # -Weverything
 # lib/lodepng.h
@@ -30,3 +30,6 @@ parser:
 
 clean:
 	rm -rf *.out *.o *.dSYM
+	
+run:
+	time ./raytracer && open z_image_out.png

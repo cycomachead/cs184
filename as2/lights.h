@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "simple.h"
+#include "objects.h"
 #include <cfloat>
 
 /*
@@ -42,6 +43,8 @@ public:
         this->color = c;
         this->position = p;
     }
+    
+    void generateLightRay(LocalGeo& local, Ray* lray, Color* lcolor);
 };
 typedef PointLight pLight;
 
@@ -55,6 +58,8 @@ public:
         this->color = c;
         this->position = p;
     }
+    
+    void generateLightRay(LocalGeo& local, Ray* lray, Color* lcolor);
 };
 typedef DirectionalLight dLight;
 

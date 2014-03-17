@@ -25,7 +25,11 @@ int main(int argc, const char** argv) {
         scene.loadScene(SCENE);
     } else {
         cout << "Loading Scene: " << COMMANDS << endl;
-        scene.loadScene(SCENE);
+        scene.loadScene(COMMANDS);
+    }
+
+    if (LOGGING > 1) {
+        cout << "RENDERING..." << endl;
     }
 
     scene.render();

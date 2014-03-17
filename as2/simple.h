@@ -9,14 +9,6 @@
 #endif
 
 class Color: public Vector3f {
-/*
-Members:
-            float r, g, b
-Notes:
-            Support +,- with other color
-            Support scalar *, /
-            May support conversion from xyz
-*/
 public:
     Vector3f data;
     

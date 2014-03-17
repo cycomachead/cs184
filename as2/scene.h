@@ -8,6 +8,7 @@
 #include "sampler.h"
 #include "objects.h"
 #include "lights.h"
+#include "loader.h"
 #include "film.h"
 #include "camera.h"
 #include "tracer.h"
@@ -16,15 +17,15 @@ class Scene {
 public:
     float fov;
 
-    int width = 640,
-        height = 480,
+    int width = 800,
+        height = 800,
         maxDepth = 5;
 
     Point lookFrom, lookAt, up;
 
-    string output = "z_image_out.png"; // FIXME
+    string output = "image_out.png";
 
-    vector<Shape*> shapes; // Is this necessary?
+    // vector<Shape*> shapes; // Is this necessary?
     vector<Primitive*> primitives;
     vector<Light*> lights;
     // Transformations vector / stack?

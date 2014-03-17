@@ -9,7 +9,7 @@
 //***************************************************************************//
 // AGGREGATEPRIMITIVES //
 //***************************************************************************//
-
+// TODO -- for the future
 
 //***************************************************************************//
 // GEOMETRICPRIMITIVES //
@@ -125,6 +125,49 @@ bool Sphere::intersectP(Ray& ray) {
 //***************************************************************************//
 // TRIANGLES //
 //***************************************************************************//
+bool Triangle::intersect(Ray& ray, float* tHit, LocalGeo* local) {
+//http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-9-ray-triangle-intersection/ray-triangle-intersection-geometric-solution/
+    
+    Vector3f u = b - a;
+    Vector3f v = c - a;
+    Vector3f w = a - c;
+    
+    Vector3f norm = u.cross(v);
+    float dp = norm.dot(ray.dir);
+    
+    if (dp == 0) {
+        return false;
+    }
+    
+    float t = norm.dot((a - ray.pos) / dp);   
+    
+    if (t < ray.tMin || t > ray.tMax ) { // Suggested is < 0...
+        return false;
+    }
+    
+    Point p = ray.pos + ray.dir * t;
+
+    bool edge1 = norm.dot(u.cross(p - a)) < 0;
+    bool edge2 = norm.dot(v.cross(p - b)) < 0;
+    bool edge3 = norm.dot(w.cross(p - c)) < 0;
+    
+    if (edge1 && edge2 && edge3) {
+        *tHit = t;
+        (*local).normal = norm;
+        (*local).pos = p;
+        
+        return true;
+    }
+    
+    return false;
+    
+}
+
+bool Triangle::intersectP(Ray& ray) {
+    float* uselessF;
+    LocalGeo* uselessLocal;
+    return intersect(ray, uselessF, uselessLocal);
+}
 
 //***************************************************************************//
 //  TRANSFORMATION AND MATRICIES AND SUCH //
@@ -178,6 +221,14 @@ Transformation Transformation::identity() {
     t.minvt = t.m;
     return t;
 }
+
+Transformation Transformation::inverse() {
+    Transformation t;
+    t.m = this->minvt;
+    t.minvt = this->m;
+    return t;
+}
+
 
 //***************************************************************************//
 //  Materials and other random things //

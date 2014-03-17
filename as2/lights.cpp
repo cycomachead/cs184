@@ -9,22 +9,22 @@
 //***************************************************************************//
 // POINT LIGHTS //
 //***************************************************************************//
-pLight::generateLightRay(LocalGeo& local, Ray* lray, Color* lcolor) {
+void pLight::generateLightRay(LocalGeo& local, Ray* lray, Color* lcolor) {
     lray->pos = local.pos;
     lray->dir = this->position - local.pos;
-    lray->t_min = 0.00001;
-    lray->t_max = FLT_MAX;
-    *lcolor = color;
+    lray->tMin = 0.00001;
+    lray->tMax = FLT_MAX;
+    *lcolor = this->color;
     
 }
 //***************************************************************************//
 // DIRECTIONAL LIGHTS //
 //***************************************************************************//
-dLight::generateLightRay(LocalGeo& local, Ray* lray, Color* lcolor) {
+void dLight::generateLightRay(LocalGeo& local, Ray* lray, Color* lcolor) {
     lray->pos = local.pos;
     lray->dir = -1 * this->position;
-    lray->t_min = 0.03;
-    lray->t_max = FLT_MAX;
-    *lcolor = color;
+    lray->tMin = 0.03;
+    lray->tMax = FLT_MAX;
+    *lcolor = this->color;
     
 }

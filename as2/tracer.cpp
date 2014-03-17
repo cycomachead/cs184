@@ -9,6 +9,8 @@
 #include "objects.h"
 #include "lights.h"
 
+#define COLOR_BLACK Color(0.0f, 0.0f, 0.0f)
+
 Color shading(LocalGeo local, BRDF *brdf, Ray lray, Color lcolor, Vector3f view) {
     Vector3f norm = lray.dir;
     norm.normalize();
@@ -18,17 +20,24 @@ Color shading(LocalGeo local, BRDF *brdf, Ray lray, Color lcolor, Vector3f view)
     return c;
 }
 
-Ray createReflectRay(LocalGeo local, Ray ray) {
-    return Ray();
+Ray createReflectRay(LocalGeo local, Ray ray, Vector3f v) {
+    Vector3f reflect = ray.dir * -1 + 2 * local.normal * v.dot(local.normal);
+    return Ray(local.pos,
+               reflect, // FIXME
+               0.01,
+               FLT_MAX);
 }
 
 Color RayTracer::trace(Ray& ray, int depth) {
-    // cout << " TRACER: POS:\n" << ray.pos << "\n\tDIR:\n" << ray.dir << endl;
+    if (LOGGING > 10) {
+        cout << "TRACER\tDEPTH: " << depth << "\nDIR:\n" << ray.dir << endl;
+    }
+
     if (depth == maxDepth) {
         if (LOGGING > 6) {
             cout << "Max Depth Reached";
         }
-        return Color(0.0f, 0.0f, 0.0f);
+        return COLOR_BLACK;
     }
 
     float tHit = FLT_MAX, smallestTime = FLT_MAX;
@@ -59,22 +68,28 @@ Color RayTracer::trace(Ray& ray, int depth) {
     }
 
     if (not found) {
-        return Color(0.0f, 0.0f, 0.0f);
+        return COLOR_BLACK;
     }
 
-    BRDF* brdf; // Holding Space
-    Color retClr;
+    // Obtain the brdf at intersection point
+    BRDF* brdf = closestPrim->getBRDF();
+    // Handle the Ambient Color term. 
+    Color retClr = brdf->ka;
+    // if (retClr.r() == 0.5f) {
+//         cout << "TRACER COLOR: " << retClr.g() << endl;
+//     }
     Ray lray;
     Color lcolor;
-    // Obtain the brdf at intersection point
-    brdf = closestPrim->getBRDF();
-    //closestPrim->getBRDF(closestInt.localGeo, &brdf);
-    // Handle the Ambient Color term. 
-    retClr = retClr + brdf->ka;
-    
+    Vector3f view = ray.dir * -1;
+    view.normalize(); // For LIGHTS AND REFLECTION
+    // closestPrim->getBRDF(closestInt.localGeo, &brdf);
+     
     // There is an intersection, loop through all light source
     // SCENE MEMBER: vector<Light*> lights;
     for (int i = 0; i < scene.lights.size(); i++) {
+        if (LOGGING > 7) {
+            cout << "Computing Light Values for Light:  " << i << endl;
+        }
         Light* lt = scene.lights.at(i);
         lt->generateLightRay(closestInt.localGeo, &lray, &lcolor);
 
@@ -89,21 +104,17 @@ Color RayTracer::trace(Ray& ray, int depth) {
             }
         }
         if (!blocked) { // If not, do shading calculation for this light source
-            Vector3f view = ray.dir * -1;
-            view.normalize();
             retClr = retClr + shading(closestInt.localGeo, brdf, lray, lcolor, view);
         }
     }
     
     // Handle mirror reflection
-    /*
-    if (brdf.kr > 0) {
-        reflectRay = createReflectRay(in.local, ray);
+    if (brdf->kr > 0) {
+        lray = createReflectRay(closestInt.localGeo, ray, view);
 
         // Make a recursive call to trace the reflected ray
-        retClr = retClr + brdf.kr * trace(reflectRay, depth + 1);
+        retClr = retClr + (brdf->kr * trace(lray, depth + 1));
     }
-    */
     
     return retClr;
 }
