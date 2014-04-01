@@ -21,10 +21,10 @@ Color shading(LocalGeo local, BRDF *brdf, Ray lray, Color lcolor, Vector3f view)
 }
 
 Ray createReflectRay(LocalGeo local, Ray ray, Vector3f v) {
-    Vector3f reflect = ray.dir * -1 + 2 * local.normal * v.dot(local.normal);
+    Vector3f reflect = (ray.dir * -1) + (2 * local.normal) * (v.dot(local.normal));
     return Ray(local.pos,
                reflect, // FIXME
-               0.01,
+               0.001,
                FLT_MAX);
 }
 
@@ -107,10 +107,10 @@ Color RayTracer::trace(Ray& ray, int depth) {
     }
 
     // Handle mirror reflection
-    if (brdf->kr > 0) {
+    if (brdf->ks > 0) {
         lray = createReflectRay(closestInt.localGeo, ray, view);
         // Make a recursive call to trace the reflected ray
-        retClr = retClr + (brdf->kr * trace(lray, depth + 1));
+        retClr = retClr + ( brdf->ks * trace(lray, depth + 1) );
     }
 
     return retClr;

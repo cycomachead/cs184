@@ -368,7 +368,9 @@ void circle(float centerX, float centerY, float radius) {
                 }
 
                 // Sum all Parts for pixel values
-                final = sum3(amb, spec, diff);
+                final.r = amb.r + spec.r + diff.r;
+                final.g = amb.g + spec.g + diff.g;
+                final.b = amb.b + spec.b + diff.b;
 
                 if (WRITE_FILE) {
                     writePixel(iCorr, jCorr, final);
