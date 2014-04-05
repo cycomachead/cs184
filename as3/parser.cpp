@@ -12,12 +12,12 @@ void loadPatches(string file) {
         cerr << "EXITING" << endl;
         exit(1);
     }
-    
+
     string line;
     int numPatches;
     int linecount = 0;
-    vector< vector<float> > patchset;
-    vector<float> currentline;
+    vector< vector<glm::vec4> > patchset;
+    vector<glm::vec4> currentline;
     while(inpfile.good()) {
         linecount += 1;
         vector<string> splitline;
@@ -29,7 +29,7 @@ void loadPatches(string file) {
         while (ss >> buf) {
             splitline.push_back(buf);
         }
-        
+
         // blank lines separate patchsets
         if (splitline.size() == 0 and patchset.size() != 0) {
             if (LOGLEVEL > 3) {
@@ -39,7 +39,7 @@ void loadPatches(string file) {
             patchset.clear();
             continue;
         }
-        
+
         if (linecount == 1) {
             numPatches = atoi(splitline[0].c_str());
             if (LOGLEVEL > 3) {
@@ -47,13 +47,18 @@ void loadPatches(string file) {
             }
             continue;
         }
-        
+
         currentline.clear();
         if (LOGLEVEL > 4) {
             cout << "LINE HAS " << splitline.size() << " ITEMS" << endl;
         }
-        for(int i = 0; i < splitline.size(); i += 1) {
-            currentline.push_back(atof(splitline[i].c_str()));
+        for(int i = 0; i < splitline.size(); i += 3) {
+            glm::vec4 point = glm::vec4(
+                atof(splitline[i].c_str()),
+                atof(splitline[i + 1].c_str()),
+                atof(splitline[i + 2].c_str()),
+                1);
+            currentline.push_back(point);
         }
         if (currentline.size() > 0) {
             patchset.push_back(currentline);
@@ -64,5 +69,5 @@ void loadPatches(string file) {
 }
 
 void loadObj(string file) {
-    
+
 }

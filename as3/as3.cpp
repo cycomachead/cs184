@@ -35,14 +35,14 @@ bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; //controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 
-vector< vector <vector<float> > > patches;
+vector< vector <vector<glm::vec4> > > patches;
 
 //****************************************************
 // Basic Functions
 //****************************************************
 void usage() {
     cout << "\t CS184 ASSIGNMENT 3 -- Usage" << endl;
-    cout << "./as3 input-file subdivision-param [ -a ] (adaptive shading)" << endl;
+    cout << "./as3 input- file subdivision-param [ -a ] (adaptive shading)" << endl;
 }
 
 
@@ -57,11 +57,10 @@ void initScene(int argc, char *argv[]) {
         cerr << "Invalid arguments found; exiting.\n" << endl;
         exit(1);
     }
-    
+
     inputFile = (string) argv[1];
-    subDivParam = atof(argv[2]);
-    
-    int pos = 3;
+
+    int pos = 2;
     while (pos < argc) {
         string curr = argv[pos];
         if (curr == "-a") {
@@ -72,9 +71,19 @@ void initScene(int argc, char *argv[]) {
         } else if (curr == "-o") {
             // OPTIONAL .obj output files
             pos += 1;
+        } else {
+            subDivParam = atof(argv[pos]);
         }
         pos += 1;
     }
+    
+    if (LOGLEVEL > 0) {
+        cout << "Input Params: " << endl;
+        cout << "File: " << inputFile << endl;
+        cout << "Subdivision Parameter: " << subDivParam << endl;
+        cout << "Using Adaptive Tessellation: " << adaptiveOn << endl;
+        cout << "LOGLEVEL: " << LOGLEVEL << endl;
+    } 
 }
 
 //****************************************************
@@ -113,7 +122,7 @@ void myDisplay() {
     // indicate we are specifying camera transformations
     glLoadIdentity();
     // make sure transformation is "zero'd"
-    
+
     // Shading model:https://www.opengl.org/sdk/docs/man2/xhtml/glShadeModel.xml
     if (useSmoothShading) {
         glShadeModel(GL_SMOOTH);
@@ -122,9 +131,9 @@ void myDisplay() {
     }
 
     // Start drawing
-    
-    // FIXME 
-    
+
+    // FIXME
+
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
@@ -149,12 +158,12 @@ void changeZoom(float amt) {
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void rotate(int dir) {
-    
+
 }
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void translate(int dir) {
-    
+
 }
 //****************************************************
 // handle keypresses
@@ -178,8 +187,8 @@ void keypress(unsigned char key, int x, int y) {
         changeZoom(0.1f);
     } else if (key == 'h' or key == 'H') { // OPTIONAL: toggleHiddenLines
         toggleHiddenLines();
-    } 
-    
+    }
+
     // Update display after circles change
     myDisplay();
 }
@@ -190,7 +199,7 @@ void specialkeypress(int key, int x, int y) {
     if (LOGLEVEL > 2) {
         cout << "Key Press: " << key << endl;
     }
-    
+
     if (key >= 100 and key <= 103) {
         int shift = glutGetModifiers();
         if (shift == 1) {
@@ -199,7 +208,7 @@ void specialkeypress(int key, int x, int y) {
             rotate(key - 100);
         }
     }
-    
+
     // Update display after circles change
     myDisplay();
 }
@@ -223,10 +232,10 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(0,0);
     glutCreateWindow(argv[0]);
     initScene(argc, argv);  // Parse command line args here.
-    
+
     // detect file type... OPTIONAL
     loadPatches(inputFile);
-    
+
     glutKeyboardFunc(keypress); // Detect key presses
     glutSpecialFunc(specialkeypress); // Detect SPECIAL (arrow) keys
     glutDisplayFunc(myDisplay);

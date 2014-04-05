@@ -12,7 +12,7 @@
 #include <string>
 #include <stdlib.h>
 
-
+#include "lib/glm/glm.hpp"
 // Libraries
 // #undef Success
 // #include "lib/Eigen/Eigen"
@@ -37,7 +37,7 @@ using namespace std;
 #include <time.h>
 
 extern int LOGLEVEL;
-extern vector< vector <vector<float> > > patches;
+extern vector< vector <vector<glm::vec4> > > patches;
 
 void loadPatches(string);
 
