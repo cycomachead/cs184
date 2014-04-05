@@ -113,6 +113,13 @@ void myDisplay() {
     // indicate we are specifying camera transformations
     glLoadIdentity();
     // make sure transformation is "zero'd"
+    
+    // Shading model:https://www.opengl.org/sdk/docs/man2/xhtml/glShadeModel.xml
+    if (useSmoothShading) {
+        glShadeModel(GL_SMOOTH);
+    } else {
+        glShadeModel(GL_FLAT);
+    }
 
     // Start drawing
     
