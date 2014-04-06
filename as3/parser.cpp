@@ -4,6 +4,7 @@
 #include "as3.h"
 
 int LOGLEVEL;
+
 void loadPatches(string file) {
 
     ifstream inpfile(file.c_str());

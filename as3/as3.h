@@ -13,11 +13,8 @@
 #include <stdlib.h>
 
 #include "lib/glm/glm.hpp"
-// Libraries
-// #undef Success
-// #include "lib/Eigen/Eigen"
-
-using namespace std;
+#include "bezier.h"
+// #include "model.h"
 
 
 #ifdef _WIN32
@@ -35,6 +32,8 @@ using namespace std;
 #endif
 
 #include <time.h>
+
+using namespace std;
 
 extern int LOGLEVEL;
 extern vector< vector <vector<glm::vec4> > > patches;

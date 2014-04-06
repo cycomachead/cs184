@@ -2,6 +2,7 @@
 // TOMO UEDA & MICHAEL BALL
 
 #include "as3.h"
+#include "model.h"
 
 #define COLOR_RED glColor3f(1.0f, 0.0f, 0.0f);
 #define COLOR_GREEN glColor3f(0.0f, 1.0f, 0.0f);
@@ -46,6 +47,8 @@ bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 
 vector< vector <vector<glm::vec4> > > patches;
+
+Model *mainModel;
 
 //****************************************************
 // Basic Functions
@@ -131,7 +134,14 @@ void setupGlut() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // use Flat shading
     glShadeModel(GL_FLAT);
-    
+
+    // gllighting
+    // glEnable(GL_LIGHTING);
+    // glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
+    // glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
+    // glLightfv(GL_LIGHT0, GL_POSITION, litepos);
+    // glEnable(GL_LIGHT0);
+
 }
 
 void myDisplay() {
@@ -148,11 +158,11 @@ void myDisplay() {
     // Start drawing
     // OPENGL Options:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
-    glBegin(GL_POLYGONS);
     COLOR_BLUE;
-    
-    
-    glEnd();
+// glBegin(GL_POLYGONS);
+//     // iterate over model polygons/faces
+//
+//     glEnd();
 
 
     glFlush();
@@ -268,6 +278,8 @@ int main(int argc, char *argv[]) {
 
     // TODO: detect file type... OPTIONAL
     loadPatches(inputFile);
+    // Create the Main Model
+    mainModel = new Model(patches, errorParam);
 
     glutKeyboardFunc(keypress); // Detect key presses
     glutSpecialFunc(specialkeypress); // Detect SPECIAL (arrow) keys
