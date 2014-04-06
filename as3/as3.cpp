@@ -125,6 +125,15 @@ void setPixel(int x, int y, GLfloat r, GLfloat g, GLfloat b) {
 //****************************************************
 // function that does the actual drawing of stuff
 //***************************************************
+void setupGlut() {
+    // setup defaults
+    // Wireframe OFF
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // use Flat shading
+    glShadeModel(GL_FLAT);
+    
+}
+
 void myDisplay() {
 
     glClear(GL_COLOR_BUFFER_BIT); // clear the color buffer
@@ -134,30 +143,21 @@ void myDisplay() {
     glLoadIdentity();
     // make sure transformation is "zero'd"
 
-    glLightfv()
+    // glLightfv()
 
     // Start drawing
     // OPENGL Options:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
-    if (useWireframeMode) {
-        glBegin(GL_LINES);
-        COLOR_BLUE;
-        glEnd();
-    } else if (useAdaptiveMode) {
-        glBegin(GL_TRIANGLES);
-        COLOR_BLUE;
-        glEnd();
-    } else { // Subdivision shading.
-        glBegin(GL_QUADS);
-        COLOR_BLUE;
-        glEnd();
-    }
+    glBegin(GL_POLYGONS);
+    COLOR_BLUE;
+    
+    
+    glEnd();
 
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
-
 
 void toggleWireframe() {
     useWireframeMode = !useWireframeMode;
@@ -274,6 +274,7 @@ int main(int argc, char *argv[]) {
     glutDisplayFunc(myDisplay);
     glutReshapeFunc(myReshape);
     glutMainLoop();
+    setupGlut();
 
     return 0;
 }

@@ -2,7 +2,7 @@ CC = g++
 SOURCES = as3.cpp parser.cpp bezier.cpp
 OBJECTS = $(SOURCES:cpp=o)
 ifeq ($(shell sw_vers 2>/dev/null | grep Mac | awk '{ print $$2}'),Mac)
-	CC = clang -xc++ # Clang handles C++11 better on 10.8
+	CC = clang #-xc++ # Clang handles C++11 better on 10.8
 	STD = -std=c++11 -stdlib=libc++
 	CFLAGS = -DGL_GLEXT_PROTOTYPES -I./include/ -I/usr/X11/include -DOSX -Wno-deprecated
 	LDFLAGS = -framework GLUT -framework OpenGL \
@@ -22,8 +22,8 @@ default: compile link
 main:
 	$(CC) $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as3
 
-compile:
-	$(CC) -c $(c++) $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o $(OBJECTS)
+catmull:
+	$(CC) catmull.c $(INC) $(CFLAGS) $(LDFLAGS) -o catmull
 
 link:
 	$(CC) -g $(OBJECTS) $(STD) -o as3
