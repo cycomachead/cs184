@@ -1,5 +1,5 @@
 CC = g++
-SOURCES = as3.cpp parser.cpp
+SOURCES = as3.cpp parser.cpp bezier.cpp
 OBJECTS = $(SOURCES:cpp=o)
 ifeq ($(shell sw_vers 2>/dev/null | grep Mac | awk '{ print $$2}'),Mac)
 	CC = clang -xc++ # Clang handles C++11 better on 10.8
