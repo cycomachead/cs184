@@ -3,7 +3,16 @@
 
 #include "as3.h"
 
-#define PI M_PI
+#define COLOR_RED glColor3f(1.0f, 0.0f, 0.0f);
+#define COLOR_GREEN glColor3f(0.0f, 1.0f, 0.0f);
+#define COLOR_BLUE glColor3f(0.0f, 0.0f, 1.0f);
+#define COLOR_YELLOW glColor3f(1.0f, 1.0f, 0.0f);
+#define COLOR_CYAN glColor3f(0.0f, 1.0f, 1.0f);
+#define COLOR_MAGENTA glColor3f(1.0f, 0.0f, 1.0f);
+#define COLOR_BLACK glColor3f(0.0f, 0.0f, 0.0f);
+#define COLOR_WHITE glColor3f(1.0f, 1.0f, 1.0f);
+
+
 inline float sqr(float x) { return x*x; }
 
 using namespace std;
@@ -27,12 +36,13 @@ Viewport	viewport;
 // Command Line Params
 string inputFile;
 float subDivParam;
-bool adaptiveOn = false;
+float errorParam;
+bool useAdaptiveMode = false;
 
 // Other Initial Settings
 bool useSmoothShading  = false; // controlled by 's'
 bool useWireframeMode  = false; // controlled by 'w'
-bool useHiddenLineMode = false; //controlled by 'h' OPTIONAL
+bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 
 vector< vector <vector<glm::vec4> > > patches;
@@ -52,7 +62,7 @@ void usage() {
 // Handle parsing any command line args.
 void initScene(int argc, char *argv[]) {
     LOGLEVEL = 0;
-    if (argc < 3) {
+    if (argc < 2) {
         usage();
         cerr << "Invalid arguments found; exiting.\n" << endl;
         exit(1);
@@ -64,7 +74,7 @@ void initScene(int argc, char *argv[]) {
     while (pos < argc) {
         string curr = argv[pos];
         if (curr == "-a") {
-            adaptiveOn = true;
+            useAdaptiveMode = true;
         } else if (curr == "-l" or curr == "-log") { // debugging switch
             pos += 1;
             LOGLEVEL = atoi(argv[pos]);
@@ -72,18 +82,19 @@ void initScene(int argc, char *argv[]) {
             // OPTIONAL .obj output files
             pos += 1;
         } else {
-            subDivParam = atof(argv[pos]);
+            errorParam = subDivParam = atof(argv[pos]);
         }
         pos += 1;
     }
-    
+
     if (LOGLEVEL > 0) {
         cout << "Input Params: " << endl;
         cout << "File: " << inputFile << endl;
         cout << "Subdivision Parameter: " << subDivParam << endl;
-        cout << "Using Adaptive Tessellation: " << adaptiveOn << endl;
+        cout << "Error Parameter: " << errorParam << endl;
+        cout << "Using Adaptive Tessellation: " << useAdaptiveMode << endl;
         cout << "LOGLEVEL: " << LOGLEVEL << endl;
-    } 
+    }
 }
 
 //****************************************************
@@ -131,8 +142,22 @@ void myDisplay() {
     }
 
     // Start drawing
+    // OPENGL Options:
+    // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
+    if (useWireframeMode) {
+        glBegin(GL_LINES);
+        COLOR_BLUE;
+        glEnd();
+    } else if (useAdaptiveMode) {
+        glBegin(GL_TRIANGLES);
+        COLOR_BLUE;
+        glEnd();
+    } else { // Subdivision shading.
+        glBegin(GL_QUADS);
+        COLOR_BLUE;
+        glEnd();
+    }
 
-    // FIXME
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
@@ -165,6 +190,7 @@ void rotate(int dir) {
 void translate(int dir) {
 
 }
+
 //****************************************************
 // handle keypresses
 //***************************************************
@@ -233,7 +259,7 @@ int main(int argc, char *argv[]) {
     glutCreateWindow(argv[0]);
     initScene(argc, argv);  // Parse command line args here.
 
-    // detect file type... OPTIONAL
+    // TODO: detect file type... OPTIONAL
     loadPatches(inputFile);
 
     glutKeyboardFunc(keypress); // Detect key presses
@@ -242,6 +268,6 @@ int main(int argc, char *argv[]) {
     glutReshapeFunc(myReshape);
     glutMainLoop();
 
-  return 0;
+    return 0;
 }
 
