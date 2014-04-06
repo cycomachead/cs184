@@ -31,7 +31,7 @@ class Viewport {
 //****************************************************
 // Global Variables
 //****************************************************
-Viewport	viewport;
+Viewport viewport;
 
 // Command Line Params
 string inputFile;
@@ -134,12 +134,7 @@ void myDisplay() {
     glLoadIdentity();
     // make sure transformation is "zero'd"
 
-    // Shading model:https://www.opengl.org/sdk/docs/man2/xhtml/glShadeModel.xml
-    if (useSmoothShading) {
-        glShadeModel(GL_SMOOTH);
-    } else {
-        glShadeModel(GL_FLAT);
-    }
+    glLightfv()
 
     // Start drawing
     // OPENGL Options:
@@ -165,11 +160,23 @@ void myDisplay() {
 
 
 void toggleWireframe() {
-    useSmoothShading = !useSmoothShading;
+    useWireframeMode = !useWireframeMode;
+    if (useWireframeMode) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 }
 
 void toggleShading() {
-    useWireframeMode = !useWireframeMode;
+    useSmoothShading = !useSmoothShading;
+    // Shading model:
+    // https://www.opengl.org/sdk/docs/man2/xhtml/glShadeModel.xml
+    if (useSmoothShading) {
+        glShadeModel(GL_SMOOTH);
+    } else {
+        glShadeModel(GL_FLAT);
+    }
 }
 
 // OPTIONAL: Extra Credit...
