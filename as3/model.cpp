@@ -14,6 +14,8 @@ void Model::buildUniformVertexNormal() {
 Model::Model(vector< vector <vector<glm::vec4> > > patches, float tau) {
     modelPatches = patches;
     errorBound = stepSize = tau;
+    verticies = new vector<glm::vec4>();
+    normals = new vector<glm::vec4>();
     buildUniformVertexNormal();
 }
 

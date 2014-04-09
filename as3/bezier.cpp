@@ -86,8 +86,8 @@ glm::vec4 cross(glm::vec4 a, glm::vec4 b) {
 /** given a control patch and (u,v) values, find 
  the surface point and update normal **/
 glm::vec4 bezpatchinterp(vector< vector< glm::vec4 > > patch, float u, float v, glm::vec4* normal) {
-	glm::vec4* dPdv;
-	glm::vec4* dPdu;
+	glm::vec4* dPdv = new glm::vec4();
+	glm::vec4* dPdu = new glm::vec4();
 	// build control points for a Bezier curve in v
 	vector<glm::vec4> vcurve;
 
@@ -140,7 +140,7 @@ void subdividepatch(vector< vector< glm::vec4 > > patch, float step,
 		for (int iv = 0; iv < numDiv; iv++) {
 			v = iv * step;
 			// evaluate surface
-			glm::vec4* normal;
+			glm::vec4* normal = new glm::vec4();
 			glm::vec4 point = bezpatchinterp(patch, u, v, normal);
 			p->push_back(point);
 			n->push_back(*normal);
