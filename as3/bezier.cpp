@@ -122,8 +122,7 @@ glm::vec4 bezpatchinterp(vector< vector< glm::vec4 > > patch, float u, float v, 
 
 /** given a patch, perform uniform subdivision
 	result is updated in p and n a vector user passes in.
-	Matching index will indicate matching surface point and normal.
-	p and n should be empty before the function call. **/
+	Matching index will indicate matching surface point and normal. **/
 void subdividepatch(vector< vector< glm::vec4 > > patch, float step, 
 	vector< glm::vec4 >* p, vector< glm::vec4 >* n) {
 	float u;
