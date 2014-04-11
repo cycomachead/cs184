@@ -384,7 +384,8 @@ vertex updated_point(vertex v)
 	if (v->v_new) return v->v_new;
 
 	v->v_new = vertex_new();
-	if (hole_vertex(v)) {
+	if (hole
+    _vertex(v)) {
 		v->v_new->pos = v->pos;
 		foreach(i, e, v->e) {
 			if (!hole_edge(e)) continue;

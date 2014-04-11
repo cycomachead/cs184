@@ -23,3 +23,11 @@ vector< vector <vector<glm::vec4> > > Model::getPatches() {
     return modelPatches;
 }
 
+vector <vector<glm::vec4> > Model::getPatchN(int i) {
+    return modelPatches.at(i);
+}
+
+// TODO:
+// vector<glm::vec4> Model::getCorners(int n) {
+//     
+// }

@@ -10,11 +10,13 @@
 #include <stack>
 #include <iostream>
 #include <string>
+#include <map>
 #include <stdlib.h>
 
 #include "lib/glm/glm.hpp"
 #include "bezier.h"
 // #include "model.h"
+// #include "patch.h"
 
 
 #ifdef _WIN32

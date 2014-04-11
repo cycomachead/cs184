@@ -25,6 +25,10 @@ public:
     void buildUniformVertexNormal();
 
     vector< vector <vector<glm::vec4> > > getPatches();
+    
+    vector <vector<glm::vec4> > getPatchN(int);
+    
+    vector<glm::vec4> getCorners(int);
 }; // end model
 
 #endif
