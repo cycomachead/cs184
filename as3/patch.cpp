@@ -32,8 +32,12 @@ Patch::Patch(Patch&) {
 
 }
 
-Patch::Patch(vector<glm::vec3>) {
-    
+Patch::Patch(vector<glm::vec3> corners) {
+    // Check if corners are 3 or 4
+    // set corners to vector
+    // set triangle and order properties.
+    // Check for subdivision??? Seems like a bad idea..
+    // initialize pointers to other arrays so they aren't null?gc 
 }
 
 // Return the control point at that index, usually 0-15
@@ -114,12 +118,17 @@ void Patch::subdivideQuad() {
     for(int i = 0; i < numQuads; i += 1) {
         // Create a new patch with corners of a current segment
         Patch* tri = new Patch(this->getQuad(i));
-        
+        // This will make the call that can recursively split triangles.
+        tri->subdivideTriangle();
+        tri->parent = this;
+        // This will add 1 patch to the list which contains 2 
         this->patches->push_back(tri);
     }
 }
 
 // Subdivide the necessary TRIANGULAR pathces into triangles
 void Patch::subdivideTriangle() {
-    
+    // if this patch is a triangle, create TWO new patches based on corners.
+    // Patch 1 is a triangle, corners 0, 1, 2. Patch 2 uses corners 1, 2, 3
+    // Use isFlat to check if the new patches need to be subdivided.
 }

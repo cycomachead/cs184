@@ -48,7 +48,7 @@ bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 
 
-
+vector< vector <vector<glm::vec4> > > patches;
 
 Model *mainModel;
 
