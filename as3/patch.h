@@ -19,20 +19,19 @@ private:
     vector<glm::vec3> *corners;
 
     // Should patches contain patches? -- subdivisions
-    vector<Patch> *innerPatches;
-
-    Patch *parent;
+    vector<Patch*> *patches;
 
     int order;
 
     bool isQuad;
 public:
+    Patch *parent;
 
     Patch();
 
     Patch(vector< vector<glm::vec4> >);
     
-    Patch(vector<glm::vec3>, Patch&);
+    Patch(vector<glm::vec3>);
 
     Patch(Patch&);
 
@@ -47,6 +46,14 @@ public:
     glm::vec3 getVertex(int);
     
     void subdivide();
+    
+    void subdivideQuad();
+    
+    void subdivideTriangle();
+    
+    int isFlat(vector<glm::vec3>);
+    
+    
 };
 
 #endif

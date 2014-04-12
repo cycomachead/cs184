@@ -3,6 +3,7 @@
 
 #include "as3.h"
 #include "model.h"
+#include "parser.h"
 
 #define COLOR_RED glColor3f(1.0f, 0.0f, 0.0f);
 #define COLOR_GREEN glColor3f(0.0f, 1.0f, 0.0f);
@@ -46,7 +47,8 @@ bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 
-vector< vector <vector<glm::vec4> > > patches;
+
+
 
 Model *mainModel;
 

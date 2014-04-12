@@ -1,5 +1,5 @@
 CC = g++
-SOURCES = as3.cpp parser.cpp bezier.cpp model.cpp patch.cpp
+SOURCES = parser.cpp bezier.cpp model.cpp patch.cpp
 OBJECTS = $(SOURCES:cpp=o)
 ifeq ($(shell sw_vers 2>/dev/null | grep Mac | awk '{ print $$2}'),Mac)
 	CC = clang #-xc++ # Clang handles C++11 better on 10.8
@@ -20,8 +20,11 @@ all: main
 default: compile link
 
 main:
-	$(CC) $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as3
+	$(CC) as3.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as3
 
+test:
+	$(CC) test.cpp $(SOURCES)$(INC) $(CFLAGS) $(LDFLAGS) -o test.out
+	
 catmull:
 	$(CC) catmull.c $(INC) $(CFLAGS) $(LDFLAGS) -o catmull
 

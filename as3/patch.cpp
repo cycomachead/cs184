@@ -12,6 +12,7 @@ Patch::Patch(vector< vector<glm::vec4> > input) {
     this->originalData = &input;
     this->controlPoints = new vector<glm::vec3>();
     this->corners = new vector<glm::vec3>();
+    this->patches = new vector<Patch*>();
     // move the input data to 1D form. convert to vec3.
     for(int i = 0; i < input.size(); i += 1) {
         vector<glm::vec4> item = input.at(i);
@@ -31,7 +32,7 @@ Patch::Patch(Patch&) {
 
 }
 
-Patch::Patch(vector<glm::vec3>, Patch&) {
+Patch::Patch(vector<glm::vec3>) {
     
 }
 
@@ -100,5 +101,25 @@ vector<glm::vec3> Patch::getTri(int n) {
 
 // Subdivide this patch into a bunch of triangles
 void Patch::subdivide() {
+    if (this->isQuad) {
+        subdivideQuad();
+    } else {
+        subdivideTriangle();
+    }
+}
+
+// Divide all square patches into triangles.
+void Patch::subdivideQuad() {
+    int numQuads = 9; // this is really hacky, but is solvable.
+    for(int i = 0; i < numQuads; i += 1) {
+        // Create a new patch with corners of a current segment
+        Patch* tri = new Patch(this->getQuad(i));
+        
+        this->patches->push_back(tri);
+    }
+}
+
+// Subdivide the necessary TRIANGULAR pathces into triangles
+void Patch::subdivideTriangle() {
     
 }

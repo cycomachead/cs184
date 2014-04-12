@@ -1,7 +1,7 @@
 // Parser for CS184 AS3.
 // Parses .bez and .obj files
 
-#include "as3.h"
+#include "parser.h"
 
 int LOGLEVEL;
 

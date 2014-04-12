@@ -40,6 +40,4 @@ using namespace std;
 extern int LOGLEVEL;
 extern vector< vector <vector<glm::vec4> > > patches;
 
-void loadPatches(string);
-
 #endif
