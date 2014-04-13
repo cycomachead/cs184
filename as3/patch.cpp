@@ -36,8 +36,15 @@ Patch::Patch(vector<glm::vec3> corners) {
     // Check if corners are 3 or 4
     // set corners to vector
     // set triangle and order properties.
-    // Check for subdivision??? Seems like a bad idea..
-    // initialize pointers to other arrays so they aren't null?gc 
+    // initialize pointers to other arrays so they aren't null?
+
+    this->order = 3;
+    // if this patch is a triangle or not..
+    this->isQuad = (corners.size() == 4);
+    // this may not be the best thing to do...
+    this->controlPoints = &corners;
+    this->corners = new vector<glm::vec3>(corners);
+    this->patches = new vector<Patch*>();
 }
 
 // Return the control point at that index, usually 0-15
@@ -56,7 +63,7 @@ glm::vec3 Patch::getVertex(int i) {
 
 */
 int* Patch::quadIndicies(int i) {
-    // FORMULA?? -- ind[] = ind[0] + n + row jump 
+    // FORMULA?? -- ind[] = ind[0] + n + row jump
     // Row-jump = floor(n/3) ...?
     int* indices = new int[4];
     int add = ((int) floor(i/this->order)) + i;
@@ -74,7 +81,7 @@ vector<glm::vec3> Patch::getQuad(int in) {
         // FIXME...
         return this->getCorners();
     }
-    
+
     vector<glm::vec3> result = vector<glm::vec3>();
     int* i = this->quadIndicies(in);
     // TL TR LL RR
@@ -89,16 +96,18 @@ vector<glm::vec3> Patch::getCorners() {
     return *(this->corners);
 }
 
+// this works for cases of two but will need to be fixed for up to 4...
+// FIXME -- this coulf use a constructor to build the result from corner.
 vector<glm::vec3> Patch::getTri(int n) {
     vector<glm::vec3> result;
-    if (n == 1) {
+    if (n == 0) {
         result.at(0) = this->controlPoints->at(0);
         result.at(1) = this->controlPoints->at(1);
         result.at(2) = this->controlPoints->at(2);
     } else {
-        result.at(0) = this->controlPoints->at(0);
-        result.at(1) = this->controlPoints->at(1);
-        result.at(2) = this->controlPoints->at(2);
+        result.at(0) = this->controlPoints->at(1);
+        result.at(1) = this->controlPoints->at(2);
+        result.at(2) = this->controlPoints->at(3);
     }
     return result;
 }
@@ -121,14 +130,44 @@ void Patch::subdivideQuad() {
         // This will make the call that can recursively split triangles.
         tri->subdivideTriangle();
         tri->parent = this;
-        // This will add 1 patch to the list which contains 2 
+        // This will add 1 patch to the list which contains 2
         this->patches->push_back(tri);
     }
 }
 
 // Subdivide the necessary TRIANGULAR pathces into triangles
 void Patch::subdivideTriangle() {
-    // if this patch is a triangle, create TWO new patches based on corners.
+    // if this is a triangle, create TWO new patches based on corners.
     // Patch 1 is a triangle, corners 0, 1, 2. Patch 2 uses corners 1, 2, 3
     // Use isFlat to check if the new patches need to be subdivided.
+    int num = 2;
+    for(int i = 0; i < num; i += 1) {
+        Patch* p = new Patch(this->getTri(i));
+        this->patches->push_back(p);
+        int flat = p->isFlat(p->getCorners());
+        if (!flat) {
+            p->subdivideTriangle(flat);
+        }
+    }
+}
+
+//
+void Patch::subdivideTriangle(int method) {
+
+}
+
+
+// Return true IFF there are patches to recurse into.
+bool Patch::hasChildren() {
+    return this->patches->size() > 0;
+}
+
+// Return all the polygons for drawing the object.
+// vector< vector<glm::vec3> > Patch::getPolygons() {
+// }
+
+// check the flatness of a triangle.
+int Patch::isFlat(vector<glm::vec3> poly) {
+    // FIXME... for now, nothing is flat.
+    return 0;
 }
