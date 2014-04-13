@@ -4,6 +4,8 @@
 
 #include "patch.h"
 
+//int LOGLEVEL;
+
 // Initialize the Patch from a bez file
 Patch::Patch(vector< vector<glm::vec4> > input) {
     this->order = 3;
@@ -22,10 +24,14 @@ Patch::Patch(vector< vector<glm::vec4> > input) {
         }
     }
     // this is hard coded and bad.. FIXME
-    this->corners->at(0) = this->controlPoints->at(0);
-    this->corners->at(1) = this->controlPoints->at(3);
-    this->corners->at(2) = this->controlPoints->at(12);
-    this->corners->at(3) = this->controlPoints->at(15);
+
+    this->corners->push_back(this->controlPoints->at(0));
+    this->corners->push_back(this->controlPoints->at(3));
+    this->corners->push_back(this->controlPoints->at(12));
+    this->corners->push_back(this->controlPoints->at(15));
+    if (LOGLEVEL) {
+        cout << "CREATED NEW PATCH" << endl;
+    }
 }
 
 Patch::Patch(Patch&) {
@@ -37,18 +43,24 @@ Patch::Patch(vector<glm::vec3> corners) {
     // set corners to vector
     // set triangle and order properties.
     // initialize pointers to other arrays so they aren't null?
-
+    if (LOGLEVEL > 5) {
+        cout << "Creating new patch from corner points " << endl;
+        cout << "Corner Size: " << corners.size() << endl;
+    }
     this->order = 3;
     // if this patch is a triangle or not..
     this->isQuad = (corners.size() == 4);
     // this may not be the best thing to do...
-    this->controlPoints = &corners;
+    this->controlPoints = new vector<glm::vec3>(corners);
     this->corners = new vector<glm::vec3>(corners);
     this->patches = new vector<Patch*>();
 }
 
 // Return the control point at that index, usually 0-15
 glm::vec3 Patch::getVertex(int i) {
+    if (LOGLEVEL > 4) {
+        cout << "Getting control point: " << i << endl;
+    }
     return this->controlPoints->at(i);
 }
 
@@ -72,21 +84,24 @@ int* Patch::quadIndicies(int i) {
     indices[1] = 1 + add;
     indices[2] = 4 + add;
     indices[3] = 5 + add;
+    if (LOGLEVEL > 4) {
+        cout << "SUCCESSFULLY CREATED QUAD INDEX VECTOR" << endl;
+    }
     return indices;
 }
 
 // Return the 4 corners of the quad ready to be drawn.
 vector<glm::vec3> Patch::getQuad(int in) {
-    if (!this->isQuad) {
-        // FIXME...
-        return this->getCorners();
-    }
+    // if (!this->isQuad) {
+    //     // FIXME...
+    //     return this->getCorners();
+    // }
 
     vector<glm::vec3> result = vector<glm::vec3>();
     int* i = this->quadIndicies(in);
     // TL TR LL RR
     for(int j = 0; j < 4; j += 1) {
-        result.at(j) = this->getVertex(i[j]);
+        result.push_back(this->getVertex(i[j]));
     }
     return result;
 }
@@ -97,17 +112,16 @@ vector<glm::vec3> Patch::getCorners() {
 }
 
 // this works for cases of two but will need to be fixed for up to 4...
-// FIXME -- this coulf use a constructor to build the result from corner.
+// FIXME -- this coulf use a constructor to build the result from corners.
+// FIXME -- does this work for 2, 3??
 vector<glm::vec3> Patch::getTri(int n) {
     vector<glm::vec3> result;
-    if (n == 0) {
-        result.at(0) = this->controlPoints->at(0);
-        result.at(1) = this->controlPoints->at(1);
-        result.at(2) = this->controlPoints->at(2);
-    } else {
-        result.at(0) = this->controlPoints->at(1);
-        result.at(1) = this->controlPoints->at(2);
-        result.at(2) = this->controlPoints->at(3);
+
+    if (LOGLEVEL > 5) {
+        cout << "GETTING TRIANGLES " << this->controlPoints->size() << endl;
+    }
+    for(int i = n; i < n + 3; i += 1) {
+        result.push_back(this->controlPoints->at(i));
     }
     return result;
 }
@@ -127,6 +141,9 @@ void Patch::subdivideQuad() {
     for(int i = 0; i < numQuads; i += 1) {
         // Create a new patch with corners of a current segment
         Patch* tri = new Patch(this->getQuad(i));
+        if (LOGLEVEL > 4) {
+            cout << "CREATED A NEW PATCH... " << i << endl;
+        }
         // This will make the call that can recursively split triangles.
         tri->subdivideTriangle();
         tri->parent = this;
@@ -139,11 +156,20 @@ void Patch::subdivideQuad() {
 void Patch::subdivideTriangle() {
     // if this is a triangle, create TWO new patches based on corners.
     // Patch 1 is a triangle, corners 0, 1, 2. Patch 2 uses corners 1, 2, 3
-    // Use isFlat to check if the new patches need to be subdivided.
+    // This needs checking and protection against other checking.
     int num = 2;
     for(int i = 0; i < num; i += 1) {
+        if (LOGLEVEL > 5) {
+            cout << "SUBDIVISION: n: " << i << endl;
+        }
         Patch* p = new Patch(this->getTri(i));
+        if (LOGLEVEL > 5) {
+            cout << "PATCH MADE..." << endl;
+        }
         this->patches->push_back(p);
+        if (LOGLEVEL > 5) {
+            cout << "New Patch added to list" << endl;
+        }
         int flat = p->isFlat(p->getCorners());
         if (!flat) {
             p->subdivideTriangle(flat);
@@ -170,4 +196,19 @@ bool Patch::hasChildren() {
 int Patch::isFlat(vector<glm::vec3> poly) {
     // FIXME... for now, nothing is flat.
     return 0;
+}
+
+// A DFS of all the polygons in this vector
+// eventually it will call .corners on the polygon and append to the list.
+vector< vector<glm::vec3> > Patch::getPolygons() {
+    vector< vector<glm::vec3> > all = vector< vector<glm::vec3> >();
+    for(int i = 0; i < patches->size(); i += 1) {
+        Patch* p = this->patches->at(i);
+        vector< vector<glm::vec3> > newVect = p->getPolygons();
+        all.insert(all.end(), newVect.begin(), newVect.end());
+    }
+    if (!this->hasChildren()) {
+        all.push_back(this->getCorners());
+    }
+    return all;
 }

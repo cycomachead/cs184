@@ -3,7 +3,7 @@
 
 #include "parser.h"
 
-int LOGLEVEL;
+// int LOGLEVEL;
 
 void loadPatches(string file) {
 

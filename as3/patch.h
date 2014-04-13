@@ -50,13 +50,13 @@ public:
     void subdivideQuad();
 
     void subdivideTriangle();
-    
+
     void subdivideTriangle(int);
 
     int isFlat(vector<glm::vec3>);
 
     bool hasChildren();
-    
+
     vector< vector<glm::vec3> > getPolygons();
 };
 

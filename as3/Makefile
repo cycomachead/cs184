@@ -15,21 +15,26 @@ endif
 
 RM = /bin/rm -f
 
-all: main
+.PHONY: main test test2 clean
 
-default: compile link
+all: main
 
 main:
 	$(CC) as3.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as3
 
 test:
 	$(CC) test.cpp $(SOURCES)$(INC) $(CFLAGS) $(LDFLAGS) -o test.out
-	
+
 catmull:
 	$(CC) catmull.c $(INC) $(CFLAGS) $(LDFLAGS) -o catmull
 
-link:
-	$(CC) -g $(OBJECTS) $(STD) -o as3
+test2:
+	$(CC) -c test.cpp $(INC) $(CFLAGS) $(LDFLAGS) -o test.o
+	$(CC) -c parser.cpp $(INC) $(CFLAGS) $(LDFLAGS)
+	$(CC) -c bezier.cpp $(INC) $(CFLAGS) $(LDFLAGS)
+	$(CC) -c model.cpp $(INC) $(CFLAGS) $(LDFLAGS)
+	$(CC) -c patch.cpp $(INC) $(CFLAGS) $(LDFLAGS)
+	$(CC) -g test.o $(OBJECTS) $(STD) -o test.out
 
 clean:
 	$(RM) *.o as3
