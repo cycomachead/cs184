@@ -204,29 +204,56 @@ void myDisplay() {
     // Start drawing
     // OPENGL Options:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
+
+    // COLOR_BLUE;
+    // glutSolidSphere(.5f, 10, 10);
+    // COLOR_GREEN;
+    // glDisable(GL_LIGHTING);
+    // // iterate over model polygons/faces
+    // for(int i = 0; i < adaptiveTri.size(); i += 1) {
+    //     vector<glm::vec3> tri = adaptiveTri.at(i);
+    //     if (LOGLEVEL > 5) {
+    //         cout << "DRAWING TRIANGLE   " << i << endl;
+    //     }
+    //     glPointSize(10.0f);
+    //     glBegin(GL_TRIANGLES);
+    //     COLOR_GREEN;
+    //     for(int j = 0; j < tri.size(); j += 1) {
+    //         glm::vec3 point = tri.at(j);
+    //         if (LOGLEVEL > 5) {
+    //             cout << "\tx: " << point.x << endl;
+    //             cout << "\ty: " << point.y << endl;
+    //             cout << "\tz: " << point.z << endl;
+    //         }
+    //         glVertex3f(point.x, point.y, point.z);
+    //         //glNormal3f(point.x, point.y, point.z);
+    //     }
+    //     glEnd();
+    // }
+
+    vector <vector<glm::vec4>* >* shapes = uniModel->getShapes();
+    vector <vector<glm::vec4>* >* normals = uniModel->getNormals();
+
+    glTranslatef(.0f, 0.f, translation.z);
     COLOR_BLUE;
     glutSolidSphere(.5f, 10, 10);
     COLOR_GREEN;
     glDisable(GL_LIGHTING);
-    // iterate over model polygons/faces
-    for(int i = 0; i < adaptiveTri.size(); i += 1) {
-        vector<glm::vec3> tri = adaptiveTri.at(i);
-        if (LOGLEVEL > 5) {
-            cout << "DRAWING TRIANGLE   " << i << endl;
-        }
+    for (int i = 0; i < shapes->size(); i++) {
         glPointSize(10.0f);
-        glBegin(GL_TRIANGLES);
+        glBegin(GL_QUADS);
         COLOR_GREEN;
-        for(int j = 0; j < tri.size(); j += 1) {
-            glm::vec3 point = tri.at(j);
-            if (LOGLEVEL > 5) {
-                cout << "\tx: " << point.x << endl;
-                cout << "\ty: " << point.y << endl;
-                cout << "\tz: " << point.z << endl;
-            }
-            glVertex3f(point.x, point.y, point.z);
-            //glNormal3f(point.x, point.y, point.z);
-        }
+        // iterate over model polygons/faces
+        vector<glm::vec4>* shape = shapes->at(i);
+        cout << "shape " << i << "\n";
+        cout << shape->at(0)[0] << ", " << shape->at(0)[1] << ", " << shape->at(0)[2] << "\n";
+        cout << shape->at(1)[0] << ", " << shape->at(1)[1] << ", " << shape->at(1)[2] << "\n";
+        cout << shape->at(2)[0] << ", " << shape->at(2)[1] << ", " << shape->at(2)[2] << "\n";
+        cout << shape->at(3)[0] << ", " << shape->at(3)[1] << ", " << shape->at(3)[2] << "\n";
+        glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+        glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+        glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+        glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
         glEnd();
     }
 

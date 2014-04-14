@@ -140,7 +140,7 @@ void subdividepatch(vector< vector< glm::vec4 > > patch, float step,
 		for (int iv = 0; iv < numDiv; iv++) {
 			v = iv * step;
 			// evaluate surface
-			if (u + step >= 1 || v + step >= 1) {
+			if (u + step <= 1 || v + step <= 1) {
 				glm::vec4* normal = new glm::vec4();
 				glm::vec4* normal2 = new glm::vec4();
 				glm::vec4* normal3 = new glm::vec4();
