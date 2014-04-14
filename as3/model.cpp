@@ -16,6 +16,7 @@ Model::Model(vector< vector <vector<glm::vec4> > > patches, float tau) {
     errorBound = stepSize = tau;
     verticies = new vector<glm::vec4>();
     normals = new vector<glm::vec4>();
+    adapPatches = new vector<Patch*>();
     buildUniformVertexNormal();
 }
 
@@ -27,7 +28,28 @@ vector <vector<glm::vec4> > Model::getPatchN(int i) {
     return modelPatches.at(i);
 }
 
-// TODO:
-// vector<glm::vec4> Model::getCorners(int n) {
-//     
-// }
+// Create the patch objects for adaptive subdivision
+void Model::buildAdaptive() {
+    for(int i = 0; i < modelPatches.size(); i += 1) {
+        vector< vector<glm::vec4> > temp = modelPatches.at(i);
+        Patch* p = new Patch(temp);
+        adapPatches->push_back(p);
+    }
+}
+
+vector <vector<glm::vec3> > Model::getAllPolygons() {
+    vector <vector<glm::vec3> > result = vector <vector<glm::vec3> >();
+    for(int i = 0; i < this->adapPatches->size(); i += 1) {
+        Patch* p = this->adapPatches->at(i);
+        vector <vector<glm::vec3> > poly = p->getPolygons();
+        result.insert(result.end(), poly.begin(), poly.end());
+    }
+    return result;
+}
+
+void Model::subdivideAll() {
+    for(int i = 0; i < this->adapPatches->size(); i += 1) {
+        Patch* p = this->adapPatches->at(i);
+        p->subdivideQuad();
+    }
+}

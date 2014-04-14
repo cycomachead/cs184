@@ -5,6 +5,8 @@
 #include "model.h"
 #include "parser.h"
 
+#include <unistd.h>
+
 #define COLOR_RED glColor3f(1.0f, 0.0f, 0.0f);
 #define COLOR_GREEN glColor3f(0.0f, 1.0f, 0.0f);
 #define COLOR_BLUE glColor3f(0.0f, 0.0f, 1.0f);
@@ -46,9 +48,12 @@ bool useSmoothShading  = false; // controlled by 's'
 bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
-
+glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
+glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
 
 vector< vector <vector<glm::vec4> > > patches;
+
+vector< vector<glm::vec3> > adaptiveTri;
 
 Model *mainModel;
 
@@ -83,11 +88,13 @@ void initScene(int argc, char *argv[]) {
         } else if (curr == "-l" or curr == "-log") { // debugging switch
             pos += 1;
             LOGLEVEL = atoi(argv[pos]);
+            cout << "LOGLEVEL FOUND: " << LOGLEVEL << endl;
         } else if (curr == "-o") {
             // OPTIONAL .obj output files
             pos += 1;
         } else {
             errorParam = subDivParam = atof(argv[pos]);
+            cout << "PARAM FOUND: " << errorParam << endl;
         }
         pos += 1;
     }
@@ -106,14 +113,15 @@ void initScene(int argc, char *argv[]) {
 // reshape viewport if the window is resized
 //****************************************************
 void myReshape(int w, int h) {
-  viewport.w = w;
-  viewport.h = h;
+    viewport.w = w;
+    viewport.h = h;
 
-  glViewport(0, 0, viewport.w, viewport.h);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluOrtho2D(0, viewport.w, 0, viewport.h);
-
+    glViewport(0, 0, viewport.w, viewport.h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.f, (GLfloat) viewport.w / viewport.h, .1f, 100.f);
+    glMatrixMode(GL_MODELVIEW);
+    //gluOrtho2D(0, viewport.w, 0, viewport.h);
 }
 
 //****************************************************
@@ -134,37 +142,90 @@ void setupGlut() {
     // setup defaults
     // Wireframe OFF
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // use Flat shading
-    glShadeModel(GL_FLAT);
+
+    glClearColor(.0f, .0f, .0f, .0f);
+    glClearDepth(1.0f);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
+    glShadeModel(GL_SMOOTH);
+
+    GLfloat ambient[] = { .5f, .5f, .5f, 1.f };
+    GLfloat diffuse[] = { .5f, .5f, .5f, .6f };
+    GLfloat litepos[] = { 0, 2, 3, 1 };
+    GLfloat litepos2[] = { 0, -2, 5, 1 };
 
     // gllighting
-    // glEnable(GL_LIGHTING);
-    // glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
-    // glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
-    // glLightfv(GL_LIGHT0, GL_POSITION, litepos);
-    // glEnable(GL_LIGHT0);
+	glPushMatrix();
+	glLoadIdentity();
+    glEnable(GL_LIGHTING);
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
+    glLightfv(GL_LIGHT0, GL_POSITION, litepos);
+    glEnable(GL_LIGHT0);
 
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  diffuse);
+    glLightfv(GL_LIGHT1, GL_POSITION, litepos2);
+    glEnable(GL_LIGHT1);
+    glPopMatrix();
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    GLfloat am2[]={.2,.2,.2,1.0};
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
+    GLfloat dif2[]={1.0,0.8,0.0,1.0};
+    glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
+    GLfloat sp2[]={0.0,0.0,1.0,1.0};
+    glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
+    glMaterialf(GL_FRONT ,GL_SHININESS, 80.0);
+    GLfloat emission[] = { .5,0.0,0.0,1.0};
+    glMaterialfv(GL_BACK,GL_EMISSION,emission);
+
+
+    //uleep(20000);
+    glutSolidSphere(2.0f, 20, 20);
+    if (LOGLEVEL > 1) {
+        cout << "SETUP COMPLETE";
+    }
 }
 
 void myDisplay() {
+    if (LOGLEVEL > 6) {
+        cout << "MY DISPLAY CALLED" << endl;
+    }
 
-    glClear(GL_COLOR_BUFFER_BIT); // clear the color buffer
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
-    glMatrixMode(GL_MODELVIEW);
-    // indicate we are specifying camera transformations
-    glLoadIdentity();
-    // make sure transformation is "zero'd"
-
-    // glLightfv()
+	glTranslatef(.0f, 0.f, translation.z);
 
     // Start drawing
     // OPENGL Options:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
     COLOR_BLUE;
-// glBegin(GL_POLYGONS);
-//     // iterate over model polygons/faces
-//
-//     glEnd();
+    glutSolidSphere(.5f, 10, 10);
+    COLOR_GREEN;
+    glDisable(GL_LIGHTING);
+    // iterate over model polygons/faces
+    for(int i = 0; i < adaptiveTri.size(); i += 1) {
+        vector<glm::vec3> tri = adaptiveTri.at(i);
+        if (LOGLEVEL > 5) {
+            cout << "DRAWING TRIANGLE   " << i << endl;
+        }
+        glPointSize(10.0f);
+        glBegin(GL_TRIANGLES);
+        COLOR_GREEN;
+        for(int j = 0; j < tri.size(); j += 1) {
+            glm::vec3 point = tri.at(j);
+            if (LOGLEVEL > 5) {
+                cout << "\tx: " << point.x << endl;
+                cout << "\ty: " << point.y << endl;
+                cout << "\tz: " << point.z << endl;
+            }
+            glVertex3f(point.x, point.y, point.z);
+            //glNormal3f(point.x, point.y, point.z);
+        }
+        glEnd();
+    }
 
 
     glFlush();
@@ -202,12 +263,20 @@ void changeZoom(float amt) {
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void rotate(int dir) {
-
+    if (!dir) {
+        translation.z -= .1;
+    } else if (dir == 2) {
+        translation.z += .1;
+    }
 }
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void translate(int dir) {
-
+    if (!dir) {
+        translation.z -= .1;
+    } else if (dir == 2) {
+        translation.z += .1;
+    }
 }
 
 //****************************************************
@@ -262,6 +331,7 @@ void specialkeypress(int key, int x, int y) {
 // the usual stuff, nothing exciting here
 //****************************************************
 int main(int argc, char *argv[]) {
+
     //This initializes glut
     glutInit(&argc, argv);
 
@@ -278,17 +348,20 @@ int main(int argc, char *argv[]) {
     glutCreateWindow(argv[0]);
     initScene(argc, argv);  // Parse command line args here.
 
+    cout << "LOGLEVEL" << LOGLEVEL << endl;
     // TODO: detect file type... OPTIONAL
     loadPatches(inputFile);
     // Create the Main Model
     mainModel = new Model(patches, errorParam);
-
+    mainModel->buildAdaptive();
+    mainModel->subdivideAll();
+    adaptiveTri = mainModel->getAllPolygons();
     glutKeyboardFunc(keypress); // Detect key presses
     glutSpecialFunc(specialkeypress); // Detect SPECIAL (arrow) keys
     glutDisplayFunc(myDisplay);
     glutReshapeFunc(myReshape);
-    glutMainLoop();
     setupGlut();
+    glutMainLoop();
 
     return 0;
 }

@@ -4,7 +4,9 @@
 
 #include "patch.h"
 
-//int LOGLEVEL;
+// THIS NEEDS TO BE COMMENTED OUT FOR COMPILING TEST.CPP
+// LEAVE UNCOMMENTED FOR AS3.CPP
+int LOGLEVEL;
 
 // Initialize the Patch from a bez file
 Patch::Patch(vector< vector<glm::vec4> > input) {

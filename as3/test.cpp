@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include "as3.h"
+#include "model.h"
 #include "parser.h"
 #include "patch.h"
 
@@ -24,6 +25,12 @@ int main(int argc, char** argv) {
     cout << "Patch now has children: " << p->hasChildren() << endl;
     vector< vector<glm::vec3> > children = p->getPolygons();
     cout << "POLYGONS LEN:" << children.size() << endl;
-
+    Model* m = new Model(patches, 0.1);
+    m->buildAdaptive();
+    cout << "Model -- Adaptive Subdivision built" << endl;
+    m->subdivideAll();
+    cout << "Model subdivided successfully" << endl;
+    vector <vector<glm::vec3> > all = m->getAllPolygons();
+    cout << "TEST.BEZ TRIANGLES " << all.size() << endl;
 }
 
