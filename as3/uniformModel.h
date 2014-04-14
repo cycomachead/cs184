@@ -15,13 +15,12 @@ public:
     vector< vector< glm::vec4 >* >* normals;
     float errorBound;
     float stepSize;
-    bool adaptive;
 
     UniformModel() {
         // empty
     }
 
-    UniformModel(vector< vector <vector<glm::vec4> > > patches, bool adapt, float tau);
+    UniformModel(vector< vector <vector<glm::vec4> > > patches, float tau);
 
     void uniformTesselation();
 

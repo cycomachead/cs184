@@ -1,6 +1,7 @@
 // Model Object for AS3
 
 #include "UniformModel.h"
+#include "bezier.h"
 
 
 void UniformModel::uniformTesselation() {
@@ -11,32 +12,24 @@ void UniformModel::uniformTesselation() {
     }
 }
 
-void UniformModel::adaptiveTesselation() {
-    //fill in later;
-}
 
-UniformModel::Model(vector< vector <vector<glm::vec4> > > patches, bool adapt, float tau) {
+UniformModel::UniformModel(vector< vector <vector<glm::vec4> > > patches, float tau) {
     modelPatches = patches;
     errorBound = stepSize = tau;
     shapes = new vector< vector<glm::vec4>* >();
     normals = new vector< vector<glm::vec4>* >();
-    adaptive = adapt;
-    if (!adaptive) {
-        uniformTesselation();
-    } else {
-        adaptiveTesselation();
-    }
+    uniformTesselation();
 }
 
-vector< vector <vector<glm::vec4> > > Model::getPatches() {
+vector< vector <vector<glm::vec4> > > UniformModel::getPatches() {
     return modelPatches;
 }
 
-vector <vector<glm::vec4>* >* Model::getShapes() {
+vector <vector<glm::vec4>* >* UniformModel::getShapes() {
     return shapes;
 }
 
-vector <vector<glm::vec4>* >* Model::getNormals() {
+vector <vector<glm::vec4>* >* UniformModel::getNormals() {
     return normals;
 }
 
