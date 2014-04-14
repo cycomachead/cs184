@@ -13,6 +13,6 @@ glm::vec4 normalize(glm::vec4 point);
 glm::vec4 cross(glm::vec4 a, glm::vec4 b);
 glm::vec4 bezpatchinterp(vector< vector< glm::vec4 > > patch, float u, float v, glm::vec4* normal);
 void subdividepatch(vector< vector< glm::vec4 > > patch, float step,
-	vector< glm::vec4 >* p, vector< glm::vec4 >* n);
+	vector< vector< glm::vec4 >*>* p, vector<vector< glm::vec4 >*>* n);
 
 #endif

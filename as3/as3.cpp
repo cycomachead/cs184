@@ -3,6 +3,7 @@
 
 #include "as3.h"
 #include "model.h"
+#include "UniformModel.h"
 #include "parser.h"
 
 #include <unistd.h>
@@ -56,6 +57,8 @@ vector< vector <vector<glm::vec4> > > patches;
 vector< vector<glm::vec3> > adaptiveTri;
 
 Model *mainModel;
+
+UniformModel* uniModel;
 
 //****************************************************
 // Basic Functions
@@ -352,6 +355,7 @@ int main(int argc, char *argv[]) {
     // TODO: detect file type... OPTIONAL
     loadPatches(inputFile);
     // Create the Main Model
+    uniModel = new UniformModel(patches, errorParam);
     mainModel = new Model(patches, errorParam);
     mainModel->buildAdaptive();
     mainModel->subdivideAll();

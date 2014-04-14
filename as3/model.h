@@ -26,7 +26,6 @@ public:
 
     Model(vector< vector <vector<glm::vec4> > > patches, float tau);
 
-    void buildUniformVertexNormal();
 
     vector< vector <vector<glm::vec4> > > getPatches();
     

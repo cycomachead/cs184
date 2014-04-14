@@ -3,13 +3,6 @@
 #include "model.h"
 
 
-void Model::buildUniformVertexNormal() {
-    // iterate over patches and create 1D vectors
-    for(int i = 0; i < modelPatches.size(); i += 1) {
-        vector <vector<glm::vec4> > patch = modelPatches.at(i);
-        subdividepatch(patch, errorBound, verticies, normals);
-    }
-}
 
 Model::Model(vector< vector <vector<glm::vec4> > > patches, float tau) {
     modelPatches = patches;
@@ -17,7 +10,6 @@ Model::Model(vector< vector <vector<glm::vec4> > > patches, float tau) {
     verticies = new vector<glm::vec4>();
     normals = new vector<glm::vec4>();
     adapPatches = new vector<Patch*>();
-    buildUniformVertexNormal();
 }
 
 vector< vector <vector<glm::vec4> > > Model::getPatches() {

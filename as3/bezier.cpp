@@ -125,7 +125,7 @@ glm::vec4 bezpatchinterp(vector< vector< glm::vec4 > > patch, float u, float v, 
 	Matching index will indicate matching surface point and normal.
 	p and n should be empty before the function call. **/
 void subdividepatch(vector< vector< glm::vec4 > > patch, float step, 
-	vector< glm::vec4 >* p, vector< glm::vec4 >* n) {
+	vector< vector< glm::vec4 >* >* p, vector< vector< glm::vec4 >* >* n) {
 	float u;
 	float v;
 	// compute how many subdivisions there 
@@ -140,13 +140,32 @@ void subdividepatch(vector< vector< glm::vec4 > > patch, float step,
 		for (int iv = 0; iv < numDiv; iv++) {
 			v = iv * step;
 			// evaluate surface
-			glm::vec4* normal = new glm::vec4();
-			glm::vec4 point = bezpatchinterp(patch, u, v, normal);
-			p->push_back(point);
-			n->push_back(*normal);
+			if (u + step >= 1 || v + step >= 1) {
+				glm::vec4* normal = new glm::vec4();
+				glm::vec4* normal2 = new glm::vec4();
+				glm::vec4* normal3 = new glm::vec4();
+				glm::vec4* normal4 = new glm::vec4();
+				glm::vec4 point = bezpatchinterp(patch, u, v, normal);
+				glm::vec4 point2 = bezpatchinterp(patch, u + step, v, normal2);
+				glm::vec4 point3 = bezpatchinterp(patch, u + step , v + step, normal3);
+				glm::vec4 point4 = bezpatchinterp(patch, u, v + step, normal4);
+				vector< glm::vec4 >* quad = new vector< glm::vec4>();
+				vector< glm::vec4 >* normals = new vector< glm::vec4>();
+				quad->push_back(point);
+				quad->push_back(point2);
+				quad->push_back(point3);
+				quad->push_back(point4);
+				normals->push_back(*normal);
+				normals->push_back(*normal2);
+				normals->push_back(*normal3);
+				normals->push_back(*normal4);
+				p->push_back(quad);
+				n->push_back(normals);
+			}
 		}
 	}
 }
+
 
 
 
