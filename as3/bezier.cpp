@@ -67,7 +67,7 @@ glm::vec4 normalize(glm::vec4 point) {
 		y = y / magnitude;
 		z = z / magnitude;
 	} else {
-		cout << "divide by zero error!";
+		// cout << "divide by zero error!";
 	}
 	glm::vec4 nPoint(x, y, z, 1);
 	return nPoint;
