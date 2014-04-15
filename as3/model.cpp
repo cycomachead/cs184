@@ -24,7 +24,7 @@ vector <vector<glm::vec3> > Model::getPatchN(int i) {
 void Model::buildAdaptive() {
     for(int i = 0; i < modelPatches.size(); i += 1) {
         vector< vector<glm::vec3> > temp = modelPatches.at(i);
-        Patch* p = new Patch(temp, errorBound);
+        Patch* p = new Patch(temp, this->errorBound);
         adapPatches->push_back(p);
     }
 }

@@ -65,6 +65,9 @@ void loadPatches(string file) {
         }
     }
 
+    if (LOGLEVEL > 6) {
+        cout << "PARSING COMPLETE" << endl;
+    }
     inpfile.close();
 }
 

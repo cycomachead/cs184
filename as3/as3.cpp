@@ -93,13 +93,11 @@ void initScene(int argc, char *argv[]) {
         } else if (curr == "-l" or curr == "-log") { // debugging switch
             pos += 1;
             LOGLEVEL = atoi(argv[pos]);
-            cout << "LOGLEVEL FOUND: " << LOGLEVEL << endl;
         } else if (curr == "-o") {
             // OPTIONAL .obj output files
             pos += 1;
         } else {
             errorParam = subDivParam = atof(argv[pos]);
-            cout << "PARAM FOUND: " << errorParam << endl;
         }
         pos += 1;
     }
@@ -186,7 +184,6 @@ void setupGlut() {
 
 
     //uleep(20000);
-    glutSolidSphere(2.0f, 20, 20);
     if (LOGLEVEL > 1) {
         cout << "SETUP COMPLETE";
     }
@@ -206,19 +203,13 @@ void myDisplay() {
     // Start drawing
     // OPENGL Options:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
-
     if (useAdaptiveMode) {
-        // COLOR_BLUE;
-        glutSolidSphere(.5f, 10, 10);
-        // COLOR_GREEN;
-        // glDisable(GL_LIGHTING);
         // iterate over model polygons/faces
         for(int i = 0; i < adaptiveTri.size(); i += 1) {
             vector<glm::vec3> tri = adaptiveTri.at(i);
             if (LOGLEVEL > 5) {
                 cout << "DRAWING TRIANGLE   " << i << endl;
             }
-            glPointSize(10.0f);
             glBegin(GL_TRIANGLES);
             COLOR_GREEN;
             for(int j = 0; j < tri.size(); j += 1) {
@@ -402,9 +393,15 @@ int main(int argc, char *argv[]) {
     // Create the Main Model
     uniModel = new UniformModel(patches, errorParam);
     mainModel = new Model(patches, errorParam);
+    if (LOGLEVEL > 3) {
+        cout << "Models Built" << endl;
+    }
     mainModel->buildAdaptive();
     mainModel->subdivideAll();
     adaptiveTri = mainModel->getAllPolygons();
+    if (LOGLEVEL > 4) {
+        cout << "Adaptive Processing Finished" << endl;
+    }
     glutKeyboardFunc(keypress); // Detect key presses
     glutSpecialFunc(specialkeypress); // Detect SPECIAL (arrow) keys
     glutDisplayFunc(myDisplay);
