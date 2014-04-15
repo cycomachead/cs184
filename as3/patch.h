@@ -6,6 +6,7 @@
 #define PATCH_H
 
 #include "as3.h"
+#include "vertex.h"
 
 class Patch {
 private:
@@ -15,16 +16,11 @@ private:
     // 1D set of control points
     vector<glm::vec3> *controlPoints;
 
-    // 1D set of corners for the patch
-    vector<glm::vec3> *corners;
+    // 1D set of verticies for the patch
+    vector<Vertex*> *verticies;
 
     // Contains all the inner patches.
     vector<Patch*> *patches;
-
-    float uStart;
-    float uEnd;
-    float vStart;
-    float vEnd;
 
     float error;
 
@@ -38,20 +34,21 @@ public:
 
     Patch(vector< vector<glm::vec3> >, float);
 
-    Patch(vector<glm::vec3>);
+    Patch(vector<Vertex*>);
 
     Patch(Patch&);
 
     // int* is an array
     int* quadIndicies(int);
 
-    vector<glm::vec3> getQuad(int);
+    // FIXME -- verify returning pointer is best.
+    vector<Vertex*> getQuad(int);
 
-    vector<glm::vec3> getCorners();
+    vector<Vertex*> getVerticies();
 
-    vector<glm::vec3> getTri(int);
+    vector<Vertex*> getTri(int);
 
-    glm::vec3 getVertex(int);
+    Vertex* getVertex(int);
 
     void subdivide();
 
@@ -61,23 +58,24 @@ public:
 
     void subdivideTriangle(int);
 
-    int isFlat(vector<glm::vec3>);
+    int isFlat();
 
     bool hasChildren();
 
-    vector< vector<glm::vec3> > getPolygons();
+    // A vector of all polygons
+    vector< vector<Vertex*> > getPolygons();
 
     void setPartentData();
 
-    vector<float> getUVQuad(int);
+    glm::vec2 getUVQuad(int);
 
-    vector<float> getUVTri();
+    // vector<float> getUVTri();
 
-    void setUV(vector<float>);
+    //void setUV(vector<float>);
 
     Patch* getOldestParent();
 
-    bool sideIsFlat(glm::vec3, float, float);
+    bool sideIsFlat(Vertex, float, float);
 };
 
 #endif

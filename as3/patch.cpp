@@ -35,7 +35,7 @@ Patch::Patch(vector< vector<glm::vec3> > input, float err) {
     this->vEnd   = 1.0f;
     this->originalData = &input;
     this->controlPoints = new vector<glm::vec3>();
-    this->corners = new vector<glm::vec3>();
+    this->verticies = new vector<glm::vec3>();
     this->patches = new vector<Patch*>();
     // move the input data to 1D form. convert to vec3.
     for(int i = 0; i < input.size(); i += 1) {
@@ -47,10 +47,10 @@ Patch::Patch(vector< vector<glm::vec3> > input, float err) {
     }
     // this is hard coded and bad.. FIXME
 
-    this->corners->push_back(this->controlPoints->at(0));
-    this->corners->push_back(this->controlPoints->at(3));
-    this->corners->push_back(this->controlPoints->at(12));
-    this->corners->push_back(this->controlPoints->at(15));
+    this->verticies->push_back(this->controlPoints->at(0));
+    this->verticies->push_back(this->controlPoints->at(3));
+    this->verticies->push_back(this->controlPoints->at(12));
+    this->verticies->push_back(this->controlPoints->at(15));
     if (LOGLEVEL) {
         cout << "CREATED NEW PATCH" << endl;
     }
@@ -60,21 +60,21 @@ Patch::Patch(Patch&) {
 
 }
 
-Patch::Patch(vector<glm::vec3> corners) {
-    // Check if corners are 3 or 4
-    // set corners to vector
+Patch::Patch(vector<glm::vec3> verticies) {
+    // Check if verticies are 3 or 4
+    // set verticies to vector
     // set triangle and order properties.
     // initialize pointers to other arrays so they aren't null?
     if (LOGLEVEL > 5) {
         cout << "Creating new patch from corner points " << endl;
-        cout << "Corner Size: " << corners.size() << endl;
+        cout << "Corner Size: " << verticies.size() << endl;
     }
     this->order = 3;
     // if this patch is a triangle or not..
-    this->isQuad = (corners.size() == 4);
+    this->isQuad = (verticies.size() == 4);
     // this may not be the best thing to do...
-    // this->controlPoints = new vector<glm::vec3>(corners);
-    this->corners = new vector<glm::vec3>(corners);
+    // this->controlPoints = new vector<glm::vec3>(verticies);
+    this->verticies = new vector<glm::vec3>(verticies);
     this->patches = new vector<Patch*>();
 }
 
@@ -101,7 +101,7 @@ int* Patch::quadIndicies(int i) {
     // Row-jump = floor(n/3) ...?
     int* indices = new int[4];
     int add = ((int) floor(i/this->order)) + i;
-    // Corners of 0: {0, 1, 4, 5}
+    // Verticies of 0: {0, 1, 4, 5}
     indices[0] = 0 + add;
     indices[1] = 1 + add;
     indices[2] = 4 + add;
@@ -112,11 +112,11 @@ int* Patch::quadIndicies(int i) {
     return indices;
 }
 
-// Return the 4 corners of the quad ready to be drawn.
+// Return the 4 verticies of the quad ready to be drawn.
 vector<glm::vec3> Patch::getQuad(int in) {
     // if (!this->isQuad) {
     //     // FIXME...
-    //     return this->getCorners();
+    //     return this->getVerticies();
     // }
 
     vector<glm::vec3> result = vector<glm::vec3>();
@@ -128,10 +128,10 @@ vector<glm::vec3> Patch::getQuad(int in) {
     return result;
 }
 
-// Return the 4 corners of this patch
-vector<glm::vec3> Patch::getCorners() {
+// Return the 4 verticies of this patch
+vector<glm::vec3> Patch::getVerticies() {
     // FIXME -- sketchy
-    return *(this->corners);
+    return *(this->verticies);
 }
 
 // Return the U and V points for one of the original quads
@@ -160,7 +160,7 @@ vector<float> Patch::getUVQuad(int n) {
     return result;
 }
 
-// Get the U and V values based on the corners of the current patch.
+// Get the U and V values based on the verticies of the current patch.
 // Store them in the standard vector format.
 // This basically creates a bounding box.
 vector<float> Patch::getUVTri() {
@@ -173,22 +173,22 @@ vector<float> Patch::getUVTri() {
     float vS4 = 1.0f;
     float vE4 = 0.0f;
 
-    if (this->corners->size() == 4) {
-        glm::vec3 pt = this->corners->at(3);
+    if (this->verticies->size() == 4) {
+        glm::vec3 pt = this->verticies->at(3);
         uS4 = pt.x;
         uE4 = pt.x;
         vS4 = pt.y;
         vE4 = pt.y;
     }
 
-    float uS = min(this->corners->at(0).x, this->corners->at(1).x,
-        this->corners->at(2).x);
-    float uE = max(this->corners->at(0).x, this->corners->at(1).x,
-        this->corners->at(2).x);
-    float vS = min(this->corners->at(0).y, this->corners->at(1).y,
-        this->corners->at(2).y);
-    float vE = max(this->corners->at(0).y, this->corners->at(1).y,
-        this->corners->at(2).y);
+    float uS = min(this->verticies->at(0).x, this->verticies->at(1).x,
+        this->verticies->at(2).x);
+    float uE = max(this->verticies->at(0).x, this->verticies->at(1).x,
+        this->verticies->at(2).x);
+    float vS = min(this->verticies->at(0).y, this->verticies->at(1).y,
+        this->verticies->at(2).y);
+    float vE = max(this->verticies->at(0).y, this->verticies->at(1).y,
+        this->verticies->at(2).y);
 
     result.push_back(uS);
     result.push_back(uE);
@@ -208,7 +208,7 @@ void Patch::setUV(vector<float> in) {
 }
 
 // this works for cases of two but will need to be fixed for up to 4...
-// FIXME -- this coulf use a constructor to build the result from corners.
+// FIXME -- this coulf use a constructor to build the result from verticies.
 // FIXME -- does this work for 2, 3??
 vector<glm::vec3> Patch::getTri(int n) {
     vector<glm::vec3> result;
@@ -235,7 +235,7 @@ void Patch::subdivide() {
 void Patch::subdivideQuad() {
     int numQuads = 9; // this is really hacky, but is solvable.
     for(int i = 0; i < numQuads; i += 1) {
-        // Create a new patch with corners of a current segment
+        // Create a new patch with verticies of a current segment
         Patch* tri = new Patch(this->getQuad(i));
         if (LOGLEVEL > 4) {
             cout << "CREATED A NEW PATCH... " << i << endl;
@@ -255,8 +255,8 @@ void Patch::subdivideQuad() {
 
 // Subdivide the necessary TRIANGULAR pathces into triangles
 void Patch::subdivideTriangle() {
-    // if this is a triangle, create TWO new patches based on corners.
-    // Patch 1 is a triangle, corners 0, 1, 2. Patch 2 uses corners 1, 2, 3
+    // if this is a triangle, create TWO new patches based on verticies.
+    // Patch 1 is a triangle, verticies 0, 1, 2. Patch 2 uses verticies 1, 2, 3
     // This needs checking and protection against other checking.
     int num = 2;
     for(int i = 0; i < num; i += 1) {
@@ -275,7 +275,7 @@ void Patch::subdivideTriangle() {
         if (LOGLEVEL > 5) {
             cout << "New Patch added to list" << endl;
         }
-        int flat = p->isFlat(p->getCorners());
+        int flat = p->isFlat(p->getVerticies());
         if (!flat) {
             p->subdivideTriangle(flat);
         }
@@ -304,9 +304,9 @@ int Patch::isFlat(vector<glm::vec3> poly) {
     glm::vec3 midA, midB, midC;
     float midU, midV;
     bool sideA, sideB, sideC;
-    midA = (this->corners->at(0) + this->corners->at(1)) / 2.0f;
-    midB = (this->corners->at(1) + this->corners->at(2)) / 2.0f;
-    midC = (this->corners->at(0) + this->corners->at(2)) / 2.0f;
+    midA = (this->verticies->at(0) + this->verticies->at(1)) / 2.0f;
+    midB = (this->verticies->at(1) + this->verticies->at(2)) / 2.0f;
+    midC = (this->verticies->at(0) + this->verticies->at(2)) / 2.0f;
     midU = (this->uStart + this->uEnd) / 2;
     midV = (this->vStart + this->vEnd) / 2;
     sideA = this->sideIsFlat(midA, midU, midV);
@@ -321,7 +321,7 @@ bool Patch::sideIsFlat(glm::vec3 midpt, float midU, float midV) {
 }
 
 // A DFS of all the polygons in this vector
-// eventually it will call .corners on the polygon and append to the list.
+// eventually it will call .verticies on the polygon and append to the list.
 vector< vector<glm::vec3> > Patch::getPolygons() {
     vector< vector<glm::vec3> > all = vector< vector<glm::vec3> >();
     for(int i = 0; i < patches->size(); i += 1) {
@@ -330,7 +330,7 @@ vector< vector<glm::vec3> > Patch::getPolygons() {
         all.insert(all.end(), newVect.begin(), newVect.end());
     }
     if (!this->hasChildren()) {
-        all.push_back(this->getCorners());
+        all.push_back(this->getVerticies());
     }
     return all;
 }

@@ -31,7 +31,7 @@ public:
     
     vector <vector<glm::vec3> > getPatchN(int);
     
-    vector<glm::vec3> getCorners(int);
+    vector<glm::vec3> getVerticies(int);
     
     void buildAdaptive();
     

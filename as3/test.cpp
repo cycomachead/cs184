@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     Patch* p = new Patch(item);
     cout << "Loaded Patches Successful" << endl;
     cout << "PATCH CHILDREN... " << p->hasChildren() << endl;
-    cout << "PATCHES CORNERS... " << p->getCorners().size() << endl;
+    cout << "PATCHES CORNERS... " << p->getVerticies().size() << endl;
     cout << "SUBDIVISION LEVEL 1 " << endl;
     p->subdivideQuad();
     cout << "Patch now has children: " << p->hasChildren() << endl;
