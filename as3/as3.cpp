@@ -198,7 +198,9 @@ void myDisplay() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(.0f, 0.f, translation.z);
+    glTranslatef(translation.x, translation.y, translation.z);
+    glRotatef(rotationX, 0.0f, 1.0f, 0.0f);
+    glRotatef(rotationY, 1.0f, 0.0f, 0.0f);
 
     // Start drawing
     // OPENGL Options:
@@ -229,9 +231,6 @@ void myDisplay() {
         vector <vector<glm::vec3>* >* shapes = uniModel->getShapes();
         vector <vector<glm::vec3>* >* normals = uniModel->getNormals();
         // glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-        glTranslatef(translation.x, translation.y, translation.z);
-        glRotatef(rotationX, 0.0f, 1.0f, 0.0f);
-        glRotatef(rotationY, 1.0f, 0.0f, 0.0f);
         // COLOR_BLUE;
         // glutSolidSphere(.5f, 10, 10);
         // COLOR_GREEN;
@@ -387,21 +386,20 @@ int main(int argc, char *argv[]) {
     glutCreateWindow(argv[0]);
     initScene(argc, argv);  // Parse command line args here.
 
-    cout << "LOGLEVEL" << LOGLEVEL << endl;
     // TODO: detect file type... OPTIONAL
     loadPatches(inputFile);
     // Create the Main Model
     uniModel = new UniformModel(patches, errorParam);
-    mainModel = new Model(patches, errorParam);
-    if (LOGLEVEL > 3) {
-        cout << "Models Built" << endl;
+    if (useAdaptiveMode) {
+        mainModel = new Model(patches, errorParam);
+        mainModel->buildAdaptive();
+        mainModel->subdivideAll();
+        adaptiveTri = mainModel->getAllPolygons();
+        if (LOGLEVEL > 4) {
+            cout << "Adaptive Processing Finished" << endl;
+        }
     }
-    mainModel->buildAdaptive();
-    mainModel->subdivideAll();
-    adaptiveTri = mainModel->getAllPolygons();
-    if (LOGLEVEL > 4) {
-        cout << "Adaptive Processing Finished" << endl;
-    }
+
     glutKeyboardFunc(keypress); // Detect key presses
     glutSpecialFunc(specialkeypress); // Detect SPECIAL (arrow) keys
     glutDisplayFunc(myDisplay);
