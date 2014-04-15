@@ -62,13 +62,13 @@ glm::vec4 normalize(glm::vec4 point) {
 	float y = point[1];
 	float z = point[2];
 	float magnitude = sqrt(x * x + y * y + z * z);
-	if (magnitude > .0001) {
+	// if (magnitude > .0001) {
 		x = x / magnitude;
 		y = y / magnitude;
 		z = z / magnitude;
-	} else {
-		// cout << "divide by zero error!";
-	}
+	// } else {
+	// 	// cout << "divide by zero error!";
+	// }
 	glm::vec4 nPoint(x, y, z, 1);
 	return nPoint;
 }
@@ -112,8 +112,10 @@ glm::vec4 bezpatchinterp(vector< vector< glm::vec4 > > patch, float u, float v, 
 	p = bezcurveinterp(ucurve, u, dPdu);
 
 	// take cross product of partials to find normal
-	glm::vec4 c = cross(*dPdu, *dPdv);
-	glm::vec4 n = normalize(c);
+	// glm::vec4 c = cross( *dPdu, *dPdv);
+	glm::vec4 c = cross( *dPdv, *dPdu);
+
+	glm::vec4 n = normalize(c);	
 
 	*normal = n;
 

@@ -238,7 +238,7 @@ void myDisplay() {
         vector <vector<glm::vec4>* >* shapes = uniModel->getShapes();
         vector <vector<glm::vec4>* >* normals = uniModel->getNormals();
         glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-        glTranslatef(.0f, 0.f, translation.z);
+        glTranslatef(translation.x, translation.y, translation.z);
         glRotatef(rotationX, 0.0f, 1.0f, 0.0f);
         glRotatef(rotationY, 1.0f, 0.0f, 0.0f);
         // COLOR_BLUE;
@@ -317,13 +317,13 @@ void rotate(int dir) {
 // 0: Left, 1: Up, 2: Right, 3: Down
 void translate(int dir) {
     if (!dir) {
-        rotationX -= 5;
+        translation.x -= 0.1f;
     } else if (dir == 1) {
-        rotationY += 5;
+        translation.y += 0.1f;
     } else if (dir == 2) {
-        rotationX += 5;
+        translation.x += 0.1f;
     } else if (dir == 3) {
-        rotationY -= 5;
+        translation.y -= 0.1f;
     }
 }
 
