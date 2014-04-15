@@ -210,10 +210,9 @@ void myDisplay() {
         for(int i = 0; i < adaptiveTri.size(); i += 1) {
             vector<glm::vec3> tri = adaptiveTri.at(i);
             if (LOGLEVEL > 5) {
-                cout << "DRAWING TRIANGLE   " << i << endl;
+                cout << "DRAWING TRIANGLE  " << i << endl;
             }
             glBegin(GL_TRIANGLES);
-            COLOR_GREEN;
             for(int j = 0; j < tri.size(); j += 1) {
                 glm::vec3 point = tri.at(j);
                 if (LOGLEVEL > 5) {
