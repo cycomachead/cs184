@@ -34,7 +34,7 @@ Patch::Patch(vector< vector<glm::vec3> > input, float err) {
     this->uEnd   = 1.0f;
     this->vEnd   = 1.0f;
     this->originalData = &input;
-    //this->controlPoints = new vector<glm::vec3>();
+    this->controlPoints = new vector<glm::vec3>();
     this->corners = new vector<glm::vec3>();
     this->patches = new vector<Patch*>();
     // move the input data to 1D form. convert to vec3.
@@ -73,7 +73,7 @@ Patch::Patch(vector<glm::vec3> corners) {
     // if this patch is a triangle or not..
     this->isQuad = (corners.size() == 4);
     // this may not be the best thing to do...
-    this->controlPoints = new vector<glm::vec3>(corners);
+    // this->controlPoints = new vector<glm::vec3>(corners);
     this->corners = new vector<glm::vec3>(corners);
     this->patches = new vector<Patch*>();
 }
@@ -237,17 +237,19 @@ void Patch::subdivideQuad() {
     for(int i = 0; i < numQuads; i += 1) {
         // Create a new patch with corners of a current segment
         Patch* tri = new Patch(this->getQuad(i));
-        // update the U V start and end values for the new patch
-        tri->setUV(this->getUVQuad(i));
         if (LOGLEVEL > 4) {
             cout << "CREATED A NEW PATCH... " << i << endl;
         }
-        // This will make the call that can recursively split triangles.
-        tri->subdivideTriangle();
         tri->parent = this;
         tri->controlPoints = this->controlPoints;
         // This will add 1 patch to the list which contains 2
         this->patches->push_back(tri);
+        // update the U V start and end values for the new patch
+        // tri->setUV(this->getUVQuad(i));
+        // This will make the call that can recursively split triangles.
+        cout << "HHELEOEOEoEOOE" << endl;
+        tri->subdivideTriangle();
+        cout << " TRI subdivide triangle success" << endl;
     }
 }
 
@@ -310,6 +312,7 @@ int Patch::isFlat(vector<glm::vec3> poly) {
     sideA = this->sideIsFlat(midA, midU, midV);
     sideB = this->sideIsFlat(midB, midU, midV);
     sideC = this->sideIsFlat(midC, midU, midV);
+    
     return 0;
 }
 

@@ -40,6 +40,9 @@ vector <vector<glm::vec3> > Model::getAllPolygons() {
 void Model::subdivideAll() {
     for(int i = 0; i < this->adapPatches->size(); i += 1) {
         Patch* p = this->adapPatches->at(i);
+        if (LOGLEVEL > 5) {
+            cout << "Subdividing Patch " << i << endl;
+        }
         p->subdivideQuad();
     }
 }
