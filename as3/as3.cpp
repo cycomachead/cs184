@@ -50,7 +50,7 @@ bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 // glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
-glm::vec3 translation = glm::vec3(0.0f, 0.0f, -5.5f);
+glm::vec3 translation = glm::vec3(0.0f, 0.0f, -7.5f);
 float rotationX = 0;
 float rotationY = 0;
 
@@ -171,14 +171,15 @@ void setupGlut() {
     glPopMatrix();
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    GLfloat am2[]={.2,.2,.2,1.0};
+    glEnable(GL_DEPTH_TEST);
+    GLfloat am2[]={.2,.2,.2,0.0};
     glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
-    GLfloat dif2[]={1.0,0.8,0.0,1.0};
+    GLfloat dif2[]={1.0,0.8,0.0,0.0};
     glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
-    GLfloat sp2[]={0.0,0.0,1.0,1.0};
+    GLfloat sp2[]={0.0,0.0,1.0,0.0};
     glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
-    glMaterialf(GL_FRONT ,GL_SHININESS, 80.0);
-    GLfloat emission[] = { .5,0.0,0.0,1.0};
+    glMaterialf(GL_FRONT ,GL_SHININESS, 64.0);
+    GLfloat emission[] = { .5,0.0,0.0,0.0};
     glMaterialfv(GL_BACK,GL_EMISSION,emission);
 
 
@@ -229,23 +230,11 @@ void myDisplay() {
 
         vector <vector<glm::vec3>* >* shapes = uniModel->getShapes();
         vector <vector<glm::vec3>* >* normals = uniModel->getNormals();
-        // glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-        // COLOR_BLUE;
-        // glutSolidSphere(.5f, 10, 10);
-        // COLOR_GREEN;
-        // glDisable(GL_LIGHTING);
         for (int i = 0; i < shapes->size(); i++) {
-            glPointSize(10.0f);
             glBegin(GL_QUADS);
-            COLOR_GREEN;
             // iterate over model polygons/faces
             vector<glm::vec3>* shape = shapes->at(i);
             vector<glm::vec3>* normal = normals->at(i);
-            // cout << "shape " << i << "\n";
-            // cout << shape->at(0)[0] << ", " << shape->at(0)[1] << ", " << shape->at(0)[2] << "\n";
-            // cout << shape->at(1)[0] << ", " << shape->at(1)[1] << ", " << shape->at(1)[2] << "\n";
-            // cout << shape->at(2)[0] << ", " << shape->at(2)[1] << ", " << shape->at(2)[2] << "\n";
-            // cout << shape->at(3)[0] << ", " << shape->at(3)[1] << ", " << shape->at(3)[2] << "\n";
             glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
             glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
             glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
@@ -373,7 +362,7 @@ int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
 
     // This tells glut to use a float-buffered window with red, green, and blue channels
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
     // Initalize theviewport size
     viewport.w = 800;

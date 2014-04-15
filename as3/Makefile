@@ -1,5 +1,5 @@
 CC = g++
-SOURCES = parser.cpp bezier.cpp model.cpp patch.cpp uniformModel.cpp
+SOURCES = parser.cpp bezier.cpp model.cpp patch.cpp uniformModel.cpp adaptiveModel.cpp
 OBJECTS = $(SOURCES:cpp=o)
 ifeq ($(shell sw_vers 2>/dev/null | grep Mac | awk '{ print $$2}'),Mac)
 	CC = clang #-xc++ # Clang handles C++11 better on 10.8
