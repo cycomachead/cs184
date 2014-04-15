@@ -9,7 +9,7 @@
 int LOGLEVEL;
 
 // Initialize the Patch from a bez file
-Patch::Patch(vector< vector<glm::vec4> > input) {
+Patch::Patch(vector< vector<glm::vec3> > input) {
     this->order = 3;
     this->isQuad = true;
     this->parent = NULL;
@@ -19,7 +19,7 @@ Patch::Patch(vector< vector<glm::vec4> > input) {
     this->patches = new vector<Patch*>();
     // move the input data to 1D form. convert to vec3.
     for(int i = 0; i < input.size(); i += 1) {
-        vector<glm::vec4> item = input.at(i);
+        vector<glm::vec3> item = input.at(i);
         for(int j = 0; j < item.size(); j += 1) {
             glm::vec3 point = glm::vec3(item.at(j));
             this->controlPoints->push_back(point);

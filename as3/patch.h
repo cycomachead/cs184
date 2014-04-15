@@ -10,7 +10,7 @@
 class Patch {
 private:
     // 2D array of parsed patch coordinates
-    vector< vector<glm::vec4> > *originalData;
+    vector< vector<glm::vec3> > *originalData;
 
     // 1D set of control points
     vector<glm::vec3> *controlPoints;
@@ -29,7 +29,7 @@ public:
 
     Patch();
 
-    Patch(vector< vector<glm::vec4> >);
+    Patch(vector< vector<glm::vec3> >);
 
     Patch(vector<glm::vec3>);
 

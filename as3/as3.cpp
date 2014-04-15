@@ -51,7 +51,7 @@ float zoomLevel = 1.0f;
 glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
 glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
 
-vector< vector <vector<glm::vec4> > > patches;
+vector< vector <vector<glm::vec3> > > patches;
 
 vector< vector<glm::vec3> > adaptiveTri;
 
@@ -181,7 +181,6 @@ void setupGlut() {
 
 
     //uleep(20000);
-    glutSolidSphere(2.0f, 20, 20);
     if (LOGLEVEL > 1) {
         cout << "SETUP COMPLETE";
     }

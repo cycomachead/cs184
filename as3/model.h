@@ -11,10 +11,10 @@ using namespace std;
 class Model {
 public:
 
-    vector< vector <vector<glm::vec4> > > modelPatches;
+    vector< vector <vector<glm::vec3> > > modelPatches;
     vector<Patch*> *adapPatches;
-    vector< glm::vec4 > *verticies;
-    vector< glm::vec4 > *normals;
+    vector< glm::vec3 > *verticies;
+    vector< glm::vec3 > *normals;
     float errorBound;
     float stepSize;
 
@@ -22,15 +22,15 @@ public:
         // empty
     }
 
-    Model(vector< vector <vector<glm::vec4> > > patches, float tau);
+    Model(vector< vector <vector<glm::vec3> > > patches, float tau);
 
     void buildUniformVertexNormal();
 
-    vector< vector <vector<glm::vec4> > > getPatches();
+    vector< vector <vector<glm::vec3> > > getPatches();
     
-    vector <vector<glm::vec4> > getPatchN(int);
+    vector <vector<glm::vec3> > getPatchN(int);
     
-    vector<glm::vec4> getCorners(int);
+    vector<glm::vec3> getCorners(int);
     
     void buildAdaptive();
     
