@@ -49,8 +49,10 @@ bool useSmoothShading  = false; // controlled by 's'
 bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
-glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
+// glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
 glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
+float rotationX = 0;
+float rotationY = 0;
 
 vector< vector <vector<glm::vec4> > > patches;
 
@@ -164,7 +166,7 @@ void setupGlut() {
     glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
     glLightfv(GL_LIGHT0, GL_POSITION, litepos);
-    glEnable(GL_LIGHT0);
+    // glEnable(GL_LIGHT0);
 
     glLightfv(GL_LIGHT1, GL_DIFFUSE,  diffuse);
     glLightfv(GL_LIGHT1, GL_POSITION, litepos2);
@@ -232,12 +234,15 @@ void myDisplay() {
             glEnd();
         }
     } else {
+
         vector <vector<glm::vec4>* >* shapes = uniModel->getShapes();
         vector <vector<glm::vec4>* >* normals = uniModel->getNormals();
-
+        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
         glTranslatef(.0f, 0.f, translation.z);
+        glRotatef(rotationX, 0.0f, 1.0f, 0.0f);
+        glRotatef(rotationY, 1.0f, 0.0f, 0.0f);
         // COLOR_BLUE;
-        glutSolidSphere(.5f, 10, 10);
+        // glutSolidSphere(.5f, 10, 10);
         // COLOR_GREEN;
         // glDisable(GL_LIGHTING);
         for (int i = 0; i < shapes->size(); i++) {
@@ -246,20 +251,23 @@ void myDisplay() {
             COLOR_GREEN;
             // iterate over model polygons/faces
             vector<glm::vec4>* shape = shapes->at(i);
+            vector<glm::vec4>* normal = normals->at(i);
             // cout << "shape " << i << "\n";
             // cout << shape->at(0)[0] << ", " << shape->at(0)[1] << ", " << shape->at(0)[2] << "\n";
             // cout << shape->at(1)[0] << ", " << shape->at(1)[1] << ", " << shape->at(1)[2] << "\n";
             // cout << shape->at(2)[0] << ", " << shape->at(2)[1] << ", " << shape->at(2)[2] << "\n";
             // cout << shape->at(3)[0] << ", " << shape->at(3)[1] << ", " << shape->at(3)[2] << "\n";
+            glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
             glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+            glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
             glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+            glNormal3f(normal->at(2)[0], normal->at(2)[1], normal->at(2)[2]);
             glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+            glNormal3f(normal->at(3)[0], normal->at(3)[1], normal->at(3)[2]);
             glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
             glEnd();
         }
     }
-
-
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
@@ -290,24 +298,32 @@ void toggleHiddenLines() {
 }
 
 void changeZoom(float amt) {
-    zoomLevel += amt;
+    translation.z += amt;
 }
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void rotate(int dir) {
     if (!dir) {
-        translation.z -= .1;
+        rotationY += 5;
+    } else if (dir == 1) {
+        rotationX += 5;
     } else if (dir == 2) {
-        translation.z += .1;
+        rotationY -= 5;
+    } else if (dir == 3) {
+        rotationX -= 5;
     }
 }
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void translate(int dir) {
     if (!dir) {
-        translation.z -= .1;
+        rotationY += 5;
+    } else if (dir == 1) {
+        rotationX += 5;
     } else if (dir == 2) {
-        translation.z += .1;
+        rotationY -= 5;
+    } else if (dir == 3) {
+        rotationX -= 5;
     }
 }
 
