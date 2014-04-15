@@ -263,7 +263,7 @@ void Patch::subdivideTriangle() {
         }
         Patch* p = new Patch(this->getTri(i));
         p->parent = this;
-        p->controlPoints = this;
+        p->controlPoints = this->controlPoints;
         // set U and V values for the new patch.
         //p->setUV(this->getTri(i)->getUVTri());
         if (LOGLEVEL > 5) {

@@ -10,7 +10,7 @@
 class Patch {
 private:
     // 2D array of parsed patch coordinates
-    vector< vector<glm::vec4> > *originalData;
+    vector< vector<glm::vec3> > *originalData;
 
     // 1D set of control points
     vector<glm::vec3> *controlPoints;
@@ -36,12 +36,12 @@ public:
 
     Patch();
 
-    Patch(vector< vector<glm::vec4> >, float);
+    Patch(vector< vector<glm::vec3> >, float);
 
     Patch(vector<glm::vec3>);
 
     Patch(Patch&);
-    
+
     // int* is an array
     int* quadIndicies(int);
 
@@ -76,7 +76,7 @@ public:
     void setUV(vector<float>);
 
     Patch* getOldestParent();
-    
+
     bool sideIsFlat(glm::vec3, float, float);
 };
 
