@@ -2,22 +2,12 @@
 
 #include "model.h"
 
-
-void Model::buildUniformVertexNormal() {
-    // iterate over patches and create 1D vectors
-    for(int i = 0; i < modelPatches.size(); i += 1) {
-        vector <vector<glm::vec3> > patch = modelPatches.at(i);
-        subdividepatch(patch, errorBound, verticies, normals);
-    }
-}
-
 Model::Model(vector< vector <vector<glm::vec3> > > patches, float tau) {
     modelPatches = patches;
     errorBound = stepSize = tau;
     verticies = new vector<glm::vec3>();
     normals = new vector<glm::vec3>();
     adapPatches = new vector<Patch*>();
-    buildUniformVertexNormal();
 }
 
 vector< vector <vector<glm::vec3> > > Model::getPatches() {
@@ -32,7 +22,7 @@ vector <vector<glm::vec3> > Model::getPatchN(int i) {
 void Model::buildAdaptive() {
     for(int i = 0; i < modelPatches.size(); i += 1) {
         vector< vector<glm::vec3> > temp = modelPatches.at(i);
-        Patch* p = new Patch(temp);
+        Patch* p = new Patch(temp, this->errorBound);
         adapPatches->push_back(p);
     }
 }

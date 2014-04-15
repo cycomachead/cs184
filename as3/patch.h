@@ -18,8 +18,15 @@ private:
     // 1D set of corners for the patch
     vector<glm::vec3> *corners;
 
-    // Should patches contain patches? -- subdivisions
+    // Contains all the inner patches.
     vector<Patch*> *patches;
+
+    float uStart;
+    float uEnd;
+    float vStart;
+    float vEnd;
+
+    float error;
 
     int order;
 
@@ -29,12 +36,13 @@ public:
 
     Patch();
 
-    Patch(vector< vector<glm::vec3> >);
+    Patch(vector< vector<glm::vec3> >, float);
 
     Patch(vector<glm::vec3>);
 
     Patch(Patch&);
 
+    // int* is an array
     int* quadIndicies(int);
 
     vector<glm::vec3> getQuad(int);
@@ -58,6 +66,18 @@ public:
     bool hasChildren();
 
     vector< vector<glm::vec3> > getPolygons();
+
+    void setPartentData();
+
+    vector<float> getUVQuad(int);
+
+    vector<float> getUVTri();
+
+    void setUV(vector<float>);
+
+    Patch* getOldestParent();
+
+    bool sideIsFlat(glm::vec3, float, float);
 };
 
 #endif
