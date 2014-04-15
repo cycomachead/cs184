@@ -54,7 +54,7 @@ glm::vec3 translation = glm::vec3(0.0f, 0.0f, -5.5f);
 float rotationX = 0;
 float rotationY = 0;
 
-vector< vector <vector<glm::vec4> > > patches;
+vector< vector <vector<glm::vec3> > > patches;
 
 vector< vector<glm::vec3> > adaptiveTri;
 
@@ -166,7 +166,7 @@ void setupGlut() {
     glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
     glLightfv(GL_LIGHT0, GL_POSITION, litepos);
-    // glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT0);
 
     glLightfv(GL_LIGHT1, GL_DIFFUSE,  diffuse);
     glLightfv(GL_LIGHT1, GL_POSITION, litepos2);
@@ -235,9 +235,9 @@ void myDisplay() {
         }
     } else {
 
-        vector <vector<glm::vec4>* >* shapes = uniModel->getShapes();
-        vector <vector<glm::vec4>* >* normals = uniModel->getNormals();
-        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+        vector <vector<glm::vec3>* >* shapes = uniModel->getShapes();
+        vector <vector<glm::vec3>* >* normals = uniModel->getNormals();
+        // glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
         glTranslatef(translation.x, translation.y, translation.z);
         glRotatef(rotationX, 0.0f, 1.0f, 0.0f);
         glRotatef(rotationY, 1.0f, 0.0f, 0.0f);
@@ -250,8 +250,8 @@ void myDisplay() {
             glBegin(GL_QUADS);
             COLOR_GREEN;
             // iterate over model polygons/faces
-            vector<glm::vec4>* shape = shapes->at(i);
-            vector<glm::vec4>* normal = normals->at(i);
+            vector<glm::vec3>* shape = shapes->at(i);
+            vector<glm::vec3>* normal = normals->at(i);
             // cout << "shape " << i << "\n";
             // cout << shape->at(0)[0] << ", " << shape->at(0)[1] << ", " << shape->at(0)[2] << "\n";
             // cout << shape->at(1)[0] << ", " << shape->at(1)[1] << ", " << shape->at(1)[2] << "\n";

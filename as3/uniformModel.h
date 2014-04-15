@@ -10,9 +10,9 @@ using namespace std;
 class UniformModel {
 public:
 
-    vector< vector <vector<glm::vec4> > > modelPatches;
-    vector< vector< glm::vec4 >* >* shapes;
-    vector< vector< glm::vec4 >* >* normals;
+    vector< vector <vector<glm::vec3> > > modelPatches;
+    vector< vector< glm::vec3 >* >* shapes;
+    vector< vector< glm::vec3 >* >* normals;
     float errorBound;
     float stepSize;
 
@@ -20,13 +20,13 @@ public:
         // empty
     }
 
-    UniformModel(vector< vector <vector<glm::vec4> > > patches, float tau);
+    UniformModel(vector< vector <vector<glm::vec3> > > patches, float tau);
 
     void uniformTesselation();
 
-    vector< vector <vector<glm::vec4> > > getPatches();
-    vector< vector <glm::vec4>* >* getShapes();
-    vector< vector <glm::vec4>* >* getNormals();
+    vector< vector <vector<glm::vec3> > > getPatches();
+    vector< vector <glm::vec3>* >* getShapes();
+    vector< vector <glm::vec3>* >* getNormals();
 }; // end model
 
 #endif

@@ -7,12 +7,12 @@
 	description.**/
 using namespace std;
 
-glm::vec4 bezcurveinterp(vector< glm::vec4 > curve, float u, glm::vec4* dPdu);
-vector< vector<glm::vec4> > transpose(vector< vector< glm::vec4 > > patch);
-glm::vec4 normalize(glm::vec4 point);
-glm::vec4 cross(glm::vec4 a, glm::vec4 b);
-glm::vec4 bezpatchinterp(vector< vector< glm::vec4 > > patch, float u, float v, glm::vec4* normal);
-void subdividepatch(vector< vector< glm::vec4 > > patch, float step,
-	vector< vector< glm::vec4 >*>* p, vector<vector< glm::vec4 >*>* n);
+glm::vec3 bezcurveinterp(vector< glm::vec3 > curve, float u, glm::vec3* dPdu);
+vector< vector<glm::vec3> > transpose(vector< vector< glm::vec3 > > patch);
+glm::vec3 normalize(glm::vec3 point);
+glm::vec3 cross(glm::vec3 a, glm::vec3 b);
+glm::vec3 bezpatchinterp(vector< vector< glm::vec3 > > patch, float u, float v, glm::vec3* normal);
+void subdividepatch(vector< vector< glm::vec3 > > patch, float step,
+	vector< vector< glm::vec3 >*>* p, vector<vector< glm::vec3 >*>* n);
 
 #endif

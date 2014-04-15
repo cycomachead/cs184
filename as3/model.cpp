@@ -4,26 +4,26 @@
 
 
 
-Model::Model(vector< vector <vector<glm::vec4> > > patches, float tau) {
+Model::Model(vector< vector <vector<glm::vec3> > > patches, float tau) {
     modelPatches = patches;
     errorBound = stepSize = tau;
-    verticies = new vector<glm::vec4>();
-    normals = new vector<glm::vec4>();
+    verticies = new vector<glm::vec3>();
+    normals = new vector<glm::vec3>();
     adapPatches = new vector<Patch*>();
 }
 
-vector< vector <vector<glm::vec4> > > Model::getPatches() {
+vector< vector <vector<glm::vec3> > > Model::getPatches() {
     return modelPatches;
 }
 
-vector <vector<glm::vec4> > Model::getPatchN(int i) {
+vector <vector<glm::vec3> > Model::getPatchN(int i) {
     return modelPatches.at(i);
 }
 
 // Create the patch objects for adaptive subdivision
 void Model::buildAdaptive() {
     for(int i = 0; i < modelPatches.size(); i += 1) {
-        vector< vector<glm::vec4> > temp = modelPatches.at(i);
+        vector< vector<glm::vec3> > temp = modelPatches.at(i);
         Patch* p = new Patch(temp);
         adapPatches->push_back(p);
     }

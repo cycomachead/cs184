@@ -38,6 +38,6 @@
 using namespace std;
 
 extern int LOGLEVEL;
-extern vector< vector <vector<glm::vec4> > > patches;
+extern vector< vector <vector<glm::vec3> > > patches;
 
 #endif
