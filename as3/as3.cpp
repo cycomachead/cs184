@@ -50,7 +50,7 @@ bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 // glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
-glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 translation = glm::vec3(0.0f, 0.0f, -5.5f);
 float rotationX = 0;
 float rotationY = 0;
 
@@ -304,26 +304,26 @@ void changeZoom(float amt) {
 // 0: Left, 1: Up, 2: Right, 3: Down
 void rotate(int dir) {
     if (!dir) {
-        rotationY += 5;
-    } else if (dir == 1) {
-        rotationX += 5;
-    } else if (dir == 2) {
-        rotationY -= 5;
-    } else if (dir == 3) {
         rotationX -= 5;
+    } else if (dir == 1) {
+        rotationY += 5;
+    } else if (dir == 2) {
+        rotationX += 5;
+    } else if (dir == 3) {
+        rotationY -= 5;
     }
 }
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void translate(int dir) {
     if (!dir) {
-        rotationY += 5;
-    } else if (dir == 1) {
-        rotationX += 5;
-    } else if (dir == 2) {
-        rotationY -= 5;
-    } else if (dir == 3) {
         rotationX -= 5;
+    } else if (dir == 1) {
+        rotationY += 5;
+    } else if (dir == 2) {
+        rotationX += 5;
+    } else if (dir == 3) {
+        rotationY -= 5;
     }
 }
 
