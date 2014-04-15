@@ -17,8 +17,8 @@ void loadPatches(string file) {
     string line;
     int numPatches;
     int linecount = 0;
-    vector< vector<glm::vec4> > patchset;
-    vector<glm::vec4> currentline;
+    vector< vector<glm::vec3> > patchset;
+    vector<glm::vec3> currentline;
     while(inpfile.good()) {
         linecount += 1;
         vector<string> splitline;
@@ -54,11 +54,10 @@ void loadPatches(string file) {
             cout << "LINE HAS " << splitline.size() << " ITEMS" << endl;
         }
         for(int i = 0; i < splitline.size(); i += 3) {
-            glm::vec4 point = glm::vec4(
+            glm::vec3 point = glm::vec3(
                 atof(splitline[i].c_str()),
                 atof(splitline[i + 1].c_str()),
-                atof(splitline[i + 2].c_str()),
-                1);
+                atof(splitline[i + 2].c_str()));
             currentline.push_back(point);
         }
         if (currentline.size() > 0) {
