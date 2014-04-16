@@ -123,7 +123,7 @@ void myReshape(int w, int h) {
     glLoadIdentity();
     gluPerspective(45.f, (GLfloat) viewport.w / viewport.h, .1f, 100.f);
     glMatrixMode(GL_MODELVIEW);
-    //gluOrtho2D(0, viewport.w, 0, viewport.h);
+    gluOrtho2D(0, viewport.w, 0, viewport.h);
 }
 
 //****************************************************
@@ -171,15 +171,15 @@ void setupGlut() {
     glPopMatrix();
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    GLfloat am2[]={.2,.2,.2,1.0};
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
-    GLfloat dif2[]={1.0,0.8,0.0,1.0};
-    glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
-    GLfloat sp2[]={0.0,0.0,1.0,1.0};
-    glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
-    glMaterialf(GL_FRONT ,GL_SHININESS, 80.0);
-    GLfloat emission[] = { .5,0.0,0.0,1.0};
-    glMaterialfv(GL_BACK,GL_EMISSION,emission);
+    // GLfloat am2[]={.2,.2,.2,1.0};
+    // glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
+    // GLfloat dif2[]={1.0,0.8,0.0,1.0};
+    // glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
+    // GLfloat sp2[]={0.0,0.0,1.0,1.0};
+    // glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
+    // glMaterialf(GL_FRONT ,GL_SHININESS, 80.0);
+    // GLfloat emission[] = { .5,0.0,0.0,1.0};
+    // glMaterialfv(GL_BACK,GL_EMISSION,emission);
 
 
     //uleep(20000);
@@ -234,9 +234,9 @@ void myDisplay() {
         // COLOR_GREEN;
         // glDisable(GL_LIGHTING);
         for (int i = 0; i < shapes->size(); i++) {
-            glPointSize(10.0f);
+            // glPointSize(10.0f);
             glBegin(GL_QUADS);
-            COLOR_GREEN;
+            // COLOR_GREEN;
             // iterate over model polygons/faces
             vector<glm::vec3>* shape = shapes->at(i);
             vector<glm::vec3>* normal = normals->at(i);
