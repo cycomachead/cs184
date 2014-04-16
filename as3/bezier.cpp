@@ -56,18 +56,6 @@ vector< vector<glm::vec3> > transpose(vector< vector< glm::vec3 > > patch) {
 	return transpose;
 }
 
-/** given a glm::vec3 we normalize the first three elements of point. **/
-glm::vec3 normalize(glm::vec3 point) {
-	float x = point[0];
-	float y = point[1];
-	float z = point[2];
-	float magnitude = sqrt(x * x + y * y + z * z);
-	x = x / magnitude;
-	y = y / magnitude;
-	z = z / magnitude;
-	glm::vec3 nPoint(x, y, z);
-	return nPoint;
-}
 
 /** given a control patch and (u,v) values, find 
  the surface point and update normal **/
@@ -77,19 +65,19 @@ glm::vec3 bezpatchinterp(vector< vector< glm::vec3 > > patch, float u, float v, 
 	// build control points for a Bezier curve in v
 	vector<glm::vec3> vcurve;
 
-	vcurve.push_back(bezcurveinterp(patch[0], u, dPdv));
-	vcurve.push_back(bezcurveinterp(patch[1], u, dPdv));
-	vcurve.push_back(bezcurveinterp(patch[2], u, dPdv));
-	vcurve.push_back(bezcurveinterp(patch[3], u, dPdv));
+	vcurve.push_back(bezcurveinterp(patch.at(0), u, dPdv));
+	vcurve.push_back(bezcurveinterp(patch.at(1), u, dPdv));
+	vcurve.push_back(bezcurveinterp(patch.at(2), u, dPdv));
+	vcurve.push_back(bezcurveinterp(patch.at(3), u, dPdv));
 
 	// build control points for a Bezier curve in u
 	vector<glm::vec3> ucurve;
 	vector< vector< glm::vec3 > > vPatch = transpose(patch);
 
-	ucurve.push_back(bezcurveinterp(vPatch[0], v, dPdu));
-	ucurve.push_back(bezcurveinterp(vPatch[1], v, dPdu));
-	ucurve.push_back(bezcurveinterp(vPatch[2], v, dPdu));
-	ucurve.push_back(bezcurveinterp(vPatch[3], v, dPdu));
+	ucurve.push_back(bezcurveinterp(vPatch.at(0), v, dPdu));
+	ucurve.push_back(bezcurveinterp(vPatch.at(1), v, dPdu));
+	ucurve.push_back(bezcurveinterp(vPatch.at(2), v, dPdu));
+	ucurve.push_back(bezcurveinterp(vPatch.at(3), v, dPdu));
 
 	// evaluate surface and derivative for u and v
 	glm::vec3 p;
@@ -101,7 +89,7 @@ glm::vec3 bezpatchinterp(vector< vector< glm::vec3 > > patch, float u, float v, 
 	glm::vec3 c = glm::cross( *dPdu, *dPdv);
 	// glm::vec3 c = cross(*dPdu, *dPdv);
 
-	glm::vec3 n = normalize(c);	
+	glm::vec3 n = glm::normalize(c);	
 
 	*normal = n;
 

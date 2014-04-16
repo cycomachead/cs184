@@ -20,7 +20,7 @@ RM = /bin/rm -f
 all: main
 
 main:
-	$(CC) as3.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as3
+	$(CC) -g as3.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as3
 
 test:
 	$(CC) test.cpp $(SOURCES)$(INC) $(CFLAGS) $(LDFLAGS) -o test.out

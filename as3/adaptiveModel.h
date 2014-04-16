@@ -6,9 +6,6 @@
 
 using namespace std;
 class Vertex;
-float sqr(float x) {
-	return x * x;
-}
 
 class AdaptiveModel {
 public:
@@ -16,6 +13,7 @@ public:
     vector< vector <vector<glm::vec3> > > modelPatches;
     vector< vector< glm::vec3 >* >* shapes;
     vector< vector< glm::vec3 >* >* normals;
+    vector <vector<glm::vec3> > curr;
     float errorBound;
 
     AdaptiveModel() {
@@ -24,7 +22,7 @@ public:
 
     AdaptiveModel(vector< vector <vector<glm::vec3> > > patches, float error);
     void adaptiveTesselation();
-    void createTriangles(float u[], float v[], vector <vector<glm::vec3> > patch);
+    void createTriangles(float u[], float v[]);
     vector< vector <vector<glm::vec3> > > getPatches();
     vector< vector <glm::vec3>* >* getShapes();
     vector< vector <glm::vec3>* >* getNormals();

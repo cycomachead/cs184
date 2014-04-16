@@ -3,7 +3,8 @@
 
 #include "as3.h"
 #include "model.h"
-#include "UniformModel.h"
+#include "uniformModel.h"
+#include "adaptiveModel.h"
 #include "parser.h"
 
 #include <unistd.h>
@@ -17,8 +18,6 @@
 #define COLOR_BLACK glColor3f(0.0f, 0.0f, 0.0f);
 #define COLOR_WHITE glColor3f(1.0f, 1.0f, 1.0f);
 
-
-inline float sqr(float x) { return x*x; }
 
 using namespace std;
 
@@ -58,7 +57,7 @@ vector< vector <vector<glm::vec3> > > patches;
 
 vector< vector<glm::vec3> > adaptiveTri;
 
-Model *mainModel;
+AdaptiveModel *mainModel;
 
 UniformModel* uniModel;
 
@@ -207,31 +206,46 @@ void myDisplay() {
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
     if (useAdaptiveMode) {
         // iterate over model polygons/faces
-        for(int i = 0; i < adaptiveTri.size(); i += 1) {
-            vector<glm::vec3> tri = adaptiveTri.at(i);
-            if (LOGLEVEL > 5) {
-                cout << "DRAWING TRIANGLE   " << i << endl;
-            }
-            glBegin(GL_TRIANGLES);
-            COLOR_GREEN;
-            for(int j = 0; j < tri.size(); j += 1) {
-                glm::vec3 point = tri.at(j);
-                if (LOGLEVEL > 5) {
-                    cout << "\tx: " << point.x << endl;
-                    cout << "\ty: " << point.y << endl;
-                    cout << "\tz: " << point.z << endl;
-                }
-                glVertex3f(point.x, point.y, point.z);
-                //glNormal3f(point.x, point.y, point.z);
-            }
-            glEnd();
+        vector <vector<glm::vec3>* >* shapes = mainModel->getShapes();
+        vector <vector<glm::vec3>* >* normals = mainModel->getNormals();
+        glBegin(GL_TRIANGLES);
+        for (int i = 0; i < shapes->size(); i++) {
+            // iterate over model polygons/faces
+            vector<glm::vec3>* shape = shapes->at(i);
+            vector<glm::vec3>* normal = normals->at(i);
+            glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
+            glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+            glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
+            glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+            glNormal3f(normal->at(2)[0], normal->at(2)[1], normal->at(2)[2]);
+            glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
         }
+        glEnd();
+        // for(int i = 0; i < adaptiveTri.size(); i += 1) {
+        //     vector<glm::vec3> tri = adaptiveTri.at(i);
+        //     if (LOGLEVEL > 5) {
+        //         cout << "DRAWING TRIANGLE   " << i << endl;
+        //     }
+        //     glBegin(GL_TRIANGLES);
+        //     COLOR_GREEN;
+        //     for(int j = 0; j < tri.size(); j += 1) {
+        //         glm::vec3 point = tri.at(j);
+        //         if (LOGLEVEL > 5) {
+        //             cout << "\tx: " << point.x << endl;
+        //             cout << "\ty: " << point.y << endl;
+        //             cout << "\tz: " << point.z << endl;
+        //         }
+        //         glVertex3f(point.x, point.y, point.z);
+        //         //glNormal3f(point.x, point.y, point.z);
+        //     }
+        //     glEnd();
+        // }
     } else {
 
         vector <vector<glm::vec3>* >* shapes = uniModel->getShapes();
         vector <vector<glm::vec3>* >* normals = uniModel->getNormals();
+        glBegin(GL_QUADS);
         for (int i = 0; i < shapes->size(); i++) {
-            glBegin(GL_QUADS);
             // iterate over model polygons/faces
             vector<glm::vec3>* shape = shapes->at(i);
             vector<glm::vec3>* normal = normals->at(i);
@@ -243,8 +257,8 @@ void myDisplay() {
             glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
             glNormal3f(normal->at(3)[0], normal->at(3)[1], normal->at(3)[2]);
             glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
-            glEnd();
         }
+        glEnd();
     }
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
@@ -379,13 +393,13 @@ int main(int argc, char *argv[]) {
     // Create the Main Model
     uniModel = new UniformModel(patches, errorParam);
     if (useAdaptiveMode) {
-        mainModel = new Model(patches, errorParam);
-        mainModel->buildAdaptive();
-        mainModel->subdivideAll();
-        adaptiveTri = mainModel->getAllPolygons();
-        if (LOGLEVEL > 4) {
-            cout << "Adaptive Processing Finished" << endl;
-        }
+        mainModel = new AdaptiveModel(patches, errorParam);
+        // mainModel->buildAdaptive();
+        // mainModel->subdivideAll();
+        // adaptiveTri = mainModel->getAllPolygons();
+        // if (LOGLEVEL > 4) {
+        //     cout << "Adaptive Processing Finished" << endl;
+        // }
     }
 
     glutKeyboardFunc(keypress); // Detect key presses

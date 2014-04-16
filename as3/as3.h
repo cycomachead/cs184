@@ -39,5 +39,6 @@ using namespace std;
 
 extern int LOGLEVEL;
 extern vector< vector <vector<glm::vec3> > > patches;
+inline float sqr(float x) { return x*x; }
 
 #endif
