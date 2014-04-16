@@ -70,7 +70,6 @@ void usage() {
     cout << "./as3 input- file subdivision-param [ -a ] (adaptive shading)" << endl;
 }
 
-
 //****************************************************
 // Simple init function
 //****************************************************

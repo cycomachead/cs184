@@ -13,8 +13,6 @@ public:
 
     vector< vector <vector<glm::vec3> > > modelPatches;
     vector<Patch*> *adapPatches;
-    vector< vector< glm::vec3 >* >* uniNormals;
-    vector< vector< glm::vec3 >* >* shapes;
     vector< glm::vec3 > *verticies;
     vector< glm::vec3 > *normals;
     float errorBound;

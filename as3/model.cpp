@@ -2,8 +2,6 @@
 
 #include "model.h"
 
-
-
 Model::Model(vector< vector <vector<glm::vec3> > > patches, float tau) {
     modelPatches = patches;
     errorBound = stepSize = tau;
