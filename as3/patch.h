@@ -66,8 +66,10 @@ public:
     vector< vector<Vertex*> > getPolygons();
 
     void setPartentData();
+    
+    void initializeVerticies();
 
-    glm::vec2 getUVQuad(int);
+    vector<glm::vec2> getUVQuad(int);
 
     // vector<float> getUVTri();
 
@@ -75,7 +77,7 @@ public:
 
     Patch* getOldestParent();
 
-    bool sideIsFlat(Vertex, float, float);
+    bool sideIsFlat(Vertex*, float, float);
 };
 
 #endif

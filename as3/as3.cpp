@@ -5,6 +5,7 @@
 #include "model.h"
 #include "UniformModel.h"
 #include "parser.h"
+#include "vertex.h"
 
 #include <unistd.h>
 
@@ -56,7 +57,7 @@ float rotationY = 0;
 
 vector< vector <vector<glm::vec3> > > patches;
 
-vector< vector<glm::vec3> > adaptiveTri;
+vector< vector<Vertex*> > adaptiveTri;
 
 Model *mainModel;
 
@@ -208,20 +209,21 @@ void myDisplay() {
     if (useAdaptiveMode) {
         // iterate over model polygons/faces
         for(int i = 0; i < adaptiveTri.size(); i += 1) {
-            vector<glm::vec3> tri = adaptiveTri.at(i);
+            vector<Vertex*> tri = adaptiveTri.at(i);
             if (LOGLEVEL > 5) {
                 cout << "DRAWING TRIANGLE  " << i << endl;
             }
             glBegin(GL_TRIANGLES);
             for(int j = 0; j < tri.size(); j += 1) {
-                glm::vec3 point = tri.at(j);
-                if (LOGLEVEL > 5) {
-                    cout << "\tx: " << point.x << endl;
-                    cout << "\ty: " << point.y << endl;
-                    cout << "\tz: " << point.z << endl;
+                glm::vec3* point = tri.at(j)->surface;
+                glm::vec3* norm  = tri.at(j)->normal;
+                if (LOGLEVEL > 50) {
+                    cout << "\tx: " << point->x << endl;
+                    cout << "\ty: " << point->y << endl;
+                    cout << "\tz: " << point->z << endl;
                 }
-                glVertex3f(point.x, point.y, point.z);
-                //glNormal3f(point.x, point.y, point.z);
+                glNormal3f(norm->x, norm->y, norm->z);
+                glVertex3f(point->x, point->y, point->z);
             }
             glEnd();
         }

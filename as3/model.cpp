@@ -29,11 +29,11 @@ void Model::buildAdaptive() {
     }
 }
 
-vector <vector<glm::vec3> > Model::getAllPolygons() {
-    vector <vector<glm::vec3> > result = vector <vector<glm::vec3> >();
+vector <vector<Vertex*> > Model::getAllPolygons() {
+    vector <vector<Vertex*> > result = vector <vector<Vertex*> >();
     for(int i = 0; i < this->adapPatches->size(); i += 1) {
         Patch* p = this->adapPatches->at(i);
-        vector <vector<glm::vec3> > poly = p->getPolygons();
+        vector <vector<Vertex*> > poly = p->getPolygons();
         result.insert(result.end(), poly.begin(), poly.end());
     }
     return result;

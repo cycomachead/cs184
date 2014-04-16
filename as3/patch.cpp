@@ -29,13 +29,9 @@ Patch::Patch(vector< vector<glm::vec3> > input, float err) {
     this->isQuad = true;
     this->parent = NULL;
     this->error = err;
-    this->uStart = 0.0f;
-    this->vStart = 0.0f;
-    this->uEnd   = 1.0f;
-    this->vEnd   = 1.0f;
     this->originalData = &input;
     this->controlPoints = new vector<glm::vec3>();
-    this->verticies = new vector<glm::vec3>();
+    this->verticies = new vector<Vertex*>();
     this->patches = new vector<Patch*>();
     // move the input data to 1D form. convert to vec3.
     for(int i = 0; i < input.size(); i += 1) {
@@ -47,10 +43,8 @@ Patch::Patch(vector< vector<glm::vec3> > input, float err) {
     }
     // this is hard coded and bad.. FIXME
 
-    this->verticies->push_back(this->controlPoints->at(0));
-    this->verticies->push_back(this->controlPoints->at(3));
-    this->verticies->push_back(this->controlPoints->at(12));
-    this->verticies->push_back(this->controlPoints->at(15));
+    this->initializeVerticies();
+
     if (LOGLEVEL) {
         cout << "CREATED NEW PATCH" << endl;
     }
@@ -60,7 +54,7 @@ Patch::Patch(Patch&) {
 
 }
 
-Patch::Patch(vector<glm::vec3> verticies) {
+Patch::Patch(vector<Vertex*> verticies) {
     // Check if verticies are 3 or 4
     // set verticies to vector
     // set triangle and order properties.
@@ -74,16 +68,28 @@ Patch::Patch(vector<glm::vec3> verticies) {
     this->isQuad = (verticies.size() == 4);
     // this may not be the best thing to do...
     // this->controlPoints = new vector<glm::vec3>(verticies);
-    this->verticies = new vector<glm::vec3>(verticies);
+    this->verticies = new vector<Vertex*>(verticies);
     this->patches = new vector<Patch*>();
 }
 
+// Initalize the veritices in this patch from the control points vector.
+void Patch::initializeVerticies() {
+    vector<glm::vec2> uv;
+    Vertex* v;
+    for(int i = 0; i < this->controlPoints->size(); i += 1) {
+        uv = this->getUVQuad(i);
+        v = new Vertex(this->controlPoints->at(i), uv.at(0), uv.at(1), this);
+        v->calcBezier();
+        this->verticies->push_back(v);
+    }
+}
+
 // Return the control point at that index, usually 0-15
-glm::vec3 Patch::getVertex(int i) {
+Vertex* Patch::getVertex(int i) {
     if (LOGLEVEL > 4) {
         cout << "Getting control point: " << i << endl;
     }
-    return this->controlPoints->at(i);
+    return this->verticies->at(i);
 }
 
 /** This is the map of the patch, i must be [0, 9]
@@ -112,14 +118,78 @@ int* Patch::quadIndicies(int i) {
     return indices;
 }
 
+// Return the U and V points for one of the original quads
+// VECTOR: uvStart, uvEnd
+vector<glm::vec2> Patch::getUVQuad(int n) {
+    vector<glm::vec2> result = vector<glm::vec2>();
+    float uS = 0.0f;
+    float vS = 0.0f;
+    float uE = 0.0f;
+    float vE = 0.0f;
+    if (n == 0) {
+        uS = 0.0f;
+        vS = 2.0f / 3.0f;
+        uE = 1.0f / 3.0f;
+        vE = 1.0f;
+    } else if (n == 1) {
+        uS = 1.0f / 3.0f;
+        vS = 2.0f / 3.0f;
+        uE = 2.0f / 3.0f;
+        vE = 1.0f;
+    } else if (n == 2) {
+        uS = 2.0f / 3.0f;
+        vS = 2.0f / 3.0f;
+        uE = 1.0f;
+        vE = 1.0f;
+    }  else if (n == 3) {
+        uS = 0.0f;
+        vS = 1.0f / 3.0f;
+        uE = 1.0f / 3.0f;
+        vE = 2.0f / 3.0f;
+    } else if (n == 4) {
+        uS = 1.0f / 3.0f;
+        vS = 1.0f / 3.0f;
+        uE = 2.0f / 3.0f;
+        vE = 2.0f / 3.0f;
+    } else if (n == 5) {
+        uS = 2.0f / 3.0f;
+        vS = 2.0f / 3.0f;
+        uE = 1.0f;
+        vE = 2.0f / 3.0f;
+    } else if (n == 6) {
+        uS = 0.0f;
+        vS = 0.0f;
+        uE = 1.0f / 3.0f;
+        vE = 1.0f / 3.0f;
+    }  else if (n == 7) {
+        uS = 1.0f / 3.0f;
+        vS = 0.0f;
+        uE = 1.0f / 3.0f;
+        vE = 2.0f / 3.0f;
+    } else if (n == 8) {
+        uS = 2.0f / 3.0f;
+        vS = 0.0f;
+        uE = 1.0f;
+        vE = 1.0f / 3.0f;
+    } // else case check??
+
+    glm::vec2 start = glm::vec2(uS, vS);
+    glm::vec2 end   = glm::vec2(uE, vE);
+
+    result.push_back(start);
+    result.push_back(end);
+
+    return result;
+}
+
 // Return the 4 verticies of the quad ready to be drawn.
-vector<glm::vec3> Patch::getQuad(int in) {
+vector<Vertex*> Patch::getQuad(int in) {
     // if (!this->isQuad) {
     //     // FIXME...
     //     return this->getVerticies();
     // }
 
-    vector<glm::vec3> result = vector<glm::vec3>();
+    vector<Vertex*> result = vector<Vertex*>();
     int* i = this->quadIndicies(in);
     // TL TR LL RR
     for(int j = 0; j < 4; j += 1) {
@@ -129,95 +199,69 @@ vector<glm::vec3> Patch::getQuad(int in) {
 }
 
 // Return the 4 verticies of this patch
-vector<glm::vec3> Patch::getVerticies() {
+vector<Vertex*> Patch::getVerticies() {
     // FIXME -- sketchy
     return *(this->verticies);
-}
-
-// Return the U and V points for one of the original quads
-// VECTOR: uStart, uEnd, vStart, vEnd
-vector<float> Patch::getUVQuad(int n) {
-    vector<float> result = vector<float>();
-    int m = n % 3;
-    float uS = m / 3;
-    float vS = (float) floor(n / 3);
-    if (vS == 0.0f) {
-        vS = 2 / 3;
-    } else if (vS == 1.0f) {
-        vS = 1 / 3;
-    } else {
-        vS = 0.0f;
-    }
-
-    float uE = uS + (1 / 3);
-    float vE = vS + (1 / 3);
-
-    result.push_back(uS);
-    result.push_back(uE);
-    result.push_back(vS);
-    result.push_back(vE);
-
-    return result;
 }
 
 // Get the U and V values based on the verticies of the current patch.
 // Store them in the standard vector format.
 // This basically creates a bounding box.
-vector<float> Patch::getUVTri() {
-    vector<float> result = vector<float>();
-
-    // where MIN is taken, this value should be 1, so as to not affect it
-    // where MAX, this should be 0 -- all values are in [0.0, 1.0]
-    float uS4 = 1.0f;
-    float uE4 = 0.0f;
-    float vS4 = 1.0f;
-    float vE4 = 0.0f;
-
-    if (this->verticies->size() == 4) {
-        glm::vec3 pt = this->verticies->at(3);
-        uS4 = pt.x;
-        uE4 = pt.x;
-        vS4 = pt.y;
-        vE4 = pt.y;
-    }
-
-    float uS = min(this->verticies->at(0).x, this->verticies->at(1).x,
-        this->verticies->at(2).x);
-    float uE = max(this->verticies->at(0).x, this->verticies->at(1).x,
-        this->verticies->at(2).x);
-    float vS = min(this->verticies->at(0).y, this->verticies->at(1).y,
-        this->verticies->at(2).y);
-    float vE = max(this->verticies->at(0).y, this->verticies->at(1).y,
-        this->verticies->at(2).y);
-
-    result.push_back(uS);
-    result.push_back(uE);
-    result.push_back(vS);
-    result.push_back(vE);
-
-    return result;
-}
+// vector<float> Patch::getUVTri() {
+//     vector<float> result = vector<float>();
+// 
+//     // where MIN is taken, this value should be 1, so as to not affect it
+//     // where MAX, this should be 0 -- all values are in [0.0, 1.0]
+//     float uS4 = 1.0f;
+//     float uE4 = 0.0f;
+//     float vS4 = 1.0f;
+//     float vE4 = 0.0f;
+// 
+//     if (this->verticies->size() == 4) {
+//         glm::vec3 pt = this->verticies->at(3);
+//         uS4 = pt.x;
+//         uE4 = pt.x;
+//         vS4 = pt.y;
+//         vE4 = pt.y;
+//     }
+// 
+//     float uS = min(this->verticies->at(0).x, this->verticies->at(1).x,
+//         this->verticies->at(2).x);
+//     float uE = max(this->verticies->at(0).x, this->verticies->at(1).x,
+//         this->verticies->at(2).x);
+//     float vS = min(this->verticies->at(0).y, this->verticies->at(1).y,
+//         this->verticies->at(2).y);
+//     float vE = max(this->verticies->at(0).y, this->verticies->at(1).y,
+//         this->verticies->at(2).y);
+// 
+//     result.push_back(uS);
+//     result.push_back(uE);
+//     result.push_back(vS);
+//     result.push_back(vE);
+// 
+//     return result;
+// }
 
 // Set the U and V values for the patch based on a vector generated by a get
 // method.
-void Patch::setUV(vector<float> in) {
-    this->uStart = in.at(0);
-    this->uEnd   = in.at(1);
-    this->vStart = in.at(2);
-    this->vEnd   = in.at(3);
-}
+// void Patch::setUV(vector<float> in) {
+//     this->uStart = in.at(0);
+//     this->uEnd   = in.at(1);
+//     this->vStart = in.at(2);
+//     this->vEnd   = in.at(3);
+// }
 
 // this works for cases of two but will need to be fixed for up to 4...
 // FIXME -- this coulf use a constructor to build the result from verticies.
 // FIXME -- does this work for 2, 3??
-vector<glm::vec3> Patch::getTri(int n) {
-    vector<glm::vec3> result;
+vector<Vertex*> Patch::getTri(int n) {
+    vector<Vertex*> result;
 
     if (LOGLEVEL > 5) {
-        cout << "GETTING TRIANGLES " << this->controlPoints->size() << endl;
+        cout << "GETTING TRIANGLES " << this->verticies->size() << endl;
     }
     for(int i = n; i < n + 3; i += 1) {
-        result.push_back(this->controlPoints->at(i));
+        result.push_back(this->verticies->at(i));
     }
     return result;
 }
@@ -275,7 +319,7 @@ void Patch::subdivideTriangle() {
         if (LOGLEVEL > 5) {
             cout << "New Patch added to list" << endl;
         }
-        int flat = p->isFlat(p->getVerticies());
+        int flat = p->isFlat(); // p->getVerticies()
         if (!flat) {
             p->subdivideTriangle(flat);
         }
@@ -300,33 +344,33 @@ bool Patch::hasChildren() {
 // }
 
 // check the flatness of a triangle.
-int Patch::isFlat(vector<glm::vec3> poly) {
+int Patch::isFlat() { // vector<glm::vec3> poly
     glm::vec3 midA, midB, midC;
     float midU, midV;
     bool sideA, sideB, sideC;
-    midA = (this->verticies->at(0) + this->verticies->at(1)) / 2.0f;
-    midB = (this->verticies->at(1) + this->verticies->at(2)) / 2.0f;
-    midC = (this->verticies->at(0) + this->verticies->at(2)) / 2.0f;
-    midU = (this->uStart + this->uEnd) / 2;
-    midV = (this->vStart + this->vEnd) / 2;
-    sideA = this->sideIsFlat(midA, midU, midV);
-    sideB = this->sideIsFlat(midB, midU, midV);
-    sideC = this->sideIsFlat(midC, midU, midV);
+    // midA = (this->verticies->at(0) + this->verticies->at(1)) / 2.0f;
+    // midB = (this->verticies->at(1) + this->verticies->at(2)) / 2.0f;
+    // midC = (this->verticies->at(0) + this->verticies->at(2)) / 2.0f;
+    // midU = (this->uStart + this->uEnd) / 2;
+    // midV = (this->vStart + this->vEnd) / 2;
+    // sideA = this->sideIsFlat(midA, midU, midV);
+    // sideB = this->sideIsFlat(midB, midU, midV);
+    // sideC = this->sideIsFlat(midC, midU, midV);
     
     return 0;
 }
 
-bool Patch::sideIsFlat(glm::vec3 midpt, float midU, float midV) {
+bool Patch::sideIsFlat(Vertex* midpt, float midU, float midV) {
     return false;
 }
 
 // A DFS of all the polygons in this vector
 // eventually it will call .verticies on the polygon and append to the list.
-vector< vector<glm::vec3> > Patch::getPolygons() {
-    vector< vector<glm::vec3> > all = vector< vector<glm::vec3> >();
+vector< vector<Vertex*> > Patch::getPolygons() {
+    vector< vector<Vertex*> > all = vector< vector<Vertex*> >();
     for(int i = 0; i < patches->size(); i += 1) {
         Patch* p = this->patches->at(i);
-        vector< vector<glm::vec3> > newVect = p->getPolygons();
+        vector< vector<Vertex*> > newVect = p->getPolygons();
         all.insert(all.end(), newVect.begin(), newVect.end());
     }
     if (!this->hasChildren()) {

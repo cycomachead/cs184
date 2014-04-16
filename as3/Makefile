@@ -1,5 +1,5 @@
 CC = g++
-SOURCES = parser.cpp bezier.cpp model.cpp patch.cpp uniformModel.cpp
+SOURCES = parser.cpp bezier.cpp model.cpp patch.cpp uniformModel.cpp vertex.cpp
 OBJECTS = $(SOURCES:cpp=o)
 ifeq ($(shell sw_vers 2>/dev/null | grep Mac | awk '{ print $$2}'),Mac)
 	CC = clang #-xc++ # Clang handles C++11 better on 10.8
@@ -15,7 +15,7 @@ endif
 
 RM = /bin/rm -f
 
-.PHONY: main test test2 clean
+.PHONY: main test clean vert
 
 all: main
 
@@ -23,7 +23,10 @@ main:
 	$(CC) as3.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as3
 
 test:
-	$(CC) test.cpp $(SOURCES)$(INC) $(CFLAGS) $(LDFLAGS) -o test.out
+	$(CC) test.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o test.out
+
+vert:
+	$(CC) -c vertex.cpp $(INC) $(CFLAGS) $(LDFLAGS)
 
 catmull:
 	$(CC) catmull.c $(INC) $(CFLAGS) $(LDFLAGS) -o catmull

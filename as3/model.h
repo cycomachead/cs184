@@ -37,7 +37,7 @@ public:
     
     void subdivideAll();
     
-    vector <vector<glm::vec3> > getAllPolygons();
+    vector <vector<Vertex*> > getAllPolygons();
 }; // end model
 
 #endif

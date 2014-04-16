@@ -19,6 +19,10 @@
 // #include "patch.h"
 
 
+// FIXME -- hacky circular includes
+class Vertex;
+class Patch;
+
 #ifdef _WIN32
 #include <windows.h>
 #else
