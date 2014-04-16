@@ -38,12 +38,12 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
     float bcv = (v[1] + v[2])/2;
     float acu = (u[0] + u[2])/2;
     float acv = (v[0] + v[2])/2;
-    bool ab = isflat((a + b) / 2.0f, 
-        bezpatchinterp(curr, abu, abv, temp), errorBound);
-    bool bc = isflat((b + c)/ 2.0f, 
-        bezpatchinterp(curr, bcu, bcv, temp), errorBound);
-    bool ac = isflat((a + c)/ 2.0f, 
-        bezpatchinterp(curr, acu, acv, temp), errorBound);
+    bool ab = isflat((a + b) / 2.0f, bezpatchinterp(curr,
+        abu, abv, temp), errorBound);
+    bool bc = isflat((b + c)/ 2.0f, bezpatchinterp(curr,
+        bcu, bcv, temp), errorBound);
+    bool ac = isflat((a + c)/ 2.0f, bezpatchinterp(curr,
+        acu, acv, temp), errorBound);
     if (ab and bc and ac) {
         vector<glm::vec3>* shape = new vector<glm::vec3>();
         vector<glm::vec3>* normal = new vector<glm::vec3>();
@@ -73,18 +73,18 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         float nextu1[3] = {u[0], bcu, u[2]};
         float nextv1[3] = {v[0], bcv, v[2]};
         createTriangles(nextu1, nextv1);
-        float nextu2[3] = {u[0], bcu, u[1]};
-        float nextv2[3] = {v[0], bcv, v[1]};
+        float nextu2[3] = {u[1], bcu, u[2]};
+        float nextv2[3] = {v[1], bcv, v[2]};
         createTriangles(nextu2, nextv2);
     } else if (ab and !bc and !ac) {
-        float nextu1[3] = {u[0], abu, acu};
-        float nextv1[3] = {v[0], abv, acv};
+        float nextu1[3] = {u[0], acu, bcu};
+        float nextv1[3] = {v[0], acv, bcv};
         createTriangles(nextu1, nextv1);
-        float nextu2[3] = {u[1], abu, u[2]};
-        float nextv2[3] = {v[1], abv, v[2]};
+        float nextu2[3] = {u[1], acu, u[2]};
+        float nextv2[3] = {v[1], acv, v[2]};
         createTriangles(nextu2, nextv2);
-        float nextu3[3] = {u[2], abu, acu};
-        float nextv3[3] = {v[2], abv, acv};
+        float nextu3[3] = {u[2], acu, bcu};
+        float nextv3[3] = {v[2], acv, bcv};
         createTriangles(nextu3, nextv3);
     } else if (!ab and !bc and ac) {
         float nextu1[3] = {u[0], abu, bcu};
