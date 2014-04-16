@@ -38,12 +38,12 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
     float bcv = (v[1] + v[2])/2;
     float acu = (u[0] + u[2])/2;
     float acv = (v[0] + v[2])/2;
-    bool ab = isflat((a + b) / 2.0f, bezpatchinterp(curr,
-        abu, abv, temp), errorBound);
-    bool bc = isflat((b + c)/ 2.0f, bezpatchinterp(curr,
-        bcu, bcv, temp), errorBound);
-    bool ac = isflat((a + c)/ 2.0f, bezpatchinterp(curr,
-        acu, acv, temp), errorBound);
+    bool ab = isflat((a + b) / 2.0f, 
+        bezpatchinterp(curr, abu, abv, temp), errorBound);
+    bool bc = isflat((b + c)/ 2.0f, 
+        bezpatchinterp(curr, bcu, bcv, temp), errorBound);
+    bool ac = isflat((a + c)/ 2.0f, 
+        bezpatchinterp(curr, acu, acv, temp), errorBound);
     if (ab and bc and ac) {
         vector<glm::vec3>* shape = new vector<glm::vec3>();
         vector<glm::vec3>* normal = new vector<glm::vec3>();
