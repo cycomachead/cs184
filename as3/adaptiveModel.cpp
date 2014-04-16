@@ -4,7 +4,7 @@
 #include "bezier.h"
 
 float euclid(glm::vec3 a, glm::vec3 b) {
-    return sqr(a.x - b.x) + sqr(a.y - b.y) + sqr(a.z - b.z);
+    return sqr(b.x - a.x) + sqr(b.y - a.y) + sqr(b.z - a.z);
 }
 
 bool isflat(glm::vec3 a, glm::vec3 b, float error) {
@@ -44,7 +44,7 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         bezpatchinterp(curr, bcu, bcv, temp), errorBound);
     bool ac = isflat((a + c)/ 2.0f, 
         bezpatchinterp(curr, acu, acv, temp), errorBound);
-    if (ab and bc and ac) {
+    if (bc and ab and ac) {
         vector<glm::vec3>* shape = new vector<glm::vec3>();
         vector<glm::vec3>* normal = new vector<glm::vec3>();
         shape->push_back(a);
@@ -55,28 +55,28 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         normal->push_back(*n3);
         shapes->push_back(shape);
         normals->push_back(normal);
-    } else if (ab and bc and !ac) {
+    } else if (bc and ab and !ac) {
         float nextu1[3] = {u[0], u[1], acu};
         float nextv1[3] = {v[0], v[1], acv};
         createTriangles(nextu1, nextv1);
         float nextu2[3] = {u[2], acu, u[1]};
         float nextv2[3] = {v[2], acv, v[1]};
         createTriangles(nextu2, nextv2);
-    } else if (ab and !bc and ac) {
+    } else if (bc and !ab and ac) {
         float nextu1[3] = {u[0], abu, u[2]};
         float nextv1[3] = {v[0], abv, v[2]};
         createTriangles(nextu1, nextv1);
         float nextu2[3] = {u[1], abu, u[2]};
         float nextv2[3] = {v[1], abv, v[2]};
         createTriangles(nextu2, nextv2);
-    } else if (!ab and bc and ac) {
+    } else if (!bc and ab and ac) {
         float nextu1[3] = {u[0], bcu, u[2]};
         float nextv1[3] = {v[0], bcv, v[2]};
         createTriangles(nextu1, nextv1);
         float nextu2[3] = {u[0], bcu, u[1]};
         float nextv2[3] = {v[0], bcv, v[1]};
         createTriangles(nextu2, nextv2);
-    } else if (ab and !bc and !ac) {
+    } else if (bc and !ab and !ac) {
         float nextu1[3] = {u[0], abu, acu};
         float nextv1[3] = {v[0], abv, acv};
         createTriangles(nextu1, nextv1);
@@ -86,7 +86,7 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         float nextu3[3] = {u[2], abu, acu};
         float nextv3[3] = {v[2], abv, acv};
         createTriangles(nextu3, nextv3);
-    } else if (!ab and !bc and ac) {
+    } else if (!bc and !ab and ac) {
         float nextu1[3] = {u[0], abu, bcu};
         float nextv1[3] = {v[0], abv, bcv};
         createTriangles(nextu1, nextv1);
@@ -96,7 +96,7 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         float nextu3[3] = {u[1], abu, bcu};
         float nextv3[3] = {v[1], abv, bcv};
         createTriangles(nextu3, nextv3);   
-    } else if (!ab and bc and !ac) {
+    } else if (!bc and ab and !ac) {
         float nextu1[3] = {u[2], acu, bcu};
         float nextv1[3] = {v[2], acv, bcv};
         createTriangles(nextu1, nextv1);
@@ -106,7 +106,7 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         float nextu3[3] = {u[1], acu, bcu};
         float nextv3[3] = {v[1], acv, bcv};
         createTriangles(nextu3, nextv3);  
-    } else if (!ab and !bc and !ac) {
+    } else if (!bc and !ab and !ac) {
         float nextu1[3] = {u[0], acu, abu};
         float nextv1[3] = {v[0], acv, abv};
         createTriangles(nextu1, nextv1);
