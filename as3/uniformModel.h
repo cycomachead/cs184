@@ -13,14 +13,13 @@ public:
     vector< vector <vector<glm::vec3> > > modelPatches;
     vector< vector< glm::vec3 >* >* shapes;
     vector< vector< glm::vec3 >* >* normals;
-    float errorBound;
     float stepSize;
 
     UniformModel() {
         // empty
     }
 
-    UniformModel(vector< vector <vector<glm::vec3> > > patches, float tau);
+    UniformModel(vector< vector <vector<glm::vec3> > > patches, float step);
 
     void uniformTesselation();
 

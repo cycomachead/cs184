@@ -1,6 +1,6 @@
 // Model Object for AS3
 
-#include "UniformModel.h"
+#include "uniformModel.h"
 #include "bezier.h"
 
 
@@ -8,14 +8,14 @@ void UniformModel::uniformTesselation() {
     // iterate over patches and create 1D vectors
     for(int i = 0; i < modelPatches.size(); i += 1) {
         vector <vector<glm::vec3> > patch = modelPatches.at(i);
-        subdividepatch(patch, errorBound, shapes, normals);
+        subdividepatch(patch, stepSize, shapes, normals);
     }
 }
 
 
-UniformModel::UniformModel(vector< vector <vector<glm::vec3> > > patches, float tau) {
+UniformModel::UniformModel(vector< vector <vector<glm::vec3> > > patches, float step) {
     modelPatches = patches;
-    errorBound = stepSize = tau;
+    stepSize = step;
     shapes = new vector< vector<glm::vec3>* >();
     normals = new vector< vector<glm::vec3>* >();
     uniformTesselation();

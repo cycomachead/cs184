@@ -3,7 +3,8 @@
 
 #include "as3.h"
 #include "model.h"
-#include "UniformModel.h"
+#include "uniformModel.h"
+#include "adaptiveModel.h"
 #include "parser.h"
 
 #include <unistd.h>
@@ -17,8 +18,6 @@
 #define COLOR_BLACK glColor3f(0.0f, 0.0f, 0.0f);
 #define COLOR_WHITE glColor3f(1.0f, 1.0f, 1.0f);
 
-
-inline float sqr(float x) { return x*x; }
 
 using namespace std;
 
@@ -50,7 +49,7 @@ bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 // glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
-glm::vec3 translation = glm::vec3(0.0f, 0.0f, -5.5f);
+glm::vec3 translation = glm::vec3(0.0f, 0.0f, -13.5f);
 float rotationX = 0;
 float rotationY = 0;
 
@@ -58,7 +57,7 @@ vector< vector <vector<glm::vec3> > > patches;
 
 vector< vector<glm::vec3> > adaptiveTri;
 
-Model *mainModel;
+AdaptiveModel *mainModel;
 
 UniformModel* uniModel;
 
@@ -127,17 +126,6 @@ void myReshape(int w, int h) {
 }
 
 //****************************************************
-// A routine to set a pixel by drawing a GL point.  This is not a
-// general purpose routine as it assumes a lot of stuff specific to
-// this example.
-//****************************************************
-void setPixel(int x, int y, GLfloat r, GLfloat g, GLfloat b) {
-  glColor3f(r, g, b);
-  glVertex2f(x + 0.5, y + 0.5); // The 0.5 is to target pixel centers
-  // Note: Need to check for gap bug on inst machines.
-}
-
-//****************************************************
 // function that does the actual drawing of stuff
 //***************************************************
 void setupGlut() {
@@ -171,18 +159,17 @@ void setupGlut() {
     glPopMatrix();
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // GLfloat am2[]={.2,.2,.2,1.0};
-    // glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
-    // GLfloat dif2[]={1.0,0.8,0.0,1.0};
-    // glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
-    // GLfloat sp2[]={0.0,0.0,1.0,1.0};
-    // glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
-    // glMaterialf(GL_FRONT ,GL_SHININESS, 80.0);
-    // GLfloat emission[] = { .5,0.0,0.0,1.0};
-    // glMaterialfv(GL_BACK,GL_EMISSION,emission);
+    glEnable(GL_DEPTH_TEST);
+    GLfloat am2[]={.2,.2,.2,0.0};
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
+    GLfloat dif2[]={1.0,0.8,0.0,0.0};
+    glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
+    GLfloat sp2[]={0.0,0.0,1.0,0.0};
+    glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
+    glMaterialf(GL_FRONT ,GL_SHININESS, 64.0);
+    GLfloat emission[] = { .5,0.0,0.0,0.0};
+    glMaterialfv(GL_BACK,GL_EMISSION,emission);
 
-
-    //uleep(20000);
     if (LOGLEVEL > 1) {
         cout << "SETUP COMPLETE";
     }
@@ -206,45 +193,103 @@ void myDisplay() {
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
     if (useAdaptiveMode) {
         // iterate over model polygons/faces
-        for(int i = 0; i < adaptiveTri.size(); i += 1) {
-            vector<glm::vec3> tri = adaptiveTri.at(i);
-            if (LOGLEVEL > 5) {
-                cout << "DRAWING TRIANGLE  " << i << endl;
-            }
-            glBegin(GL_TRIANGLES);
-            for(int j = 0; j < tri.size(); j += 1) {
-                glm::vec3 point = tri.at(j);
-                if (LOGLEVEL > 5) {
-                    cout << "\tx: " << point.x << endl;
-                    cout << "\ty: " << point.y << endl;
-                    cout << "\tz: " << point.z << endl;
-                }
-                glVertex3f(point.x, point.y, point.z);
-                //glNormal3f(point.x, point.y, point.z);
-            }
-            glEnd();
+        vector <vector<glm::vec3>* >* shapes = mainModel->getShapes();
+        vector <vector<glm::vec3>* >* normals = mainModel->getNormals();
+        glBegin(GL_TRIANGLES);
+        for (int i = 0; i < shapes->size(); i++) {
+            // iterate over model polygons/faces
+            // if (i % 5 == 0) {
+            //     COLOR_GREEN
+            // } else if (i % 5 == 1) {
+            //     COLOR_BLUE
+            // } else if (i % 5 == 2) {
+            //     COLOR_RED
+            // } else if (i % 5 == 3) {
+            //     COLOR_CYAN
+            // } else if (i % 5 == 4) {
+            //     COLOR_YELLOW
+            // }
+            vector<glm::vec3>* shape = shapes->at(i);
+            vector<glm::vec3>* normal = normals->at(i);
+            glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
+            glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+            glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
+            glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+            glNormal3f(normal->at(2)[0], normal->at(2)[1], normal->at(2)[2]);
+            glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
         }
-    } else {
+        glEnd();
 
+        // glDisable(GL_LIGHTING);
+        // glBegin(GL_LINES);
+        // for (int i = 0; i < shapes->size(); i++) {
+        //     vector<glm::vec3>* shape = shapes->at(i);
+        //     vector<glm::vec3>* normal = normals->at(i);
+        //     COLOR_GREEN
+        //     glVertex3f(normal->at(0)[0] + shape->at(0)[0], normal->at(0)[1] + shape->at(0)[1], normal->at(0)[2] + shape->at(0)[2]);
+        //     glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+        //     COLOR_BLUE
+        //     glVertex3f(normal->at(1)[0] + shape->at(1)[0], normal->at(1)[1] + shape->at(1)[1], normal->at(1)[2] + shape->at(1)[2]);
+        //     glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+        //     COLOR_RED
+        //     glVertex3f(normal->at(2)[0] + shape->at(2)[0], normal->at(2)[1] + shape->at(2)[1], normal->at(2)[2] + shape->at(2)[2]);
+        //     glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+        //     // COLOR_YELLOW
+        //     // glVertex3f(normal->at(3)[0] + shape->at(3)[0], normal->at(3)[1] + shape->at(3)[1], normal->at(3)[2] + shape->at(3)[2]);
+        //     // glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
+        // }
+        // glEnd();
+        // for(int i = 0; i < adaptiveTri.size(); i += 1) {
+        //     vector<glm::vec3> tri = adaptiveTri.at(i);
+        //     if (LOGLEVEL > 5) {
+        //         cout << "DRAWING TRIANGLE   " << i << endl;
+        //     }
+        //     glBegin(GL_TRIANGLES);
+        //     COLOR_GREEN;
+        //     for(int j = 0; j < tri.size(); j += 1) {
+        //         glm::vec3 point = tri.at(j);
+        //         if (LOGLEVEL > 5) {
+        //             cout << "\tx: " << point.x << endl;
+        //             cout << "\ty: " << point.y << endl;
+        //             cout << "\tz: " << point.z << endl;
+        //         }
+        //         glVertex3f(point.x, point.y, point.z);
+        //         //glNormal3f(point.x, point.y, point.z);
+        //     }
+        //     glEnd();
+        // }
+    } else {
         vector <vector<glm::vec3>* >* shapes = uniModel->getShapes();
         vector <vector<glm::vec3>* >* normals = uniModel->getNormals();
-        // glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-        // COLOR_BLUE;
-        // glutSolidSphere(.5f, 10, 10);
-        // COLOR_GREEN;
         // glDisable(GL_LIGHTING);
+        glBegin(GL_QUADS);
         for (int i = 0; i < shapes->size(); i++) {
-            // glPointSize(10.0f);
-            glBegin(GL_QUADS);
-            // COLOR_GREEN;
             // iterate over model polygons/faces
             vector<glm::vec3>* shape = shapes->at(i);
             vector<glm::vec3>* normal = normals->at(i);
-            // cout << "shape " << i << "\n";
-            // cout << shape->at(0)[0] << ", " << shape->at(0)[1] << ", " << shape->at(0)[2] << "\n";
-            // cout << shape->at(1)[0] << ", " << shape->at(1)[1] << ", " << shape->at(1)[2] << "\n";
-            // cout << shape->at(2)[0] << ", " << shape->at(2)[1] << ", " << shape->at(2)[2] << "\n";
-            // cout << shape->at(3)[0] << ", " << shape->at(3)[1] << ", " << shape->at(3)[2] << "\n";
+            // if (i % 5 == 0) {
+            //     COLOR_GREEN
+            // } else if (i % 5 == 1) {
+            //     COLOR_BLUE
+            // } else if (i % 5 == 2) {
+            //     COLOR_RED
+            // } else if (i % 5 == 3) {
+            //     COLOR_CYAN
+            // } else if (i % 5 == 4) {
+            //     COLOR_YELLOW
+            // }
+
+            // if (r <= .2) {
+            //     COLOR_GREEN
+            // } else if (r > .2 && r <= .4) {
+            //     COLOR_BLUE
+            // } else if (r > .4 && r <= .6) {
+            //     COLOR_RED
+            // } else if (r > .6 && r <= .8) {
+            //     COLOR_CYAN
+            // } else if (r > .8) {
+            //     COLOR_YELLOW
+            // }
             glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
             glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
             glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
@@ -253,8 +298,27 @@ void myDisplay() {
             glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
             glNormal3f(normal->at(3)[0], normal->at(3)[1], normal->at(3)[2]);
             glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
-            glEnd();
         }
+        glEnd();
+
+        // glBegin(GL_LINES);
+        // for (int i = 0; i < shapes->size(); i++) {
+        //     vector<glm::vec3>* shape = shapes->at(i);
+        //     vector<glm::vec3>* normal = normals->at(i);
+        //     COLOR_GREEN
+        //     glVertex3f(normal->at(0)[0] + shape->at(0)[0], normal->at(0)[1] + shape->at(0)[1], normal->at(0)[2] + shape->at(0)[2]);
+        //     glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+        //     COLOR_BLUE
+        //     glVertex3f(normal->at(1)[0] + shape->at(1)[0], normal->at(1)[1] + shape->at(1)[1], normal->at(1)[2] + shape->at(1)[2]);
+        //     glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+        //     COLOR_RED
+        //     glVertex3f(normal->at(2)[0] + shape->at(2)[0], normal->at(2)[1] + shape->at(2)[1], normal->at(2)[2] + shape->at(2)[2]);
+        //     glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+        //     COLOR_CYAN
+        //     glVertex3f(normal->at(3)[0] + shape->at(3)[0], normal->at(3)[1] + shape->at(3)[1], normal->at(3)[2] + shape->at(3)[2]);
+        //     glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
+        // }
+        // glEnd();
     }
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
@@ -372,7 +436,7 @@ int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
 
     // This tells glut to use a float-buffered window with red, green, and blue channels
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
     // Initalize theviewport size
     viewport.w = 800;
@@ -389,13 +453,13 @@ int main(int argc, char *argv[]) {
     // Create the Main Model
     uniModel = new UniformModel(patches, errorParam);
     if (useAdaptiveMode) {
-        mainModel = new Model(patches, errorParam);
-        mainModel->buildAdaptive();
-        mainModel->subdivideAll();
-        adaptiveTri = mainModel->getAllPolygons();
-        if (LOGLEVEL > 4) {
-            cout << "Adaptive Processing Finished" << endl;
-        }
+        mainModel = new AdaptiveModel(patches, errorParam);
+        // mainModel->buildAdaptive();
+        // mainModel->subdivideAll();
+        // adaptiveTri = mainModel->getAllPolygons();
+        // if (LOGLEVEL > 4) {
+        //     cout << "Adaptive Processing Finished" << endl;
+        // }
     }
 
     glutKeyboardFunc(keypress); // Detect key presses
