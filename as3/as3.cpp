@@ -220,7 +220,6 @@ void displayNormal(vector<glm::vec3>* shape, vector<glm::vec3>* normal) {
 }
 
 void setMultiColor() {
-    glDisable(GL_LIGHTING);
     float r = ((double) rand() / (RAND_MAX));
     if (r <= .2) {
         COLOR_GREEN
@@ -259,6 +258,7 @@ void myDisplay() {
         vector<glm::vec3>* shape = shapes->at(i);
         vector<glm::vec3>* normal = normals->at(i);
         if (multiColor) {
+            glDisable(GL_LIGHTING);
             setMultiColor();
         }
         glBegin(GL_POLYGON);
@@ -274,7 +274,6 @@ void myDisplay() {
         }
         glEnd();
     }
-    
 
     if (normalDisplay) {
         for (int i = 0; i < shapes->size(); i++) {
