@@ -6,4 +6,5 @@
 
 void loadPatches(string file);
 
+void writeObj(string, vector <vector<glm::vec3>* >*, vector <vector<glm::vec3>* >*);
 #endif

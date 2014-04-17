@@ -37,6 +37,8 @@ Viewport viewport;
 
 // Command Line Params
 string inputFile;
+bool writeFile = false;
+string outputFile;
 float subDivParam;
 float errorParam;
 bool useAdaptiveMode = false;
@@ -91,7 +93,9 @@ void initScene(int argc, char *argv[]) {
             LOGLEVEL = atoi(argv[pos]);
         } else if (curr == "-o") {
             // OPTIONAL .obj output files
+            writeFile = true;
             pos += 1;
+            outputFile = argv[pos];
         } else {
             errorParam = subDivParam = atof(argv[pos]);
         }
@@ -375,6 +379,9 @@ void keypress(unsigned char key, int x, int y) {
         cout << "Key Press: " << key << endl;
     }
     if (key == 32) { // spacebar.
+        if (writeFile) {
+            writeObj(outputFile, mainModel->getShapes(), mainModel->getNormals());
+        }
         exit(0);
     } else if (key == 'w' or key == 'W') { // Filled or Wireframe
         toggleWireframe();
