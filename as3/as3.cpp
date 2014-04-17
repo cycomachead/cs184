@@ -49,7 +49,7 @@ bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 float zoomLevel = 1.0f;
 // glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
-glm::vec3 translation = glm::vec3(0.0f, 0.0f, -7.5f);
+glm::vec3 translation = glm::vec3(0.0f, 0.0f, -13.5f);
 float rotationX = 0;
 float rotationY = 0;
 
@@ -211,6 +211,17 @@ void myDisplay() {
         glBegin(GL_TRIANGLES);
         for (int i = 0; i < shapes->size(); i++) {
             // iterate over model polygons/faces
+            // if (i % 5 == 0) {
+            //     COLOR_GREEN
+            // } else if (i % 5 == 1) {
+            //     COLOR_BLUE
+            // } else if (i % 5 == 2) {
+            //     COLOR_RED
+            // } else if (i % 5 == 3) {
+            //     COLOR_CYAN
+            // } else if (i % 5 == 4) {
+            //     COLOR_YELLOW
+            // }
             vector<glm::vec3>* shape = shapes->at(i);
             vector<glm::vec3>* normal = normals->at(i);
             glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
@@ -221,6 +232,26 @@ void myDisplay() {
             glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
         }
         glEnd();
+
+        // glDisable(GL_LIGHTING);
+        // glBegin(GL_LINES);
+        // for (int i = 0; i < shapes->size(); i++) {
+        //     vector<glm::vec3>* shape = shapes->at(i);
+        //     vector<glm::vec3>* normal = normals->at(i);
+        //     COLOR_GREEN
+        //     glVertex3f(normal->at(0)[0] + shape->at(0)[0], normal->at(0)[1] + shape->at(0)[1], normal->at(0)[2] + shape->at(0)[2]);
+        //     glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+        //     COLOR_BLUE
+        //     glVertex3f(normal->at(1)[0] + shape->at(1)[0], normal->at(1)[1] + shape->at(1)[1], normal->at(1)[2] + shape->at(1)[2]);
+        //     glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+        //     COLOR_RED
+        //     glVertex3f(normal->at(2)[0] + shape->at(2)[0], normal->at(2)[1] + shape->at(2)[1], normal->at(2)[2] + shape->at(2)[2]);
+        //     glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+        //     // COLOR_YELLOW
+        //     // glVertex3f(normal->at(3)[0] + shape->at(3)[0], normal->at(3)[1] + shape->at(3)[1], normal->at(3)[2] + shape->at(3)[2]);
+        //     // glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
+        // }
+        // glEnd();
         // for(int i = 0; i < adaptiveTri.size(); i += 1) {
         //     vector<glm::vec3> tri = adaptiveTri.at(i);
         //     if (LOGLEVEL > 5) {
@@ -241,14 +272,37 @@ void myDisplay() {
         //     glEnd();
         // }
     } else {
-
         vector <vector<glm::vec3>* >* shapes = uniModel->getShapes();
         vector <vector<glm::vec3>* >* normals = uniModel->getNormals();
+        // glDisable(GL_LIGHTING);
         glBegin(GL_QUADS);
         for (int i = 0; i < shapes->size(); i++) {
             // iterate over model polygons/faces
             vector<glm::vec3>* shape = shapes->at(i);
             vector<glm::vec3>* normal = normals->at(i);
+            // if (i % 5 == 0) {
+            //     COLOR_GREEN
+            // } else if (i % 5 == 1) {
+            //     COLOR_BLUE
+            // } else if (i % 5 == 2) {
+            //     COLOR_RED
+            // } else if (i % 5 == 3) {
+            //     COLOR_CYAN
+            // } else if (i % 5 == 4) {
+            //     COLOR_YELLOW
+            // }
+
+            // if (r <= .2) {
+            //     COLOR_GREEN
+            // } else if (r > .2 && r <= .4) {
+            //     COLOR_BLUE
+            // } else if (r > .4 && r <= .6) {
+            //     COLOR_RED
+            // } else if (r > .6 && r <= .8) {
+            //     COLOR_CYAN
+            // } else if (r > .8) {
+            //     COLOR_YELLOW
+            // }
             glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
             glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
             glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
@@ -259,6 +313,25 @@ void myDisplay() {
             glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
         }
         glEnd();
+
+        // glBegin(GL_LINES);
+        // for (int i = 0; i < shapes->size(); i++) {
+        //     vector<glm::vec3>* shape = shapes->at(i);
+        //     vector<glm::vec3>* normal = normals->at(i);
+        //     COLOR_GREEN
+        //     glVertex3f(normal->at(0)[0] + shape->at(0)[0], normal->at(0)[1] + shape->at(0)[1], normal->at(0)[2] + shape->at(0)[2]);
+        //     glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+        //     COLOR_BLUE
+        //     glVertex3f(normal->at(1)[0] + shape->at(1)[0], normal->at(1)[1] + shape->at(1)[1], normal->at(1)[2] + shape->at(1)[2]);
+        //     glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+        //     COLOR_RED
+        //     glVertex3f(normal->at(2)[0] + shape->at(2)[0], normal->at(2)[1] + shape->at(2)[1], normal->at(2)[2] + shape->at(2)[2]);
+        //     glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+        //     COLOR_CYAN
+        //     glVertex3f(normal->at(3)[0] + shape->at(3)[0], normal->at(3)[1] + shape->at(3)[1], normal->at(3)[2] + shape->at(3)[2]);
+        //     glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
+        // }
+        // glEnd();
     }
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)

@@ -20,7 +20,7 @@ glm::vec3 bezcurveinterp(vector< glm::vec3 > curve, float u, glm::vec3* dPdu) {
     glm::vec3 p = D * (float) (1.0 - u) + E * u;
 
     // compute derivative also
-    *dPdu = (E - D) * (float) 3.0;
+    *dPdu = (E - D);
 
     return p;
 }
@@ -89,9 +89,16 @@ glm::vec3 bezpatchinterp(vector< vector< glm::vec3 > > patch, float u, float v, 
 	glm::vec3 c = glm::cross( *dPdu, *dPdv);
 	// glm::vec3 c = cross(*dPdu, *dPdv);
 
-	glm::vec3 n = glm::normalize(c);	
+	glm::vec3 n = glm::normalize(c);
 
 	*normal = n;
+
+	if (glm::length(n) != glm::length(n)) {
+		float offset = .01;
+		u += offset;
+		v += offset;
+		bezpatchinterp(patch, u, v, normal);
+	}	
 
 	return p;
 }
@@ -104,10 +111,11 @@ void subdividepatch(vector< vector< glm::vec3 > > patch, float step,
 	vector< vector< glm::vec3 >* >* p, vector< vector< glm::vec3 >* >* n) {
 	float u;
 	float v;
+	float absolom = 0;
 	// compute how many subdivisions there 
 	// are for this step size
 	// We are also omitting epsilon.. 
-	int numDiv = (int) 1 / step;
+	int numDiv = (int) (1 + absolom) / step;
 	// for each parametric value of u
 	for (int iu = 0; iu < numDiv; iu++) {
 		u = iu * step;
