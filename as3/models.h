@@ -4,8 +4,14 @@
 #include "as3.h"
 
 using namespace std;
+class Model {
+public:
+    virtual vector< vector <vector<glm::vec3> > > getPatches() = 0;
+    virtual vector< vector <glm::vec3>* >* getShapes() = 0; 
+    virtual vector< vector <glm::vec3>* >* getNormals() = 0;
+};
 
-class AdaptiveModel {
+class AdaptiveModel : public Model {
 public:
 
     vector< vector <vector<glm::vec3> > > modelPatches;
@@ -26,7 +32,7 @@ public:
     vector< vector <glm::vec3>* >* getNormals();
 };
 
-class UniformModel {
+class UniformModel : public Model {
 public:
 
     vector< vector <vector<glm::vec3> > > modelPatches;

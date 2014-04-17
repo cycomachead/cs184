@@ -58,9 +58,8 @@ vector< vector <vector<glm::vec3> > > patches;
 
 vector< vector<glm::vec3> > adaptiveTri;
 
-AdaptiveModel *mainModel;
+Model* mainModel;
 
-UniformModel* uniModel;
 
 //****************************************************
 // Basic Functions
@@ -192,7 +191,7 @@ void setupGlut() {
 void displayNormal(vector<glm::vec3>* shape, vector<glm::vec3>* normal) {
     glDisable(GL_LIGHTING);
     glBegin(GL_LINES);
-    if (shape->size() == 3) {
+    if (useAdaptiveMode) {
         COLOR_GREEN
         glVertex3f(normal->at(0)[0] + shape->at(0)[0], normal->at(0)[1] + shape->at(0)[1], normal->at(0)[2] + shape->at(0)[2]);
         glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
@@ -252,65 +251,39 @@ void myDisplay() {
     // Start drawing
     // OPENGL Options:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
-    if (useAdaptiveMode) {
-        // iterate over model polygons/faces
-        vector <vector<glm::vec3>* >* shapes = mainModel->getShapes();
-        vector <vector<glm::vec3>* >* normals = mainModel->getNormals();
-        glBegin(GL_TRIANGLES);
-        for (int i = 0; i < shapes->size(); i++) {
-            vector<glm::vec3>* shape = shapes->at(i);
-            vector<glm::vec3>* normal = normals->at(i);
-            if (multiColor) {
-                setMultiColor();
-            }
-            glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
-            glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
-            glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
-            glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
-            glNormal3f(normal->at(2)[0], normal->at(2)[1], normal->at(2)[2]);
-            glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+    // iterate over model polygons/faces
+    vector <vector<glm::vec3>* >* shapes = mainModel->getShapes();
+    vector <vector<glm::vec3>* >* normals = mainModel->getNormals();
+    
+    for (int i = 0; i < shapes->size(); i++) {
+        vector<glm::vec3>* shape = shapes->at(i);
+        vector<glm::vec3>* normal = normals->at(i);
+        if (multiColor) {
+            setMultiColor();
         }
-        glEnd();
-
-        if (normalDisplay) {
-            for (int i = 0; i < shapes->size(); i++) {
-                vector<glm::vec3>* shape = shapes->at(i);
-                vector<glm::vec3>* normal = normals->at(i);
-                displayNormal(shape, normal);
-            }
-        }
-
-    } else {
-        vector <vector<glm::vec3>* >* shapes = uniModel->getShapes();
-        vector <vector<glm::vec3>* >* normals = uniModel->getNormals();
-        // glDisable(GL_LIGHTING);
-        glBegin(GL_QUADS);
-        for (int i = 0; i < shapes->size(); i++) {
-            // iterate over model polygons/faces
-            if (multiColor) {
-                setMultiColor();
-            }
-            vector<glm::vec3>* shape = shapes->at(i);
-            vector<glm::vec3>* normal = normals->at(i);
-            glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
-            glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
-            glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
-            glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
-            glNormal3f(normal->at(2)[0], normal->at(2)[1], normal->at(2)[2]);
-            glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+        glBegin(GL_POLYGON);
+        glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
+        glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+        glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
+        glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+        glNormal3f(normal->at(2)[0], normal->at(2)[1], normal->at(2)[2]);
+        glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+        if (!useAdaptiveMode) {
             glNormal3f(normal->at(3)[0], normal->at(3)[1], normal->at(3)[2]);
             glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
         }
         glEnd();
+    }
+    
 
-        if (normalDisplay) {
-            for (int i = 0; i < shapes->size(); i++) {
-                vector<glm::vec3>* shape = shapes->at(i);
-                vector<glm::vec3>* normal = normals->at(i);
-                displayNormal(shape, normal);
-            }
+    if (normalDisplay) {
+        for (int i = 0; i < shapes->size(); i++) {
+            vector<glm::vec3>* shape = shapes->at(i);
+            vector<glm::vec3>* normal = normals->at(i);
+            displayNormal(shape, normal);
         }
     }
+
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
@@ -452,15 +425,9 @@ int main(int argc, char *argv[]) {
     // TODO: detect file type... OPTIONAL
     loadPatches(inputFile);
     // Create the Main Model
-    uniModel = new UniformModel(patches, errorParam);
+    mainModel = new UniformModel(patches, errorParam);
     if (useAdaptiveMode) {
         mainModel = new AdaptiveModel(patches, errorParam);
-        // mainModel->buildAdaptive();
-        // mainModel->subdivideAll();
-        // adaptiveTri = mainModel->getAllPolygons();
-        // if (LOGLEVEL > 4) {
-        //     cout << "Adaptive Processing Finished" << endl;
-        // }
     }
 
     glutKeyboardFunc(keypress); // Detect key presses
