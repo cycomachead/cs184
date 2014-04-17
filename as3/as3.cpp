@@ -46,6 +46,7 @@ bool useSmoothShading  = false; // controlled by 's'
 bool useWireframeMode  = false; // controlled by 'w'
 bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 bool normalDisplay = false;
+bool multiColor = false;
 float zoomLevel = 1.0f;
 // glm::vec2 rotation = glm::vec2(0.0f, 0.0f);
 glm::vec3 translation = glm::vec3(0.0f, 0.0f, -13.5f);
@@ -219,6 +220,22 @@ void displayNormal(vector<glm::vec3>* shape, vector<glm::vec3>* normal) {
     glEnd();
 }
 
+void setMultiColor() {
+    glDisable(GL_LIGHTING);
+    float r = ((double) rand() / (RAND_MAX));
+    if (r <= .2) {
+        COLOR_GREEN
+    } else if (r > .2 && r <= .4) {
+        COLOR_BLUE
+    } else if (r > .4 && r <= .6) {
+        COLOR_RED
+    } else if (r > .6 && r <= .8) {
+        COLOR_CYAN
+    } else if (r > .8) {
+        COLOR_YELLOW
+    }
+}
+
 void myDisplay() {
     if (LOGLEVEL > 6) {
         cout << "MY DISPLAY CALLED" << endl;
@@ -241,20 +258,11 @@ void myDisplay() {
         vector <vector<glm::vec3>* >* normals = mainModel->getNormals();
         glBegin(GL_TRIANGLES);
         for (int i = 0; i < shapes->size(); i++) {
-            // iterate over model polygons/faces
-            // if (i % 5 == 0) {
-            //     COLOR_GREEN
-            // } else if (i % 5 == 1) {
-            //     COLOR_BLUE
-            // } else if (i % 5 == 2) {
-            //     COLOR_RED
-            // } else if (i % 5 == 3) {
-            //     COLOR_CYAN
-            // } else if (i % 5 == 4) {
-            //     COLOR_YELLOW
-            // }
             vector<glm::vec3>* shape = shapes->at(i);
             vector<glm::vec3>* normal = normals->at(i);
+            if (multiColor) {
+                setMultiColor();
+            }
             glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
             glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
             glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
@@ -279,31 +287,11 @@ void myDisplay() {
         glBegin(GL_QUADS);
         for (int i = 0; i < shapes->size(); i++) {
             // iterate over model polygons/faces
+            if (multiColor) {
+                setMultiColor();
+            }
             vector<glm::vec3>* shape = shapes->at(i);
             vector<glm::vec3>* normal = normals->at(i);
-            // if (i % 5 == 0) {
-            //     COLOR_GREEN
-            // } else if (i % 5 == 1) {
-            //     COLOR_BLUE
-            // } else if (i % 5 == 2) {
-            //     COLOR_RED
-            // } else if (i % 5 == 3) {
-            //     COLOR_CYAN
-            // } else if (i % 5 == 4) {
-            //     COLOR_YELLOW
-            // }
-
-            // if (r <= .2) {
-            //     COLOR_GREEN
-            // } else if (r > .2 && r <= .4) {
-            //     COLOR_BLUE
-            // } else if (r > .4 && r <= .6) {
-            //     COLOR_RED
-            // } else if (r > .6 && r <= .8) {
-            //     COLOR_CYAN
-            // } else if (r > .8) {
-            //     COLOR_YELLOW
-            // }
             glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
             glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
             glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
@@ -407,6 +395,11 @@ void keypress(unsigned char key, int x, int y) {
     } else if (key == 'n' or key == 'N') {
         normalDisplay = !normalDisplay;
         if (!normalDisplay) {
+            glEnable(GL_LIGHTING);
+        }
+    } else if (key == 'b' or key == 'B') {
+        multiColor = !multiColor;
+        if (!multiColor) {
             glEnable(GL_LIGHTING);
         }
     }
