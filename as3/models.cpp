@@ -1,5 +1,4 @@
-#include "uniformModel.h"
-#include "adaptiveModel.h"
+#include "models.h"
 #include "bezier.h"
 
 /** Utility Functions **/
