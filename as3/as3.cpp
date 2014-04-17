@@ -2,9 +2,7 @@
 // TOMO UEDA & MICHAEL BALL
 
 #include "as3.h"
-#include "model.h"
-#include "uniformModel.h"
-#include "adaptiveModel.h"
+#include "models.h"
 #include "parser.h"
 
 #include <unistd.h>
@@ -52,6 +50,7 @@ float zoomLevel = 1.0f;
 glm::vec3 translation = glm::vec3(0.0f, 0.0f, -13.5f);
 float rotationX = 0;
 float rotationY = 0;
+int LOGLEVEL;
 
 vector< vector <vector<glm::vec3> > > patches;
 

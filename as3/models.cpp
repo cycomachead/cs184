@@ -1,16 +1,39 @@
-// Model Object for AS3
-
+#include "uniformModel.h"
 #include "adaptiveModel.h"
 #include "bezier.h"
 
+/** Utility Functions **/
+/** Euclid takes in two points: A and B and returns
+	the Euclidean distance between the two points. **/
 float euclid(glm::vec3 a, glm::vec3 b) {
     return sqr(b.x - a.x) + sqr(b.y - a.y) + sqr(b.z - a.z);
 }
 
+/** Is Flat takes in two points A and B and returns 
+	true if the distance between the two points is less than 
+	error. Returns false otherwise. **/
 bool isflat(glm::vec3 a, glm::vec3 b, float error) {
     return euclid(a, b) < error;
 }
 
+
+/** AdaptiveModel Function implementations **/
+
+/** The constructor for the Adaptive Model class.
+	The constructor takes in PATCHES containing the control 
+	point of the surface. ERROR will be used to in
+	the isFlat function where we determine if two points during
+	the adaptive tesselation are close enough to be considered flat. **/
+AdaptiveModel::AdaptiveModel(vector< vector <vector<glm::vec3> > > patches, float error) {
+    modelPatches = patches;
+    errorBound = sqr(error);
+    shapes = new vector< vector<glm::vec3>* >();
+    normals = new vector< vector<glm::vec3>* >();
+    adaptiveTesselation();
+}
+
+/** For each patch in patches, we split one patch in two triangles,
+	and start the tesselation of the triangles. **/
 void AdaptiveModel::adaptiveTesselation() {
     // iterate over patches and create 1D vectors
     for(int i = 0; i < modelPatches.size(); i += 1) {
@@ -24,6 +47,10 @@ void AdaptiveModel::adaptiveTesselation() {
     }
 }
 
+/** U and V represent the three vertices on the triangle we are
+	trying to tesselate. We determine if the midpoint between the 
+	vertices are flat. If they aren't we divide and recursively 
+	call createTriangles until all triangles are flat. **/
 void AdaptiveModel::createTriangles(float u[], float v[]) {
     glm::vec3* n1 = new glm::vec3();
     glm::vec3* n2 = new glm::vec3();
@@ -123,24 +150,57 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
 
 }
 
-
-AdaptiveModel::AdaptiveModel(vector< vector <vector<glm::vec3> > > patches, float error) {
-    modelPatches = patches;
-    errorBound = sqr(error);
-    shapes = new vector< vector<glm::vec3>* >();
-    normals = new vector< vector<glm::vec3>* >();
-    adaptiveTesselation();
-}
-
+/** returns the patches that represent the surface. **/
 vector< vector <vector<glm::vec3> > > AdaptiveModel::getPatches() {
     return modelPatches;
 }
 
+/** Returns the shapes to be drawn. **/
 vector <vector<glm::vec3>* >* AdaptiveModel::getShapes() {
     return shapes;
 }
 
+/** Returns the Normals to be drawn. **/
 vector <vector<glm::vec3>* >* AdaptiveModel::getNormals() {
+    return normals;
+}
+
+/** Uniform Model Functions **/
+
+/** This constructor takes in PATCHES, which contains control point for the surface.
+	It also takes in STEP, which is used to deterime: 1 / STEP, the number
+	of subdivision for each patch. **/
+UniformModel::UniformModel(vector< vector <vector<glm::vec3> > > patches, float step) {
+    modelPatches = patches;
+    stepSize = step;
+    shapes = new vector< vector<glm::vec3>* >();
+    normals = new vector< vector<glm::vec3>* >();
+    uniformTesselation();
+}
+
+/** This will simply pass each patch to the bezier function subdividepatch
+	and construct rectangles there. **/
+void UniformModel::uniformTesselation() {
+    // iterate over patches and create 1D vectors
+    for(int i = 0; i < modelPatches.size(); i += 1) {
+        vector <vector<glm::vec3> > patch = modelPatches.at(i);
+        subdividepatch(patch, stepSize, shapes, normals);
+    }
+}
+
+/** Returns the patches that represents the control points. **/
+vector< vector <vector<glm::vec3> > > UniformModel::getPatches() {
+    return modelPatches;
+}
+
+/** Returns the rectangle that needs to be drawn. **/
+vector <vector<glm::vec3>* >* UniformModel::getShapes() {
+    return shapes;
+}
+
+/** Returns the normal for each vertice of the shape that needs
+	to be drawn. **/
+vector <vector<glm::vec3>* >* UniformModel::getNormals() {
     return normals;
 }
 
