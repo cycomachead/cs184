@@ -52,6 +52,7 @@ bool multiColor = false;
 glm::vec3 translation = glm::vec3(0.0f, 0.0f, -13.5f);
 float rotationX = 0;
 float rotationY = 0;
+float rotationZ = 0;
 int LOGLEVEL;
 
 vector< vector <vector<glm::vec3> > > patches;
@@ -267,6 +268,7 @@ void myDisplay() {
     glTranslatef(translation.x, translation.y, translation.z);
     glRotatef(rotationX, 0.0f, 1.0f, 0.0f);
     glRotatef(rotationY, 1.0f, 0.0f, 0.0f);
+    glRotatef(rotationZ, 0.0f, 0.0f, 1.0f);
     
     if (useHiddenLineMode) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -352,6 +354,10 @@ void rotate(int dir) {
         rotationX += 5;
     } else if (dir == 3) {
         rotationY -= 5;
+    } else if (dir == 4) {
+        rotationZ += 5;
+    } else if (dir == 5) {
+        rotationZ -= 5;
     }
 }
 
@@ -391,6 +397,10 @@ void keypress(unsigned char key, int x, int y) {
         changeZoom(-0.1f);
     } else if (key == '=' or key == '+') { // zoom in
         changeZoom(0.1f);
+    } else if (key == 'z' or key == 'Z') { // rotate Z
+        rotate(4);
+    } else if (key == 'x' or key == 'X') { // rotate Z
+        rotate(5);
     } else if (key == 'h' or key == 'H') { // OPTIONAL: toggleHiddenLines
         toggleHiddenLines();
     } else if (key == 'n' or key == 'N') {
