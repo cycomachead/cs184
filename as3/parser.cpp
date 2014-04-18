@@ -5,11 +5,11 @@
 
 // int LOGLEVEL;
 
-/** A function that splits STRING, by a DELIMiter, and stores it 
+/** A function that splits STRING, by a DELIMiter, and stores it
     in ELEM. Returns elem, which is a vector containing the split
     string. Disclaimer found this method on stack overflow. **/
-std::vector<std::string> &split(const string &s, char delim, 
-    std::vector<std::string> &elems) {
+vector<string> &split(const string &s, char delim,
+    vector<string> &elems) {
     stringstream sstream(s);
     string item;
     while (getline(sstream, item, delim)) {
@@ -20,10 +20,25 @@ std::vector<std::string> &split(const string &s, char delim,
 
 /** Same as the following but a function that returns the a new Vector.
     **/
-std::vector<std::string> split(const string &s, char delim) {
-    std::vector<std::string> elems;
+vector<string> split(const string &s, char delim) {
+    vector<string> elems;
     split(s, delim, elems);
     return elems;
+}
+
+// Split a string using C++ strings, and a multichar delimiter.
+// This also had help from stack overflow...
+vector<string> splitMulti(string in, string delim) {
+    vector<string> result;
+    size_t pos = 0;
+    string token;
+    while ((pos = in.find(delim)) != string::npos) {
+        token = in.substr(0, pos);
+        result.push_back(token);
+        in.erase(0, pos + delim.length());
+    }
+    result.push_back(token);
+    return result;
 }
 
 void parseInputLine(vector<string> line) {
@@ -33,7 +48,7 @@ void parseInputLine(vector<string> line) {
         float z = atof(line.at(3).c_str());
         glm::vec3 vertex(x, y, z);
         vertices.push_back(vertex);
-    } else if (!line.at(0).compare("vn")) {
+    } else if (!line.at(0).compare("vn") || !line.at(0).compare("n")) {
         float x = atof(line.at(1).c_str());
         float y = atof(line.at(2).c_str());
         float z = atof(line.at(3).c_str());
@@ -42,6 +57,18 @@ void parseInputLine(vector<string> line) {
     } else if (!line.at(0).compare("f")) {
         noNormal = false;
         if (line.at(1).find("//") != string::npos) {
+            vector<glm::vec3> tri;
+            vector<glm::vec3> normal;
+            for (int i = 1; i < line.size(); i += 1) {
+                vector<string> sv1 = splitMulti(line.at(i), "//");
+                glm::vec3 v1 = vertices.at(atoi(sv1.at(0).c_str()) - 1);
+                glm::vec3 n1 = normals.at(atoi(sv1.at(1).c_str()) - 1);
+                normal.push_back(n1);
+                tri.push_back(v1);
+            }
+            shapes.push_back(tri);
+            shapeNormals.push_back(normal);
+        } else if (line.at(1).find("/") != string::npos) {
             vector<string> sv1 = split(line.at(1), '/');
             vector<string> sv2 = split(line.at(2), '/');
             vector<string> sv3 = split(line.at(3), '/');
@@ -176,8 +203,8 @@ void loadPatches(string file) {
 }
 
 void writeObj(string name, Model* m, string inFile) {
-    
-    // Get vertices from model 
+
+    // Get vertices from model
     vector <vector<glm::vec3>* >* shapes = m->getShapes();
     vector <vector<glm::vec3>* >* normals = m->getNormals();
     // Triangles or quads?

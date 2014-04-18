@@ -53,9 +53,7 @@ bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
 bool normalDisplay = false;
 bool multiColor = false;
 glm::vec3 translation = glm::vec3(0.0f, 0.0f, -13.5f);
-float rotationX = 0;
-float rotationY = 0;
-float rotationZ = 0;
+glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 int LOGLEVEL;
 
 vector< vector <vector<glm::vec3> > > patches;
@@ -203,7 +201,7 @@ void displayNormal(vector<glm::vec3>* shape, vector<glm::vec3>* normal) {
     COLOR_RED
     glVertex3f(normal->at(2)[0] + shape->at(2)[0], normal->at(2)[1] + shape->at(2)[1], normal->at(2)[2] + shape->at(2)[2]);
     glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
-    if (!useAdaptiveMode || shape->size() == 4) {
+    if  (shape->size() == 4) { // removed !useAdaptive has problems with obj.
         COLOR_YELLOW
         glVertex3f(normal->at(3)[0] + shape->at(3)[0], normal->at(3)[1] + shape->at(3)[1], normal->at(3)[2] + shape->at(3)[2]);
         glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
@@ -233,7 +231,7 @@ void drawObject() {
     // OPENGL Options:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
     // iterate over model polygons/faces
-    
+
     vector <vector<glm::vec3>* >* shapes = mainModel->getShapes();
     vector <vector<glm::vec3>* >* normals = mainModel->getNormals();
     for (int i = 0; i < shapes->size(); i++) {
@@ -269,10 +267,10 @@ void myDisplay() {
 	glLoadIdentity();
 
     glTranslatef(translation.x, translation.y, translation.z);
-    glRotatef(rotationX, 0.0f, 1.0f, 0.0f);
-    glRotatef(rotationY, 1.0f, 0.0f, 0.0f);
-    glRotatef(rotationZ, 0.0f, 0.0f, 1.0f);
-    
+    glRotatef(rotation.x, 0.0f, 1.0f, 0.0f);
+    glRotatef(rotation.y, 1.0f, 0.0f, 0.0f);
+    glRotatef(rotation.z, 0.0f, 0.0f, 1.0f);
+
     if (useHiddenLineMode) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         // Color hidden lines as red
@@ -280,7 +278,7 @@ void myDisplay() {
         // add glDepthMask(GL_FALSE); before you render the hidden lines stage, but after the solid stage.
         // (don't forget to reverse this after the visible line stage or your rendering will be messed up)
     }
-    
+
     drawObject();
 
     if (useHiddenLineMode) {
@@ -289,9 +287,9 @@ void myDisplay() {
         glEnable(GL_POLYGON_OFFSET_FILL);
         glPolygonOffset(1.0, 1.0);
         glEnable(GL_LIGHTING);
-        
+
         drawObject();
-        
+
         glDisable(GL_POLYGON_OFFSET_FILL);
         glDisable(GL_LIGHTING);
     }
@@ -308,7 +306,7 @@ void myDisplay() {
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
-    
+
 void myDisplayObj() {
 
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -316,8 +314,9 @@ void myDisplayObj() {
     glLoadIdentity();
 
     glTranslatef(translation.x, translation.y, translation.z);
-    glRotatef(rotationX, 0.0f, 1.0f, 0.0f);
-    glRotatef(rotationY, 1.0f, 0.0f, 0.0f);
+    glRotatef(rotation.x, 0.0f, 1.0f, 0.0f);
+    glRotatef(rotation.y, 1.0f, 0.0f, 0.0f);
+    glRotatef(rotation.z, 0.0f, 0.0f, 1.0f);
 
     // Start drawing
     // OPENGL Options:
@@ -342,9 +341,6 @@ void myDisplayObj() {
         } else {
             vector<glm::vec3> shape = shapes.at(i);
             vector<glm::vec3> normal = shapeNormals.at(i);
-            cout << i << "\n";
-            cout << shape.at(0)[0] << " " <<  shape.at(0)[1] << " " <<  shape.at(0)[2] << "\n";
-            cout << normal.at(0)[0] << " " << normal.at(0)[1] << " " << normal.at(0)[2] << "\n";
             if (multiColor) {
                 glDisable(GL_LIGHTING);
                 setMultiColor();
@@ -416,17 +412,17 @@ void changeZoom(float amt) {
 // 0: Left, 1: Up, 2: Right, 3: Down
 void rotate(int dir) {
     if (!dir) {
-        rotationX -= 5;
+        rotation.x -= 5;
     } else if (dir == 1) {
-        rotationY += 5;
+        rotation.y += 5;
     } else if (dir == 2) {
-        rotationX += 5;
+        rotation.x += 5;
     } else if (dir == 3) {
-        rotationY -= 5;
+        rotation.y -= 5;
     } else if (dir == 4) {
-        rotationZ += 5;
+        rotation.z += 5;
     } else if (dir == 5) {
-        rotationZ -= 5;
+        rotation.z -= 5;
     }
 }
 
