@@ -380,7 +380,7 @@ void keypress(unsigned char key, int x, int y) {
     }
     if (key == 32) { // spacebar.
         if (writeFile) {
-            writeObj(outputFile, mainModel, inputFon);
+            writeObj(outputFile, mainModel, inputFile);
         }
         exit(0);
     } else if (key == 'w' or key == 'W') { // Filled or Wireframe

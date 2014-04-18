@@ -104,7 +104,7 @@ void writeObj(string name, Model* m, string inFile) {
         }
         // Write the line to create a "face" syntax is V#//N#
         // when defining only vertices and normals
-        int num = count - shapes->size();
+        int num = count - vertices;
         output << "f " << num << "//" << num << " " << num + 1 << "//" << num + 1;
         output << " " << num + 2 << "//" << num + 2;
         if (vertices == 4) { // If we have a quad.

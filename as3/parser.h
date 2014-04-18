@@ -3,8 +3,9 @@
 #ifndef PARSER_H
 #define PARSER_H
 #include "as3.h"
+#include "models.h"
 
 void loadPatches(string file);
 
-void writeObj(string, vector <vector<glm::vec3>* >*, vector <vector<glm::vec3>* >*);
+void writeObj(string, Model*, string);
 #endif
