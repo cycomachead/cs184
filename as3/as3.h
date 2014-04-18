@@ -39,6 +39,11 @@ using namespace std;
 
 extern int LOGLEVEL;
 extern vector< vector <vector<glm::vec3> > > patches;
+extern vector<glm::vec3> vertices;
+extern vector<glm::vec3> normals;
+extern vector< vector<glm::vec3> > shapes;
+extern vector< vector<glm::vec3> > shapeNormals;
+extern bool noNormal;
 inline float sqr(float x) { return x*x; }
 
 #endif

@@ -5,5 +5,6 @@
 #include "as3.h"
 
 void loadPatches(string file);
+void loadobj(string file);
 
 #endif
