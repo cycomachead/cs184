@@ -320,6 +320,9 @@ void myDisplayObj() {
         } else {
             vector<glm::vec3> shape = shapes.at(i);
             vector<glm::vec3> normal = shapeNormals.at(i);
+            cout << i << "\n";
+            cout << shape.at(0)[0] << " " <<  shape.at(0)[1] << " " <<  shape.at(0)[2] << "\n";
+            cout << normal.at(0)[0] << " " << normal.at(0)[1] << " " << normal.at(0)[2] << "\n";
             if (multiColor) {
                 glDisable(GL_LIGHTING);
                 setMultiColor();
@@ -335,7 +338,6 @@ void myDisplayObj() {
                 glNormal3f(normal.at(3)[0], normal.at(3)[1], normal.at(3)[2]);
                 glVertex3f(shape.at(3)[0], shape.at(3)[1], shape.at(3)[2]);
             }
-
             glEnd();
 
             if (normalDisplay) {

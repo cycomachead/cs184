@@ -38,8 +38,7 @@ void parseInputLine(vector<string> line) {
         float y = atof(line.at(2).c_str());
         float z = atof(line.at(3).c_str());
         glm::vec3 normal(x, y, z);
-        glm::vec3 normalized = glm::normalize(normal);
-        normals.push_back(normalized);
+        normals.push_back(normal);
     } else if (!line.at(0).compare("f")) {
         noNormal = false;
         if (line.at(1).find('/') != string::npos) {
@@ -56,12 +55,12 @@ void parseInputLine(vector<string> line) {
             tri.push_back(v1);
             tri.push_back(v2);
             tri.push_back(v3);
-            vector<glm::vec3> shapeNormal;
-            shapeNormal.push_back(n1);
-            shapeNormal.push_back(n2);
-            shapeNormal.push_back(n3);
+            vector<glm::vec3> normal;
+            normal.push_back(n1);
+            normal.push_back(n2);
+            normal.push_back(n3);
             shapes.push_back(tri);
-            shapeNormals.push_back(shapeNormal);
+            shapeNormals.push_back(normal);
         } else {
             noNormal = true;
             int len = line.size();
