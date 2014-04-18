@@ -6,6 +6,7 @@
 #include "models.h"
 
 void loadPatches(string file);
+void loadobj(string file);
 
 void writeObj(string, Model*, string);
 #endif

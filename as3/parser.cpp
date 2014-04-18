@@ -5,6 +5,111 @@
 
 // int LOGLEVEL;
 
+/** A function that splits STRING, by a DELIMiter, and stores it 
+    in ELEM. Returns elem, which is a vector containing the split
+    string. Disclaimer found this method on stack overflow. **/
+std::vector<std::string> &split(const string &s, char delim, 
+    std::vector<std::string> &elems) {
+    stringstream sstream(s);
+    string item;
+    while (getline(sstream, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+/** Same as the following but a function that returns the a new Vector.
+    **/
+std::vector<std::string> split(const string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+void parseInputLine(vector<string> line) {
+    if (!line.at(0).compare("vertex") || !line.at(0).compare("v")) {
+        float x = atof(line.at(1).c_str());
+        float y = atof(line.at(2).c_str());
+        float z = atof(line.at(3).c_str());
+        glm::vec3 vertex(x, y, z);
+        vertices.push_back(vertex);
+    } else if (!line.at(0).compare("vn")) {
+        float x = atof(line.at(1).c_str());
+        float y = atof(line.at(2).c_str());
+        float z = atof(line.at(3).c_str());
+        glm::vec3 normal(x, y, z);
+        glm::vec3 normalized = glm::normalize(normal);
+        normals.push_back(normalized);
+    } else if (!line.at(0).compare("f")) {
+        noNormal = false;
+        if (line.at(1).find("//") != string::npos) {
+            vector<string> sv1 = split(line.at(1), '/');
+            vector<string> sv2 = split(line.at(2), '/');
+            vector<string> sv3 = split(line.at(3), '/');
+            glm::vec3 v1 = vertices.at(atoi(sv1.at(0).c_str()) - 1);
+            glm::vec3 n1 = normals.at(atoi(sv1.at(2).c_str()) - 1);
+            glm::vec3 v2 = vertices.at(atoi(sv2.at(0).c_str()) - 1);
+            glm::vec3 n2 = normals.at(atoi(sv2.at(2).c_str()) - 1);
+            glm::vec3 v3 = vertices.at(atoi(sv3.at(0).c_str()) - 1);
+            glm::vec3 n3 = normals.at(atoi(sv3.at(2).c_str()) - 1);
+            vector<glm::vec3> tri;
+            tri.push_back(v1);
+            tri.push_back(v2);
+            tri.push_back(v3);
+            vector<glm::vec3> shapeNormal;
+            shapeNormal.push_back(n1);
+            shapeNormal.push_back(n2);
+            shapeNormal.push_back(n3);
+            shapes.push_back(tri);
+            shapeNormals.push_back(shapeNormal);
+        } else {
+            noNormal = true;
+            int len = line.size();
+            if (len == 4) {
+                glm::vec3 v1 = vertices.at(atoi(line.at(1).c_str())-1);
+                glm::vec3 v2 = vertices.at(atoi(line.at(2).c_str())-1);
+                glm::vec3 v3 = vertices.at(atoi(line.at(3).c_str())-1);
+                vector<glm::vec3> tri;
+                tri.push_back(v1);
+                tri.push_back(v2);
+                tri.push_back(v3);
+                shapes.push_back(tri);
+            } else if (len == 5) {
+                glm::vec3 v1 = vertices.at(atoi(line.at(1).c_str())-1);
+                glm::vec3 v2 = vertices.at(atoi(line.at(2).c_str())-1);
+                glm::vec3 v3 = vertices.at(atoi(line.at(3).c_str())-1);
+                glm::vec3 v4 = vertices.at(atoi(line.at(4).c_str())-1);
+                vector<glm::vec3> quad;
+                quad.push_back(v1);
+                quad.push_back(v2);
+                quad.push_back(v3);
+                quad.push_back(v4);
+                shapes.push_back(quad);
+            }
+        }
+    }
+}
+
+void loadobj(string file) {
+    ifstream obj(file.c_str());
+    if (!obj.is_open()) {
+        cout << "Unable to open file " << file << endl;
+        cerr << "EXITING" << endl;
+        exit(1);
+    }
+
+    string line;
+    vector<string> parsedline;
+    while (getline(obj, line)) {
+        if (line.compare("")) {
+            parsedline = split(line, ' ');
+            if (parsedline.at(0).compare("#")) {
+               parseInputLine(parsedline);
+            }
+        }
+    }
+}
+
 void loadPatches(string file) {
 
     ifstream inpfile(file.c_str());
@@ -69,10 +174,6 @@ void loadPatches(string file) {
         cout << "PARSING COMPLETE" << endl;
     }
     inpfile.close();
-}
-
-void loadObj(string file) {
-
 }
 
 void writeObj(string name, Model* m, string inFile) {
