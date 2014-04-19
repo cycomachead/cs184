@@ -37,7 +37,7 @@ test2:
 	$(CC) -g test.o $(OBJECTS) $(STD) -o test.out
 
 clean:
-	$(RM) *.o as3
+	$(RM) *.o as3 *.dSYM
 
 
 

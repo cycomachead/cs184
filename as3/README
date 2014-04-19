@@ -25,6 +25,7 @@ commands:
 
 COMPILE:
 This compiles on OS X 10.8+, including the lab machines.
+(specific machine tested was Viking.cs)
 
 Extra Credit:
 These features are specifically mentioned as extra credit:
@@ -35,3 +36,9 @@ The following were implemented for fun:
 * 'b' key for random coloring
 * 'n' key for displaying normals
 * 'x' 'z' for z-axis rotation
+
+NOTES:
+* teapot.obj and teapotAdaptive.obj were rendered by our program
+* The android was found online
+* To compile glm should be placed in lib/glm (this is NOT included in the submission)
+*
