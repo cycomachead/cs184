@@ -223,7 +223,7 @@ vector <vector<glm::vec3> > norms) {
     }
     for (int i = 0; i < norms.size(); i += 1) {
         vector<glm::vec3>* n = new vector<glm::vec3>(poly.at(i));
-        this->shapes->push_back(n);
+        this->normals->push_back(n);
     }
 
 }

@@ -40,33 +40,40 @@ string inputFile;
 string outputFile;
 
 bool objInput = false;
+bool sceneFile = false;
 bool writeFile = false;
 
 float subDivParam;
 float errorParam;
 bool useAdaptiveMode = false;
 
-// Other Initial Settings
-bool useSmoothShading  = false; // controlled by 's'
-bool useWireframeMode  = false; // controlled by 'w'
-bool useHiddenLineMode = false; // controlled by 'h' OPTIONAL
-bool normalDisplay = false;
-bool multiColor = false;
-glm::vec3 translation = glm::vec3(0.0f, 0.0f, -13.5f);
-glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+// Global Variables
 int LOGLEVEL;
+
+int modelNum = 0;
 
 vector< vector <vector<glm::vec3> > > patches;
 
-vector< vector<glm::vec3> > adaptiveTri;
 
 vector<glm::vec3> vertices;
 vector<glm::vec3> normals;
+
 vector< vector<glm::vec3> > shapes;
 vector< vector<glm::vec3> > shapeNormals;
 bool noNormal;
 
-Model* mainModel;
+
+// Things specific to each model.
+vector<Model*> models = vector<Model*>();
+
+// Other Initial Settings
+vector<bool> useSmoothShading  = vector<bool>(); // controlled by 's'
+vector<bool> useWireframeMode  = vector<bool>(); // controlled by 'w'
+vector<bool> useHiddenLineMode = vector<bool>(); // controlled by 'h'
+vector<bool> normalDisplay = vector<bool>();
+vector<bool> multiColor = vector<bool>();
+vector<glm::vec3> translation = vector<glm::vec3>();
+vector<glm::vec3> rotation = vector<glm::vec3>();
 
 
 //****************************************************
@@ -106,6 +113,8 @@ void initScene(int argc, char *argv[]) {
             inputFile = (string) argv[pos];
             // Check file type
             size_t found = inputFile.find(".obj");
+            size_t scene = inputFile.find(".scene");
+            sceneFile = (scene != string::npos);
             // If found, use a different parser.
             objInput = (found != string::npos);
             if (!objInput) {
@@ -186,6 +195,16 @@ void setupGlut() {
     GLfloat emission[] = { .5,0.0,0.0,0.0};
     glMaterialfv(GL_BACK,GL_EMISSION,emission);
 
+    for (int i = 0; i < models.size(); i += 1) {
+        translation.push_back(glm::vec3(0.0f, 0.0f, -13.5f));
+        rotation.push_back(glm::vec3(0.0f, 0.0f, -13.5f));
+        useSmoothShading.push_back(false);
+        useWireframeMode.push_back(false);
+        useHiddenLineMode.push_back(false);
+        normalDisplay.push_back(false);
+        multiColor.push_back(false);
+    }
+
     if (LOGLEVEL > 1) {
         cout << "SETUP COMPLETE";
     }
@@ -246,44 +265,62 @@ void drawObject(Model* m) {
 
     vector <vector<glm::vec3>* >* shapes = m->getShapes();
     vector <vector<glm::vec3>* >* normals = m->getNormals();
-    for (int i = 0; i < shapes->size(); i++) {
-        vector<glm::vec3>* shape = shapes->at(i);
-        vector<glm::vec3>* normal = normals->at(i);
-        if (multiColor) {
-            glDisable(GL_LIGHTING);
-            setMultiColor();
+    if (m->hasNormals()) {
+        for (int i = 0; i < shapes->size(); i++) {
+            vector<glm::vec3>* shape = shapes->at(i);
+            vector<glm::vec3>* normal = normals->at(i);
+            if (multiColor.at(modelNum)) {
+                glDisable(GL_LIGHTING);
+                setMultiColor();
+            }
+            glBegin(GL_POLYGON);
+            glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
+            glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+            glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
+            glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+            glNormal3f(normal->at(2)[0], normal->at(2)[1], normal->at(2)[2]);
+            glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+            if (normal->size() > 3) {
+                glNormal3f(normal->at(3)[0], normal->at(3)[1], normal->at(3)[2]);
+                glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
+            }
+            glEnd();
         }
-        glBegin(GL_POLYGON);
-        glNormal3f(normal->at(0)[0], normal->at(0)[1], normal->at(0)[2]);
-        glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
-        glNormal3f(normal->at(1)[0], normal->at(1)[1], normal->at(1)[2]);
-        glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
-        glNormal3f(normal->at(2)[0], normal->at(2)[1], normal->at(2)[2]);
-        glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
-        if (!useAdaptiveMode) {
-            glNormal3f(normal->at(3)[0], normal->at(3)[1], normal->at(3)[2]);
-            glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
+    } else { // m has no nromals.
+        for (int i = 0; i < shapes->size(); i++) {
+            vector<glm::vec3>* shape = shapes->at(i);
+            if (multiColor.at(modelNum)) {
+                glDisable(GL_LIGHTING);
+                setMultiColor();
+            }
+            glBegin(GL_POLYGON);
+            glVertex3f(shape->at(0)[0], shape->at(0)[1], shape->at(0)[2]);
+            glVertex3f(shape->at(1)[0], shape->at(1)[1], shape->at(1)[2]);
+            glVertex3f(shape->at(2)[0], shape->at(2)[1], shape->at(2)[2]);
+            if (shape->size() > 3) {
+                glVertex3f(shape->at(3)[0], shape->at(3)[1], shape->at(3)[2]);
+            }
+            glEnd();
         }
-        glEnd();
     }
 }
 
-void myDisplay() {
+void myDisplay(int num) {
     if (LOGLEVEL > 6) {
         cout << "MY DISPLAY CALLED" << endl;
     }
 
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
     gluOrtho2D(0, viewport.w, 0, viewport.h);
-	glLoadIdentity();
+    glLoadIdentity();
 
-    glTranslatef(translation.x, translation.y, translation.z);
-    glRotatef(rotation.x, 0.0f, 1.0f, 0.0f);
-    glRotatef(rotation.y, 1.0f, 0.0f, 0.0f);
-    glRotatef(rotation.z, 0.0f, 0.0f, 1.0f);
+    glTranslatef(translation.at(num).x, translation.at(num).y, translation.at(num).z);
+    glRotatef(rotation.at(num).x, 0.0f, 1.0f, 0.0f);
+    glRotatef(rotation.at(num).y, 1.0f, 0.0f, 0.0f);
+    glRotatef(rotation.at(num).z, 0.0f, 0.0f, 1.0f);
 
-    if (useHiddenLineMode) {
+    if (useHiddenLineMode.at(num)) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         // Color hidden lines as red
         COLOR_RED
@@ -291,120 +328,64 @@ void myDisplay() {
         // (don't forget to reverse this after the visible line stage or your rendering will be messed up)
     }
 
-    drawObject(mainModel);
+    drawObject(models.at(num));
 
-    if (useHiddenLineMode) {
+    if (useHiddenLineMode.at(num)) {
         glDepthFunc(GL_LEQUAL);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glEnable(GL_POLYGON_OFFSET_FILL);
         glPolygonOffset(1.0, 1.0);
         glEnable(GL_LIGHTING);
 
-        drawObject(mainModel);
+        drawObject(models.at(num));
 
         glDisable(GL_POLYGON_OFFSET_FILL);
         glDisable(GL_LIGHTING);
     }
-    if (normalDisplay) {
-        drawNormals(mainModel);
+    if (normalDisplay.at(num)) {
+        drawNormals(models.at(num));
     }
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
 
-void myDisplayObj() {
-
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glTranslatef(translation.x, translation.y, translation.z);
-    glRotatef(rotation.x, 0.0f, 1.0f, 0.0f);
-    glRotatef(rotation.y, 1.0f, 0.0f, 0.0f);
-    glRotatef(rotation.z, 0.0f, 0.0f, 1.0f);
-
-    // Start drawing
-    // OPENGL Options:
-    // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
-    // iterate over model polygons/faces
-
-    for (int i = 0; i < shapes.size(); i++) {
-        if (noNormal) {
-            vector<glm::vec3> shape = shapes.at(i);
-            if (multiColor) {
-                glDisable(GL_LIGHTING);
-                setMultiColor();
-            }
-            glBegin(GL_POLYGON);
-            glVertex3f(shape.at(0)[0], shape.at(0)[1], shape.at(0)[2]);
-            glVertex3f(shape.at(1)[0], shape.at(1)[1], shape.at(1)[2]);
-            glVertex3f(shape.at(2)[0], shape.at(2)[1], shape.at(2)[2]);
-            if (shape.size() > 3) {
-                glVertex3f(shape.at(3)[0], shape.at(3)[1], shape.at(3)[2]);
-            }
-            glEnd();
-        } else {
-            vector<glm::vec3> shape = shapes.at(i);
-            vector<glm::vec3> normal = shapeNormals.at(i);
-            if (multiColor) {
-                glDisable(GL_LIGHTING);
-                setMultiColor();
-            }
-            glBegin(GL_POLYGON);
-            glNormal3f(normal.at(0)[0], normal.at(0)[1], normal.at(0)[2]);
-            glVertex3f(shape.at(0)[0], shape.at(0)[1], shape.at(0)[2]);
-            glNormal3f(normal.at(1)[0], normal.at(1)[1], normal.at(1)[2]);
-            glVertex3f(shape.at(1)[0], shape.at(1)[1], shape.at(1)[2]);
-            glNormal3f(normal.at(2)[0], normal.at(2)[1], normal.at(2)[2]);
-            glVertex3f(shape.at(2)[0], shape.at(2)[1], shape.at(2)[2]);
-            if (shape.size() > 3) {
-                glNormal3f(normal.at(3)[0], normal.at(3)[1], normal.at(3)[2]);
-                glVertex3f(shape.at(3)[0], shape.at(3)[1], shape.at(3)[2]);
-            }
-            glEnd();
-
-            if (normalDisplay) {
-                for (int i = 0; i < shapes.size(); i++) {
-                    vector<glm::vec3> shape = shapes.at(i);
-                    vector<glm::vec3> normal = shapeNormals.at(i);
-                    displayNormal(&shape, &normal);
-                }
-            }
-        }
-    }
-    glFlush();
-    glutSwapBuffers(); // swap buffers (we earlier set float buffer)
-}
 
 // OPTIONAL: Extra Credit...
 void toggleHiddenLines() {
-    useHiddenLineMode = !useHiddenLineMode;
-    if (!useHiddenLineMode) {
+    useHiddenLineMode.at(modelNum) = !useHiddenLineMode.at(modelNum);
+    if (!useHiddenLineMode.at(modelNum)) {
         glEnable(GL_LIGHTING);
     } else {
         glDisable(GL_LIGHTING);
     }
 }
 
+void displayAll() {
+
+    for (int i = 0; i < models.size(); i += 1) {
+        myDisplay(i);
+    }
+}
+
 void toggleWireframe() {
-    useWireframeMode = !useWireframeMode;
-    if (useWireframeMode) {
+    useWireframeMode.at(modelNum) = !useWireframeMode.at(modelNum);
+    if (useWireframeMode.at(modelNum)) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     } else {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
     // Hiddenline and wireframes arent compatible.
-    if (useHiddenLineMode) {
+    if (useHiddenLineMode.at(modelNum)) {
         toggleHiddenLines();
     }
 }
 
 void toggleShading() {
-    useSmoothShading = !useSmoothShading;
+    useSmoothShading.at(modelNum) = !useSmoothShading.at(modelNum);
     // Shading model:
     // https://www.opengl.org/sdk/docs/man2/xhtml/glShadeModel.xml
-    if (useSmoothShading) {
+    if (useSmoothShading.at(modelNum)) {
         glShadeModel(GL_SMOOTH);
     } else {
         glShadeModel(GL_FLAT);
@@ -412,36 +393,36 @@ void toggleShading() {
 }
 
 void changeZoom(float amt) {
-    translation.z += amt;
+    translation.at(modelNum).z += amt;
 }
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void rotate(int dir) {
     if (!dir) {
-        rotation.x -= 5;
+        rotation.at(modelNum).x -= 5;
     } else if (dir == 1) {
-        rotation.y += 5;
+        rotation.at(modelNum).y += 5;
     } else if (dir == 2) {
-        rotation.x += 5;
+        rotation.at(modelNum).x += 5;
     } else if (dir == 3) {
-        rotation.y -= 5;
+        rotation.at(modelNum).y -= 5;
     } else if (dir == 4) {
-        rotation.z += 5;
+        rotation.at(modelNum).z += 5;
     } else if (dir == 5) {
-        rotation.z -= 5;
+        rotation.at(modelNum).z -= 5;
     }
 }
 
 // 0: Left, 1: Up, 2: Right, 3: Down
 void translate(int dir) {
     if (!dir) {
-        translation.x -= 0.1f;
+        translation.at(modelNum).x -= 0.1f;
     } else if (dir == 1) {
-        translation.y += 0.1f;
+        translation.at(modelNum).y += 0.1f;
     } else if (dir == 2) {
-        translation.x += 0.1f;
+        translation.at(modelNum).x += 0.1f;
     } else if (dir == 3) {
-        translation.y -= 0.1f;
+        translation.at(modelNum).y -= 0.1f;
     }
 }
 
@@ -457,7 +438,9 @@ void keypress(unsigned char key, int x, int y) {
     }
     if (key == 32) { // spacebar.
         if (writeFile) {
-            writeObj(outputFile, mainModel, inputFile);
+            for (int i = 0; i < models.size(); i += 1) {
+                writeObj(outputFile, models.at(i), inputFile);
+            }
         }
         exit(0);
     } else if (key == 'w' or key == 'W') { // Filled or Wireframe
@@ -478,23 +461,29 @@ void keypress(unsigned char key, int x, int y) {
         if (noNormal) {
             return;
         }
-        normalDisplay = !normalDisplay;
-        if (!normalDisplay) {
+        normalDisplay.at(modelNum) = !normalDisplay.at(modelNum);
+        if (!normalDisplay.at(modelNum)) {
             glEnable(GL_LIGHTING);
         }
     } else if (key == 'b' or key == 'B') {
-        multiColor = !multiColor;
-        if (!multiColor) {
+        multiColor.at(modelNum) = !multiColor.at(modelNum);
+        if (!multiColor.at(modelNum)) {
             glEnable(GL_LIGHTING);
+        }
+    } else if (key == 'j' or key == 'J') {
+        modelNum -= 1;
+        if (modelNum < 0) {
+            modelNum = models.size() - 1;
+        }
+    } else if (key == 'k' or key == 'K') {
+        modelNum += 1;
+        if (modelNum == models.size()) {
+            modelNum = 0;
         }
     }
 
     // Update display after circles change
-    if (objInput) {
-        myDisplayObj();
-    } else {
-        myDisplay();
-    }
+    myDisplay(modelNum);
 }
 
 // Reference: http://www.swiftless.com/tutorials/opengl/keyboard.html
@@ -514,11 +503,7 @@ void specialkeypress(int key, int x, int y) {
     }
 
     // Update display after circles change
-    if (objInput) {
-        myDisplayObj();
-    } else {
-        myDisplay();
-    }
+    myDisplay(modelNum);
 }
 
 //****************************************************
@@ -542,27 +527,50 @@ int main(int argc, char *argv[]) {
     glutCreateWindow(argv[0]);
     initScene(argc, argv);  // Parse command line args here.
 
-    // detect file type... OPTIONAL
-    if (objInput) {
-        loadobj(inputFile);
-        mainModel = new SimpleModel(shapes, shapeNormals);
+    if (sceneFile) {
+        vector<string> files = loadScene(inputFile);
+        for (int i = 0; i < files.size(); i += 1) {
+            string file = files.at(i);
+            size_t obj = file.find(".obj");
+            if (obj != string::npos) {
+                loadobj(file);
+                models.push_back(new SimpleModel(shapes, shapeNormals));
+            } else {
+                loadPatches(file);
+                if (useAdaptiveMode) {
+                    models.push_back(new AdaptiveModel(patches, errorParam));
+                } else {
+                    models.push_back(new UniformModel(patches, errorParam));
+                }
+            }
+            patches.clear();
+            shapes.clear();
+            shapeNormals.clear();
+            vertices.clear();
+            normals.clear();
+        }
     } else {
-        loadPatches(inputFile);
-    }
-    // Create the Main Model
-    if (useAdaptiveMode) {
-        mainModel = new AdaptiveModel(patches, errorParam);
-    } else {
-        mainModel = new UniformModel(patches, errorParam);
+        // detect file type...
+        if (objInput) {
+            loadobj(inputFile);
+        } else {
+            loadPatches(inputFile);
+        }
+        // Create the Main Model
+        if (useAdaptiveMode) {
+            models.push_back(new AdaptiveModel(patches, errorParam));
+        } else if (objInput) {
+            models.push_back(new SimpleModel(shapes, shapeNormals));
+        } else {
+            models.push_back(new UniformModel(patches, errorParam));
+        }
     }
 
     glutKeyboardFunc(keypress); // Detect key presses
     glutSpecialFunc(specialkeypress); // Detect SPECIAL (arrow) keys
-    if (false) { // FIXME
-        glutDisplayFunc(myDisplayObj);
-    } else {
-        glutDisplayFunc(myDisplay);
-    }
+
+    glutDisplayFunc(displayAll);
+
     glutReshapeFunc(myReshape);
     setupGlut();
     glutMainLoop();

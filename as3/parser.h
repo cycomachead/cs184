@@ -9,5 +9,6 @@
 void loadPatches(string file);
 void loadobj(string file);
 
+vector<string> loadScene(string file);
 void writeObj(string, Model*, string);
 #endif

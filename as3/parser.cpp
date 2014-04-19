@@ -86,32 +86,27 @@ void parseInputLine(vector<string> line) {
             normal.push_back(n1);
             normal.push_back(n2);
             normal.push_back(n3);
+
             shapes.push_back(tri);
             shapeNormals.push_back(normal);
         } else {
             noNormal = true;
             int len = line.size();
-            if (len == 4) {
-                glm::vec3 v1 = vertices.at(atoi(line.at(1).c_str())-1);
-                glm::vec3 v2 = vertices.at(atoi(line.at(2).c_str())-1);
-                glm::vec3 v3 = vertices.at(atoi(line.at(3).c_str())-1);
-                vector<glm::vec3> tri;
-                tri.push_back(v1);
-                tri.push_back(v2);
-                tri.push_back(v3);
-                shapes.push_back(tri);
-            } else if (len == 5) {
-                glm::vec3 v1 = vertices.at(atoi(line.at(1).c_str())-1);
-                glm::vec3 v2 = vertices.at(atoi(line.at(2).c_str())-1);
-                glm::vec3 v3 = vertices.at(atoi(line.at(3).c_str())-1);
+            vector<glm::vec3> poly;
+            glm::vec3 v1 = vertices.at(atoi(line.at(1).c_str())-1);
+            glm::vec3 v2 = vertices.at(atoi(line.at(2).c_str())-1);
+            glm::vec3 v3 = vertices.at(atoi(line.at(3).c_str())-1);
+
+            poly.push_back(v1);
+            poly.push_back(v2);
+            poly.push_back(v3);
+
+            if (len == 5) {
                 glm::vec3 v4 = vertices.at(atoi(line.at(4).c_str())-1);
-                vector<glm::vec3> quad;
-                quad.push_back(v1);
-                quad.push_back(v2);
-                quad.push_back(v3);
-                quad.push_back(v4);
-                shapes.push_back(quad);
+                poly.push_back(v4);
             }
+
+            shapes.push_back(poly);
         }
     }
 }
@@ -134,6 +129,24 @@ void loadobj(string file) {
             }
         }
     }
+}
+
+vector<string> loadScene(string file) {
+    ifstream obj(file.c_str());
+    if (!obj.is_open()) {
+        cout << "Unable to open file " << file << endl;
+        cerr << "EXITING" << endl;
+        exit(1);
+    }
+
+    string line;
+    vector<string> result;
+    while (getline(obj, line)) {
+        if (line.compare("")) {
+            result.push_back(line);
+        }
+    }
+    return result;
 }
 
 void loadPatches(string file) {
