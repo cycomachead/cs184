@@ -1,0 +1,37 @@
+As3 
+Tomo Ueda - sid: 23509410
+Michael Ball - sid: 22942141
+
+usage:
+./as3 INPUT-FILE (bez extension or obj extension) [step size/error bound (*)] [-a] [-o FILENAME]
+
+* The step size parameter should be omitted for OBJ files as it is not needed.
+
+-this will render the bez file using uniform tessellation.
+flags:
+-a : this will turn on the adaptive tessellation and the step size becomes the error bound.
+-o : calling this flag will output a .obj version of the .bez file you enter.
+
+commands:
+'w' : toggle between wireframe of the rendered object and the shaded object.
+'s' : toggle smooth shading and flat shading.
+'h' : toggle hidden line mode
+'n' : toggle into display normal mode, where you could see the normal of surface.
+'b' : toggle into solid color mode, where you could see the distinct shapes.
+'left', 'right' : arrow key will rotate the object about the x-axis
+'up', 'down' : arrow key will rotate the object about the y-axis.
+'z', 'x' : will rotate the object by the z-axis. (z is negative, x is positive)
+'shift' + 'up', 'down', 'right', 'left' : will translate the object towards the pressed direction.
+
+COMPILE:
+This compiles on OS X 10.8+, including the lab machines.
+
+Extra Credit:
+These features are specifically mentioned as extra credit:
+* implementation of 'h' key
+* reading of OBJ files
+* output / conversion of OBJ files
+The following were implemented for fun:
+* 'b' key for random coloring
+* 'n' key for displaying normals
+* 'x' 'z' for z-axis rotation

@@ -108,8 +108,10 @@ void initScene(int argc, char *argv[]) {
             size_t found = inputFile.find(".obj");
             // If found, use a different parser.
             objInput = (found != string::npos);
-            pos += 1;
-            errorParam = subDivParam = atof(argv[pos]);
+            if (!objInput) {
+                pos += 1;
+                errorParam = subDivParam = atof(argv[pos]);
+            }
         }
         pos += 1;
     }
