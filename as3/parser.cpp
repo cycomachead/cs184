@@ -210,7 +210,7 @@ void writeObj(string name, Model* m, string inFile) {
     // Triangles or quads?
     int vertices = shapes->at(0)->size();
     ofstream output;
-    output.open(name, fstream::out);
+    output.open(name.c_str(), fstream::out);
     output << "# CS184 Assignment 3 Object Output\n";
     output << "# Based on Input: " << inFile << "\n";
     output << "# File: " << name << "\n";
@@ -225,7 +225,7 @@ void writeObj(string name, Model* m, string inFile) {
         for (int j = 0; j < shape->size(); j += 1) {
             output << "v " << shape->at(j)[0] << " " << shape->at(j)[1] << " ";
             output << shape->at(j)[2] << "\n";
-            output << "n " << normal->at(j)[0] << " " << normal->at(j)[1] << " ";
+            output << "vn " << normal->at(j)[0] << " " << normal->at(j)[1] << " ";
             output << normal->at(j)[2] << "\n";
             count += 1;
         }
