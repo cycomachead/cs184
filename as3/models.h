@@ -7,8 +7,9 @@ using namespace std;
 class Model {
 public:
     virtual vector< vector <vector<glm::vec3> > > getPatches() = 0;
-    virtual vector< vector <glm::vec3>* >* getShapes() = 0; 
+    virtual vector< vector <glm::vec3>* >* getShapes() = 0;
     virtual vector< vector <glm::vec3>* >* getNormals() = 0;
+    virtual bool hasNormals() = 0;
 };
 
 class AdaptiveModel : public Model {
@@ -30,6 +31,7 @@ public:
     vector< vector <vector<glm::vec3> > > getPatches();
     vector< vector <glm::vec3>* >* getShapes();
     vector< vector <glm::vec3>* >* getNormals();
+    bool hasNormals();
 };
 
 class UniformModel : public Model {
@@ -49,7 +51,31 @@ public:
     vector< vector <vector<glm::vec3> > > getPatches();
     vector< vector <glm::vec3>* >* getShapes();
     vector< vector <glm::vec3>* >* getNormals();
-}; // end model
+    bool hasNormals();
+};
+
+
+class SimpleModel : public Model {
+public:
+
+    vector< vector <vector<glm::vec3> > > modelPatches;
+    vector< vector< glm::vec3 >* >* shapes;
+    vector< vector< glm::vec3 >* >* normals;
+    bool hasNorms;
+    // float stepSize;
+
+    SimpleModel() {
+        // empty
+    }
+
+    SimpleModel(vector <vector<glm::vec3> >, vector <vector<glm::vec3> >);
+    vector< vector <vector<glm::vec3> > > getPatches();
+    vector< vector <glm::vec3>* >* getShapes();
+    vector< vector <glm::vec3>* >* getNormals();
+
+    bool hasNormals();
+};
+// end model
 
 
 #endif

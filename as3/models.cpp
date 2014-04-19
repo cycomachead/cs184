@@ -8,8 +8,8 @@ float euclid(glm::vec3 a, glm::vec3 b) {
     return sqr(b.x - a.x) + sqr(b.y - a.y) + sqr(b.z - a.z);
 }
 
-/** Is Flat takes in two points A and B and returns 
-	true if the distance between the two points is less than 
+/** Is Flat takes in two points A and B and returns
+	true if the distance between the two points is less than
 	error. Returns false otherwise. **/
 bool isflat(glm::vec3 a, glm::vec3 b, float error) {
     return euclid(a, b) < error;
@@ -19,7 +19,7 @@ bool isflat(glm::vec3 a, glm::vec3 b, float error) {
 /** AdaptiveModel Function implementations **/
 
 /** The constructor for the Adaptive Model class.
-	The constructor takes in PATCHES containing the control 
+	The constructor takes in PATCHES containing the control
 	point of the surface. ERROR will be used to in
 	the isFlat function where we determine if two points during
 	the adaptive tesselation are close enough to be considered flat. **/
@@ -47,8 +47,8 @@ void AdaptiveModel::adaptiveTesselation() {
 }
 
 /** U and V represent the three vertices on the triangle we are
-	trying to tesselate. We determine if the midpoint between the 
-	vertices are flat. If they aren't we divide and recursively 
+	trying to tesselate. We determine if the midpoint between the
+	vertices are flat. If they aren't we divide and recursively
 	call createTriangles until all triangles are flat. **/
 void AdaptiveModel::createTriangles(float u[], float v[]) {
     glm::vec3* n1 = new glm::vec3();
@@ -64,11 +64,11 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
     float bcv = (v[1] + v[2])/2;
     float acu = (u[0] + u[2])/2;
     float acv = (v[0] + v[2])/2;
-    bool ab = isflat((a + b) / 2.0f, 
+    bool ab = isflat((a + b) / 2.0f,
         bezpatchinterp(curr, abu, abv, temp), errorBound);
-    bool bc = isflat((b + c)/ 2.0f, 
+    bool bc = isflat((b + c)/ 2.0f,
         bezpatchinterp(curr, bcu, bcv, temp), errorBound);
-    bool ac = isflat((a + c)/ 2.0f, 
+    bool ac = isflat((a + c)/ 2.0f,
         bezpatchinterp(curr, acu, acv, temp), errorBound);
     if (bc and ab and ac) {
         vector<glm::vec3>* shape = new vector<glm::vec3>();
@@ -121,7 +121,7 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         createTriangles(nextu2, nextv2);
         float nextu3[3] = {u[1], abu, bcu};
         float nextv3[3] = {v[1], abv, bcv};
-        createTriangles(nextu3, nextv3);   
+        createTriangles(nextu3, nextv3);
     } else if (!bc and ab and !ac) {
         float nextu1[3] = {u[2], acu, bcu};
         float nextv1[3] = {v[2], acv, bcv};
@@ -131,7 +131,7 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         createTriangles(nextu2, nextv2);
         float nextu3[3] = {u[1], acu, bcu};
         float nextv3[3] = {v[1], acv, bcv};
-        createTriangles(nextu3, nextv3);  
+        createTriangles(nextu3, nextv3);
     } else if (!bc and !ab and !ac) {
         float nextu1[3] = {u[0], acu, abu};
         float nextv1[3] = {v[0], acv, abv};
@@ -141,7 +141,7 @@ void AdaptiveModel::createTriangles(float u[], float v[]) {
         createTriangles(nextu2, nextv2);
         float nextu3[3] = {u[2], acu, bcu};
         float nextv3[3] = {v[2], acv, bcv};
-        createTriangles(nextu3, nextv3); 
+        createTriangles(nextu3, nextv3);
         float nextu4[3] = {abu, acu, bcu};
         float nextv4[3] = {abv, acv, bcv};
         createTriangles(nextu4, nextv4);
@@ -162,6 +162,10 @@ vector <vector<glm::vec3>* >* AdaptiveModel::getShapes() {
 /** Returns the Normals to be drawn. **/
 vector <vector<glm::vec3>* >* AdaptiveModel::getNormals() {
     return normals;
+}
+
+bool AdaptiveModel::hasNormals() {
+    return true;
 }
 
 /** Uniform Model Functions **/
@@ -203,3 +207,44 @@ vector <vector<glm::vec3>* >* UniformModel::getNormals() {
     return normals;
 }
 
+bool UniformModel::hasNormals() {
+    return true;
+}
+
+//////////// SIMPLE MODEL. PARSED FROM OBJ FILE
+SimpleModel::SimpleModel(vector <vector<glm::vec3> > poly,
+vector <vector<glm::vec3> > norms) {
+    this->shapes = new vector< vector<glm::vec3>* >();
+    this->normals = new vector< vector<glm::vec3>* >();
+    this->hasNorms = norms.size() == poly.size();
+    for (int i = 0; i < poly.size(); i += 1) {
+        vector<glm::vec3>* s = new vector<glm::vec3>(poly.at(i));
+        this->shapes->push_back(s);
+    }
+    for (int i = 0; i < norms.size(); i += 1) {
+        vector<glm::vec3>* n = new vector<glm::vec3>(poly.at(i));
+        this->shapes->push_back(n);
+    }
+
+}
+
+
+/** Returns the patches that represents the control points. **/
+vector< vector <vector<glm::vec3> > > SimpleModel::getPatches() {
+    return modelPatches;
+}
+
+/** Returns the rectangle that needs to be drawn. **/
+vector <vector<glm::vec3>* >* SimpleModel::getShapes() {
+    return shapes;
+}
+
+/** Returns the normal for each vertice of the shape that needs
+	to be drawn. **/
+vector <vector<glm::vec3>* >* SimpleModel::getNormals() {
+    return normals;
+}
+
+bool SimpleModel::hasNormals() {
+    return hasNorms;
+}

@@ -228,14 +228,24 @@ void setMultiColor() {
     }
 }
 
-void drawObject() {
+void drawNormals(Model* m) {
+    vector <vector<glm::vec3>* >* shapes = m->getShapes();
+    vector <vector<glm::vec3>* >* normals = m->getNormals();
+    for (int i = 0; i < shapes->size(); i++) {
+        vector<glm::vec3>* shape = shapes->at(i);
+        vector<glm::vec3>* normal = normals->at(i);
+        displayNormal(shape, normal);
+    }
+}
+
+void drawObject(Model* m) {
     // Start drawing
     // OPENGL Options:
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd318361.aspx
-    // iterate over model polygons/faces
+    // iterate over m polygons/faces
 
-    vector <vector<glm::vec3>* >* shapes = mainModel->getShapes();
-    vector <vector<glm::vec3>* >* normals = mainModel->getNormals();
+    vector <vector<glm::vec3>* >* shapes = m->getShapes();
+    vector <vector<glm::vec3>* >* normals = m->getNormals();
     for (int i = 0; i < shapes->size(); i++) {
         vector<glm::vec3>* shape = shapes->at(i);
         vector<glm::vec3>* normal = normals->at(i);
@@ -281,7 +291,7 @@ void myDisplay() {
         // (don't forget to reverse this after the visible line stage or your rendering will be messed up)
     }
 
-    drawObject();
+    drawObject(mainModel);
 
     if (useHiddenLineMode) {
         glDepthFunc(GL_LEQUAL);
@@ -290,19 +300,13 @@ void myDisplay() {
         glPolygonOffset(1.0, 1.0);
         glEnable(GL_LIGHTING);
 
-        drawObject();
+        drawObject(mainModel);
 
         glDisable(GL_POLYGON_OFFSET_FILL);
         glDisable(GL_LIGHTING);
     }
     if (normalDisplay) {
-        vector <vector<glm::vec3>* >* shapes = mainModel->getShapes();
-        vector <vector<glm::vec3>* >* normals = mainModel->getNormals();
-        for (int i = 0; i < shapes->size(); i++) {
-            vector<glm::vec3>* shape = shapes->at(i);
-            vector<glm::vec3>* normal = normals->at(i);
-            displayNormal(shape, normal);
-        }
+        drawNormals(mainModel);
     }
 
     glFlush();
@@ -541,18 +545,20 @@ int main(int argc, char *argv[]) {
     // detect file type... OPTIONAL
     if (objInput) {
         loadobj(inputFile);
+        mainModel = new SimpleModel(shapes, shapeNormals);
     } else {
         loadPatches(inputFile);
     }
     // Create the Main Model
-    mainModel = new UniformModel(patches, errorParam);
     if (useAdaptiveMode) {
         mainModel = new AdaptiveModel(patches, errorParam);
+    } else {
+        mainModel = new UniformModel(patches, errorParam);
     }
 
     glutKeyboardFunc(keypress); // Detect key presses
     glutSpecialFunc(specialkeypress); // Detect SPECIAL (arrow) keys
-    if (objInput) {
+    if (false) { // FIXME
         glutDisplayFunc(myDisplayObj);
     } else {
         glutDisplayFunc(myDisplay);
