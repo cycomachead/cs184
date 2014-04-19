@@ -1,4 +1,4 @@
-As3 
+As3
 Tomo Ueda - sid: 23509410
 Michael Ball - sid: 22942141
 
@@ -22,6 +22,7 @@ commands:
 'up', 'down' : arrow key will rotate the object about the y-axis.
 'z', 'x' : will rotate the object by the z-axis. (z is negative, x is positive)
 'shift' + 'up', 'down', 'right', 'left' : will translate the object towards the pressed direction.
+'j', 'k': toggle between next and previous files when a .scene is loaded
 
 COMPILE:
 This compiles on OS X 10.8+, including the lab machines.
@@ -36,9 +37,13 @@ The following were implemented for fun:
 * 'b' key for random coloring
 * 'n' key for displaying normals
 * 'x' 'z' for z-axis rotation
+* display of multiple objects via a .scene file
 
 NOTES:
 * teapot.obj and teapotAdaptive.obj were rendered by our program
 * The android was found online
 * To compile glm should be placed in lib/glm (this is NOT included in the submission)
-*
+* objects in a .scene must be relative to the path of the program, not the scene file
+* adaptive shading, and error or subdivision parameter are global for all objects, except from .obj files
+* the scene file handles OBJ files too.
+* only 1 object is displayed at a time.
