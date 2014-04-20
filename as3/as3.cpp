@@ -4,6 +4,7 @@
 #include "as3.h"
 #include "models.h"
 #include "parser.h"
+#include "lib/lodepng.h"
 
 #include <unistd.h>
 
@@ -51,6 +52,7 @@ bool useAdaptiveMode = false;
 int LOGLEVEL;
 
 int modelNum = 0;
+int imageCount = 1;
 
 vector< vector <vector<glm::vec3> > > patches;
 
@@ -208,6 +210,37 @@ void setupGlut() {
     if (LOGLEVEL > 1) {
         cout << "SETUP COMPLETE";
     }
+}
+
+void writeImage() {
+    vector<unsigned char> image;
+    int width = viewport.w;
+    int height = viewport.h;
+    unsigned char px [] = {0, 0, 0, 255};
+
+    string filename = "image-" + to_string(imageCount) + ".png";
+    for (int y = 0; y < width; y += 1) {
+        for (int x = height - 1; x > -1; x -= 1) {
+            cout << "X: " << x << " Y: " << y << endl;
+            glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px);
+            image.push_back(px[0]);
+            image.push_back(px[1]);
+            image.push_back(px[2]);
+            image.push_back(px[3]);
+            px = {0, 0, 0, 255};
+        }
+    }
+    cout << "Image " << imageCount <<" Written " << endl;
+    unsigned error = lodepng::encode(filename, image, width, height);
+
+    if (error) { // if there's an error, display it
+        cerr << "encoder error " << error << ":\n\t";
+        cerr << lodepng_error_text(error) << endl;
+        cerr << "\n debug info:";
+        cerr << "\n Vector:\t" << image.size();
+        cerr << "\n Expected Size:\t" << width * height * 4;
+    }
+    imageCount += 1;
 }
 
 void displayNormal(vector<glm::vec3>* shape, vector<glm::vec3>* normal) {
@@ -457,6 +490,8 @@ void keypress(unsigned char key, int x, int y) {
         rotate(5);
     } else if (key == 'h' or key == 'H') { // OPTIONAL: toggleHiddenLines
         toggleHiddenLines();
+    }  else if (key == 'i' or key == 'i') { // rotate Z
+        writeImage();
     } else if (key == 'n' or key == 'N') {
         if (noNormal) {
             return;
