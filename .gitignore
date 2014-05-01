@@ -21,5 +21,9 @@
 as2/images/test
 *.pdf
 as2/*.png
-raytracer
+*test*
+
+# Compiled Binaries
+as2/raytracer
 as3/as3
+as4/as4
