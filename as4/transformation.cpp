@@ -23,16 +23,14 @@ Transformation::Transformation(Matrix4f mat) {
 
 /** Adds a rotation to the current matrix. This matrix will rotate points
     about ABOUT by radian RADIAN. Remember that quaternion rotation matrix
-    are NOT commutative, so take care when deciding the order of rotation. **/
-void Transformation::add_rotation(Vector4f axis, float radian) {
+    are NOT commutative, so take care when deciding the order of rotation.
+    X, Y, Z represents axis **/
+void Transformation::add_rotation(float x, float y, float z, float radian) {
     Matrix4f new_rotate;
     Matrix4f rx;
     Matrix4f identity;
     float s = sin(radian);
     float c = cos(radian);
-    float x = axis(0);
-    float y = axis(1);
-    float z = axis(2);
     identity << 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
@@ -50,7 +48,7 @@ void Transformation::add_translation(float x, float y, float z) {
     Matrix4f new_translate;
     new_translate << 1, 0, 0, x,
                      0, 1, 0, y,
-                     0, 0, 1, z, 
+                     0, 0, 1, z,
                      0, 0, 0, 1;
     _mat = _mat * new_translate;
 }
@@ -65,10 +63,26 @@ void Transformation::add_scaling(float x, float y, float z) {
     _mat = _mat * new_scaling;
 }
 
+/** Adds another transformation into this transformation.**/
+void Transformation::add_transformation(Transformation& trans) {
+  _mat = _mat * trans._mat;
+}
+
 Transformation& Transformation::invt() {
     return *new Transformation(_mat.inverse().transpose());
 }
 
 Transformation& Transformation::inv() {
     return *new Transformation(_mat.inverse());
+}
+
+Vector4f Transformation::operator*(Vector4f vec4) {
+  return _mat * vec4;
+}
+
+Vector3f Transformation::operator*(Vector3f vec3) {
+  Vector4f vec4(vec3[0], vec3[1], vec3[2], 1);
+  vec4 = _mat * vec4;
+  Vector3f new_vec3(vec4[0], vec4[1], vec4[2]);
+  return new_vec3;
 }

@@ -4,6 +4,7 @@
 #define ARM_H
 
 #include "as4.h"
+#include "transformation.h"
 
 /*
  * Arm class which stores all the data about each elment in an IK system
@@ -13,8 +14,6 @@ class Arm {
 private:
 
 public:
-    static Matrix4f initialRotation; 
-
     // Links to other arms
     Arm* parent;
     Arm* child;
@@ -27,32 +26,32 @@ public:
 
     // Transformation Matricies
 
-    Eigen::MatrixXf worldTransformation;
+    Transformation worldTransformation;
 
-    Eigen::Matrix4f localTransformation;
+    Transformation localTransformation;
 
     Arm() {
         // empty constructor
     }
 
-    Arm(float, Eigen::Matrix4f);
+    Arm(float, Transformation);
 
-    Arm(Arm*, float, Eigen::Matrix4f);
+    Arm(Arm*, float, Transformation);
 
     // Setters and getters for stored matricies
-    void setWorld(Eigen::MatrixXf world) {
+    void setWorld(Transformation world) {
         this->worldTransformation = world;
     }
 
-    Eigen::MatrixXf getWorld() {
+    Transformation getWorld() {
         return this->worldTransformation;
     }
 
-    void setLocal(Eigen::Matrix4f local) {
+    void setLocal(Transformation local) {
         this->localTransformation = local;
     }
 
-    Eigen::Matrix4f getLocal() {
+    Transformation getLocal() {
         return this->localTransformation;
     }
 

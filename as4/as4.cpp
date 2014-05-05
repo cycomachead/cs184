@@ -45,8 +45,8 @@ Arm _arm;
 // Basic Functions
 //****************************************************
 void usage() {
-    cout << "\t CS184 ASSIGNMENT 3 -- Usage" << endl;
-    cout << "./as3 input- file subdivision-param [ -a ] (adaptive shading)" << endl;
+    cout << "\t CS184 ASSIGNMENT 4 -- Usage" << endl;
+    cout << "./as4 [-l NUM]" << endl;
 }
 
 //****************************************************
@@ -65,7 +65,7 @@ void initScene(int argc, char *argv[]) {
     while (pos < argc) {
         string curr = argv[pos];
         if (curr == "-l" or curr == "-log") { // debugging switch
-        
+
         }
         pos += 1;
     }
