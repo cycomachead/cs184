@@ -3,6 +3,8 @@
 
 #include "as4.h"
 #include "arm.h"
+#include "transformation.h"
+
 
 #include <unistd.h>
 
@@ -14,6 +16,7 @@
 #define COLOR_MAGENTA glColor3f(1.0f, 0.0f, 1.0f);
 #define COLOR_BLACK glColor3f(0.0f, 0.0f, 0.0f);
 #define COLOR_WHITE glColor3f(1.0f, 1.0f, 1.0f);
+#define PI           3.14159265358979323846
 
 
 using namespace std;
@@ -38,7 +41,8 @@ Viewport viewport;
 // Global Variables
 int LOGLEVEL;
 
-Arm _arm;
+Arm arm;
+Transformation t1, t2, t3, t4;
 
 
 //****************************************************
@@ -136,7 +140,11 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArms() {
-    // Arm* furthest = new Arm(1, )
+    t1 = *new Transformation();
+    t1.add_rotation(1, 0, 0, PI/4);
+    Arm* furthest = new Arm(1, t1);
+    t2 = *new Transformation();
+    t2.add_rotation(1, 0, 0, PI/4);
     // _arm = new Arm()
 }
 
