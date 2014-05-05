@@ -65,6 +65,11 @@ void Transformation::add_scaling(float x, float y, float z) {
     _mat = _mat * new_scaling;
 }
 
+/** Adds another transformation into this transformation.**/
+void Transformation::add_transformation(Transformation& trans) {
+  _mat = _mat * trans._mat;
+}
+
 Transformation& Transformation::invt() {
     return *new Transformation(_mat.inverse().transpose());
 }

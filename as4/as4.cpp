@@ -3,6 +3,8 @@
 
 #include "as4.h"
 #include "arm.h"
+#include "hransformation.h"
+
 
 #include <unistd.h>
 
@@ -38,7 +40,8 @@ Viewport viewport;
 // Global Variables
 int LOGLEVEL;
 
-Arm _arm;
+Arm arm;
+Transformation t1, t2, t3, t4;
 
 
 //****************************************************
@@ -142,6 +145,7 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArms() {
+    t1 = *new Transformation();
     // Arm* furthest = new Arm(1, )
     // _arm = new Arm()
 }
