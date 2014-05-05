@@ -38,6 +38,8 @@ Viewport viewport;
 // Global Variables
 int LOGLEVEL;
 
+Arm _arm;
+
 
 //****************************************************
 // Basic Functions
@@ -104,6 +106,7 @@ void myReshape(int w, int h) {
 //***************************************************
 
 void myDisplay() {
+
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
@@ -138,6 +141,11 @@ void specialkeypress(int key, int x, int y) {
     myDisplay();
 }
 
+void createArms() {
+    // Arm* furthest = new Arm(1, )
+    // _arm = new Arm()
+}
+
 //****************************************************
 // the usual stuff, nothing exciting here
 //****************************************************
@@ -149,6 +157,7 @@ int main(int argc, char *argv[]) {
     // This tells glut to use a float-buffered window with red, green, and blue channels
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
+    void createArms();
     // Initalize theviewport size
     viewport.w = 800;
     viewport.h = 800;
