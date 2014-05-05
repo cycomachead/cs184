@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
     createArmsAndRotation();
-    setupGlut();
+
     // Initalize theviewport size
     viewport.w = 800;
     viewport.h = 800;
@@ -224,6 +224,7 @@ int main(int argc, char *argv[]) {
     glutDisplayFunc(myDisplay);
 
     glutReshapeFunc(myReshape);
+    setupGlut();
     glutMainLoop();
 
     return 0;
