@@ -41,6 +41,7 @@ Vector3f Arm::getLocalOutPos() {
     return initial;
 }
 
+
 /*
  * Draw this object as a solid cone in OpenGL GLUT.
  * Must be called from within a GLUT drawing loop.

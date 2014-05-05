@@ -20,7 +20,7 @@ RM = /bin/rm -f
 all: main
 
 main:
-	$(CC) as4.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as4
+	$(CC) -g as4.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as4
 
 clean:
 	$(RM) *.o as4 *.dSYM

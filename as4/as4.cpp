@@ -192,7 +192,6 @@ void createArmsAndRotation() {
     t4 = *new Transformation();
     t4.add_rotation(0, 1, 0, PI/4);
     arm = *new Arm(far, 4, t4);
-    // _arm = new Arm()
 }
 
 //****************************************************
@@ -207,7 +206,7 @@ int main(int argc, char *argv[]) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
     createArmsAndRotation();
-    setupGlut();
+    // setupGlut();
     // Initalize theviewport size
     viewport.w = 800;
     viewport.h = 800;
