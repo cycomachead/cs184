@@ -45,6 +45,20 @@ Vector3f Arm::getLocalOutPos() {
  * Draw this object as a solid cone in OpenGL GLUT.
  * Must be called from within a GLUT drawing loop.
  */
-void draw() {
+void Arm::draw() {
 
 }
+
+/*
+ * Draw the entire arm system. We go through one by one
+ * until we hit a child, everytime we call draw.
+ */
+void Arm::drawSystem() {
+    this->draw();
+    if (child != NULL) {
+        child->drawSystem();
+    }
+}
+
+
+
