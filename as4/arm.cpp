@@ -30,7 +30,6 @@ Arm::Arm(Arm* paren, float len, Transformation transform) {
 Vector3f Arm::getLocalOutPos() {
     Vector3f initial = Vector3f(this->length, 0.0f, 0.0f);
 
-    cout << "IN POS NULL?? " << this->inPos << endl;
     if (this->inPos != NULL) {
         initial = *(this->inPos);
     }
@@ -38,7 +37,6 @@ Vector3f Arm::getLocalOutPos() {
     initial[0] += this->length;
     initial = this->getLocal() * initial;
 
-    cout << "RESULT: " << initial << endl;
     return initial;
 }
 
@@ -84,3 +82,10 @@ void Arm::drawSystem(int i) {
     }
 }
 
+
+/*
+ * All the hard work goes here...
+ */
+Arm::update(Vector3f dest) {
+    // DONE!
+}
