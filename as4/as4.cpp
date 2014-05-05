@@ -223,6 +223,7 @@ int main(int argc, char *argv[]) {
     glutDisplayFunc(myDisplay);
 
     glutReshapeFunc(myReshape);
+    setupGlut();
     glutMainLoop();
 
     return 0;
