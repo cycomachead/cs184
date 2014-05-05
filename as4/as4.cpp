@@ -8,14 +8,6 @@
 
 #include <unistd.h>
 
-#define COLOR_RED glColor3f(1.0f, 0.0f, 0.0f);
-#define COLOR_GREEN glColor3f(0.0f, 1.0f, 0.0f);
-#define COLOR_BLUE glColor3f(0.0f, 0.0f, 1.0f);
-#define COLOR_YELLOW glColor3f(1.0f, 1.0f, 0.0f);
-#define COLOR_CYAN glColor3f(0.0f, 1.0f, 1.0f);
-#define COLOR_MAGENTA glColor3f(1.0f, 0.0f, 1.0f);
-#define COLOR_BLACK glColor3f(0.0f, 0.0f, 0.0f);
-#define COLOR_WHITE glColor3f(1.0f, 1.0f, 1.0f);
 #define PI           3.14159265358979323846
 
 
@@ -174,7 +166,6 @@ void keypress(unsigned char key, int x, int y) {
         exit(0);
     }
 
-    // Update display after circles change
     myDisplay();
 }
 
@@ -185,7 +176,6 @@ void specialkeypress(int key, int x, int y) {
         cout << "Key Press: " << key << endl;
     }
 
-    // Update display after circles change
     myDisplay();
 }
 

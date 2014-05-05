@@ -46,7 +46,20 @@ Vector3f Arm::getLocalOutPos() {
  * Must be called from within a GLUT drawing loop.
  */
 void Arm::draw() {
+    COLOR_BLUE
+    glPushMatrix();
+        glTranslatef(this->inPos->x(), this->inPos->y(), this->inPos->z());
+        // glRotatef(65, -1.0, 0.0, 0.0);
+        // Radius, Length, Slices, subdivisions
+        glutSolidCone(2, this->length, 50, 50);
+    glPopMatrix();
 
+    glPointSize(3.0f);
+    COLOR_YELLOW
+    glBegin(GL_POINTS);
+    glVertex3f(this->inPos->x(), this->inPos->y(), this->inPos->z());
+    glVertex3f(this->outPos.x(), this->outPos.y(), this->outPos.z());
+    glEnd();
 }
 
 /*
@@ -59,6 +72,4 @@ void Arm::drawSystem() {
         child->drawSystem();
     }
 }
-
-
 
