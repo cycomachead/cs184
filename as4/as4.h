@@ -33,6 +33,7 @@
 using namespace std;
 
 extern int LOGLEVEL;
+
 inline float sqr(float x) { return x*x; }
 
 #endif

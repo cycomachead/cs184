@@ -2,6 +2,7 @@
 // TOMO UEDA & MICHAEL BALL
 
 #include "as4.h"
+#include "arm.h"
 
 #include <unistd.h>
 
