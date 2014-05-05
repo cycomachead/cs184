@@ -86,6 +86,6 @@ void Arm::drawSystem(int i) {
 /*
  * All the hard work goes here...
  */
-Arm::update(Vector3f dest) {
+void Arm::update(Vector3f dest) {
     // DONE!
 }
