@@ -23,16 +23,14 @@ Transformation::Transformation(Matrix4f mat) {
 
 /** Adds a rotation to the current matrix. This matrix will rotate points
     about ABOUT by radian RADIAN. Remember that quaternion rotation matrix
-    are NOT commutative, so take care when deciding the order of rotation. **/
-void Transformation::add_rotation(Vector4f axis, float radian) {
+    are NOT commutative, so take care when deciding the order of rotation.
+    X, Y, Z represents axis **/
+void Transformation::add_rotation(float x, float y, float z, float radian) {
     Matrix4f new_rotate;
     Matrix4f rx;
     Matrix4f identity;
     float s = sin(radian);
     float c = cos(radian);
-    float x = axis(0);
-    float y = axis(1);
-    float z = axis(2);
     identity << 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
