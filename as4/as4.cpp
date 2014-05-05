@@ -51,7 +51,7 @@ void usage() {
 // Handle parsing any command line args.
 void initScene(int argc, char *argv[]) {
     LOGLEVEL = 0;
-    if (argc < 2) {
+    if (argc < 0) {
         usage();
         cerr << "Invalid arguments found; exiting.\n" << endl;
         exit(1);
