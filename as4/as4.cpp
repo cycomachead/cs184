@@ -12,6 +12,7 @@
 
 
 using namespace std;
+using namespace Eigen;
 
 //****************************************************
 // Some Classes
@@ -36,6 +37,8 @@ int LOGLEVEL;
 Arm arm;
 Transformation t1, t2, t3, t4;
 
+Vector3f rotation    = Vector3f(0.0f, 0.0f, 0.0f);
+Vector3f translation = Vector3f(0.0f, 0.0f, 0.0f);
 
 //****************************************************
 // Basic Functions
@@ -145,7 +148,12 @@ void myDisplay() {
     gluOrtho2D(0, viewport.w, 0, viewport.h);
     glLoadIdentity();
 
-    arm.drawSystem();
+    glTranslatef(translation.x(), translation.y(), translation.z());
+    glRotatef(rotation.x(), 0.0f, 1.0f, 0.0f);
+    glRotatef(rotation.y(), 1.0f, 0.0f, 0.0f);
+    glRotatef(rotation.z(), 0.0f, 0.0f, 1.0f);
+
+    arm.drawSystem(0);
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
@@ -155,6 +163,41 @@ void myDisplay() {
 //****************************************************
 // handle keypresses
 //***************************************************
+void changeZoom(float amt) {
+    translation[2] += amt;
+}
+
+// 0: Left, 1: Up, 2: Right, 3: Down
+void rotate(int dir) {
+    if (!dir) {
+        rotation[0] -= 5;
+    } else if (dir == 1) {
+        rotation[1] += 5;
+    } else if (dir == 2) {
+        rotation[0] += 5;
+    } else if (dir == 3) {
+        rotation[1] -= 5;
+    } else if (dir == 4) {
+        rotation[2] += 5;
+    } else if (dir == 5) {
+        rotation[2] -= 5;
+    }
+}
+
+// 0: Left, 1: Up, 2: Right, 3: Down
+void translate(int dir) {
+    if (!dir) {
+        translation[0] -= 0.1f;
+    } else if (dir == 1) {
+        translation[1] += 0.1f;
+    } else if (dir == 2) {
+        translation[0] += 0.1f;
+    } else if (dir == 3) {
+        translation[1] -= 0.1f;
+    }
+}
+
+
 // Ref: http://www.opengl.org/resources/libraries/glut/spec3/node49.html
 // X and Y are mouse coordinates and can be ingnored for AS3.
 void keypress(unsigned char key, int x, int y) {
@@ -164,6 +207,14 @@ void keypress(unsigned char key, int x, int y) {
     }
     if (key == 32) { // spacebar.
         exit(0);
+    } else if (key == '-' or key == '_') { // zoom out
+        changeZoom(-0.1f);
+    } else if (key == '=' or key == '+') { // zoom in
+        changeZoom(0.1f);
+    } else if (key == 'z' or key == 'Z') { // rotate Z
+        rotate(4);
+    } else if (key == 'x' or key == 'X') { // rotate Z
+        rotate(5);
     }
 
     myDisplay();
@@ -174,6 +225,15 @@ void keypress(unsigned char key, int x, int y) {
 void specialkeypress(int key, int x, int y) {
     if (LOGLEVEL > 2) {
         cout << "Key Press: " << key << endl;
+    }
+
+    if (key >= 100 and key <= 103) {
+        int shift = glutGetModifiers();
+        if (shift == 1) {
+            translate(key - 100);
+        } else {
+            rotate(key - 100);
+        }
     }
 
     myDisplay();
