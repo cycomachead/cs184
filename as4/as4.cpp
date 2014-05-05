@@ -91,11 +91,61 @@ void myReshape(int w, int h) {
     gluOrtho2D(0, viewport.w, 0, viewport.h);
 }
 
+void setupGlut() {
+    // setup defaults
+    // Wireframe OFF
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glClearColor(.0f, .0f, .0f, .0f);
+    glClearDepth(1.0f);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
+    glShadeModel(GL_SMOOTH);
+
+    GLfloat ambient[] = { .5f, .5f, .5f, 1.f };
+    GLfloat diffuse[] = { .5f, .5f, .5f, .6f };
+    GLfloat litepos[] = { 0, 2, 3, 1 };
+    GLfloat litepos2[] = { 10, -20, 15, 1 };
+
+    // gllighting
+    glPushMatrix();
+    glLoadIdentity();
+    glEnable(GL_LIGHTING);
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
+    glLightfv(GL_LIGHT0, GL_POSITION, litepos);
+    glEnable(GL_LIGHT0);
+
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  diffuse);
+    glLightfv(GL_LIGHT1, GL_POSITION, litepos2);
+    glEnable(GL_LIGHT1);
+    glPopMatrix();
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_DEPTH_TEST);
+    GLfloat am2[]={.2,.2,.2,0.0};
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
+    GLfloat dif2[]={1.0,0.8,0.0,0.0};
+    glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
+    GLfloat sp2[]={0.0,0.0,1.0,0.0};
+    glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
+    glMaterialf(GL_FRONT ,GL_SHININESS, 64.0);
+    GLfloat emission[] = { .5,0.0,0.0,0.0};
+    glMaterialfv(GL_BACK,GL_EMISSION,emission);
+
+}
+
 //****************************************************
 // function that does the actual drawing of stuff
 //***************************************************
 
 void myDisplay() {
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    gluOrtho2D(0, viewport.w, 0, viewport.h);
+    glLoadIdentity();
+
+    arm.drawSystem();
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
@@ -129,12 +179,19 @@ void specialkeypress(int key, int x, int y) {
     myDisplay();
 }
 
-void createArms() {
+void createArmsAndRotation() {
     t1 = *new Transformation();
     t1.add_rotation(1, 0, 0, PI/4);
     Arm* furthest = new Arm(1, t1);
     t2 = *new Transformation();
-    t2.add_rotation(1, 0, 0, PI/4);
+    t2.add_rotation(0, 1, 0, PI/4);
+    Arm* further = new Arm(furthest, 2, t2);
+    t3 = *new Transformation();
+    t3.add_rotation(1, 0, 0, PI/4);
+    Arm* far = new Arm(further, 3, t3);
+    t4 = *new Transformation();
+    t4.add_rotation(0, 1, 0, PI/4);
+    arm = *new Arm(far, 4, t4);
     // _arm = new Arm()
 }
 
@@ -149,7 +206,8 @@ int main(int argc, char *argv[]) {
     // This tells glut to use a float-buffered window with red, green, and blue channels
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-    void createArms();
+    createArmsAndRotation();
+    setupGlut();
     // Initalize theviewport size
     viewport.w = 800;
     viewport.h = 800;

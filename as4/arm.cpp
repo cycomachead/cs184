@@ -61,3 +61,15 @@ void Arm::draw() {
     glVertex3f(this->outPos.x(), this->outPos.y(), this->outPos.z());
     glEnd();
 }
+
+/*
+ * Draw the entire arm system. We go through one by one
+ * until we hit a child, everytime we call draw.
+ */
+void Arm::drawSystem() {
+    this->draw();
+    if (child != NULL) {
+        child->drawSystem();
+    }
+}
+
