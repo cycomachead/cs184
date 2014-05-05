@@ -32,6 +32,6 @@ Vector3f Arm::getLocalOutPos() {
     if (this->inPos != NULL) {
         initial = *this->inPos;
     }
-    // FIXME
+    //
     return initial;
 }

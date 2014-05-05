@@ -13,6 +13,8 @@ class Arm {
 private:
 
 public:
+    static Matrix4f initialRotation; 
+
     // Links to other arms
     Arm* parent;
     Arm* child;
@@ -57,6 +59,11 @@ public:
     Eigen::Vector3f getLocalOutPos();
 
     void update(Eigen::Vector3f);
+
+    // Drawing uses GLUT and must be called from within a GLUT loop.
+    void draw();
+
+    void drawSystem();
 };
 
 

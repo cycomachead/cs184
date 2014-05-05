@@ -62,14 +62,8 @@ void initScene(int argc, char *argv[]) {
     int pos = 1;
     while (pos < argc) {
         string curr = argv[pos];
-        if (curr == "-a") {
-
-        } else if (curr == "-l" or curr == "-log") { // debugging switch
-
-        } else if (curr == "-o") {
-
-        } else {
-
+        if (curr == "-l" or curr == "-log") { // debugging switch
+        
         }
         pos += 1;
     }
