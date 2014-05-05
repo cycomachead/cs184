@@ -62,9 +62,8 @@ public:
     // Drawing uses GLUT and must be called from within a GLUT loop.
     void draw();
 
-    void drawSystem();
+    void drawSystem(int);
 
-};
 
 
 #endif
