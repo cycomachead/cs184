@@ -87,5 +87,29 @@ void Arm::drawSystem(int i) {
  * All the hard work goes here...
  */
 void Arm::update(Vector3f dest) {
-    // DONE!
+    Vector3f dp = this->outPos - dest;
+
+
+
+}
+
+
+Arm* Arm::getOldest() {
+    Arm* arm = this;
+
+    while (arm != NULL) {
+        arm = arm->parent;
+    }
+
+    return arm;
+}
+
+Arm* Arm::getYoungest() {
+    Arm* arm = this;
+
+    while (arm != NULL) {
+        arm = arm->child;
+    }
+
+    return arm;
 }
