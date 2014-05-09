@@ -68,7 +68,5 @@ public:
 
     Arm* getYoungest();
 };
-
-
 #endif
 

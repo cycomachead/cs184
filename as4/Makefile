@@ -15,7 +15,7 @@ endif
 
 RM = /bin/rm -f
 
-.PHONY: main clean
+.PHONY: main
 
 all: main
 

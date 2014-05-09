@@ -4,6 +4,16 @@
 
 using namespace Eigen;
 
+/** Utility Functions **/
+/** Euclid takes in two points: A and B and returns
+	the Euclidean distance between the two points. **/
+float euclidean(Eigen::Vector3f a, Eigen::Vector3f b) {
+    return sqrt(sqr(b[0] - a[0]) + sqr(b[1] - a
+        [1]) + sqr(b[2] - a[2]));
+}
+
+
+/******************************************************************************/
 /*
  * If no parent is provided, then this is the first arm in the series.
  * It's starting point would be the origin.
@@ -75,9 +85,7 @@ void Arm::draw() {
  */
 void Arm::drawSystem(int i) {
     this->draw();
-    cout << "CHILD??   " << this->parent << endl;
     if (this->parent != NULL and i < 3) {
-        cout << "Draw Recursion" << endl;
         this->parent->drawSystem(i + 1);
     }
 }
@@ -88,8 +96,6 @@ void Arm::drawSystem(int i) {
  */
 void Arm::update(Vector3f dest) {
     Vector3f dp = this->outPos - dest;
-
-
 
 }
 
