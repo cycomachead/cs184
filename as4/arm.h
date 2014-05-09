@@ -63,6 +63,10 @@ public:
     void draw();
 
     void drawSystem(int);
+
+    Arm* getOldest();
+
+    Arm* getYoungest();
 };
 
 

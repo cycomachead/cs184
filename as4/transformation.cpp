@@ -4,6 +4,15 @@
 using namespace Eigen;
 
 
+Matrix4f convertTo4(Matrix3f mat3) {
+  Matrix4f mat = *new Matrix4f();
+  mat << mat3(0, 0), mat3(0, 1), mat3(0, 2), 0,
+         mat3(1, 0), mat3(1, 1), mat3(1, 2), 0,
+         mat3(2, 0), mat3(2, 1), mat3(2, 2), 0,
+         0, 0, 0, 1;
+  return mat;
+}
+
 /** This constructor will create an identity matrix.
     If applied this matrix will give a identity transformation.
     REMEMBER THAT THE MATRIX TENDS TO EXECUTE TRANSFORMATION IN THE
@@ -86,3 +95,28 @@ Vector3f Transformation::operator*(Vector3f vec3) {
   Vector3f new_vec3(vec4[0], vec4[1], vec4[2]);
   return new_vec3;
 }
+
+void Transformation::rightMultiply(Matrix4f right) {
+  _mat = _mat * right;
+}
+
+void Transformation::leftMultiply(Matrix4f left) {
+  _mat = left * _mat;
+}
+
+void Transformation::rightMultiplyBy3f(Matrix3f right) {
+  Matrix4f mult = convertTo4(right);
+  _mat = _mat * mult;
+}
+
+void Transformation::leftMultiplyBy3f(Matrix3f left) {
+  Matrix4f mult = convertTo4(left);
+  _mat = mult * _mat;
+}
+
+Matrix4f Transformation::getMatrix() {
+  return _mat;
+}
+
+
+

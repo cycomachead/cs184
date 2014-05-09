@@ -19,6 +19,11 @@ public:
     Transformation& inv();
     Vector4f operator*(Vector4f v);
     Vector3f operator*(Vector3f v);
+    void rightMultiply(Matrix4f right);
+    void leftMultiply(Matrix4f left);
+    void rightMultiplyBy3f(Matrix3f right);
+    void leftMultiplyBy3f(Matrix3f left);
+    Matrix4f getMatrix();
 };
 
 #endif

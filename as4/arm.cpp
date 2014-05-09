@@ -4,6 +4,22 @@
 
 using namespace Eigen;
 
+Matrix3f crossProductMatrix(Vector3f cross) {
+    Matrix3f mat = *new Matrix3f();
+    mat << 0, -cross[2], cross[1],
+           cross[2], 0, -cross[0],
+           -cross[1], cross[0], 0;
+    return mat;
+}
+
+Matrix3f convertTo3(Matrix4f mat4) {
+    Matrix3f mat = *new Matrix3f();
+    mat << mat4(0, 0), mat4(0, 1), mat4(0, 2),
+           mat4(1, 0), mat4(1, 1), mat4(1, 2),
+           mat4(2, 0), mat4(2, 1), mat4(2, 2);
+    return mat;
+}
+
 /*
  * If no parent is provided, then this is the first arm in the series.
  * It's starting point would be the origin.
@@ -87,5 +103,29 @@ void Arm::drawSystem(int i) {
  * All the hard work goes here...
  */
 void Arm::update(Vector3f dest) {
-    
+    Vector3f dp = this->outPos - dest;
+    Matrix3f jacob = crossProductMatrix(this->outPos);
+    this->localTransformation.rightMultiply(jacob);
+    jacob =  convertTo3(this->localTransformation.getMatrix());
+}
+
+
+Arm* Arm::getOldest() {
+    Arm* arm = this;
+
+    while (arm != NULL) {
+        arm = arm->parent;
+    }
+
+    return arm;
+}
+
+Arm* Arm::getYoungest() {
+    Arm* arm = this;
+
+    while (arm != NULL) {
+        arm = arm->child;
+    }
+
+    return arm;
 }
