@@ -63,7 +63,7 @@ public:
     void draw();
 
     void drawSystem(int);
-
+};
 
 
 #endif

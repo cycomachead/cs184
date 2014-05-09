@@ -40,10 +40,6 @@ Vector3f Arm::getLocalOutPos() {
     return initial;
 }
 
-void Arm::update(Eigen::Vector3f newPos) {
-    Vector3f dp(outPos[0] - new_pos[0], outPos[1] - new_pos[1], outPos[2] - new_)
-}
-
 /*
  * Draw this object as a solid cone in OpenGL GLUT.
  * Must be called from within a GLUT drawing loop.
@@ -79,9 +75,9 @@ void Arm::draw() {
  */
 void Arm::drawSystem(int i) {
     this->draw();
-    cout << "CHILD??   " << this->parent << endl;
+    // cout << "CHILD??   " << this->parent << endl;
     if (this->parent != NULL and i < 3) {
-        cout << "Draw Recursion" << endl;
+        // cout << "Draw Recursion" << endl;
         this->parent->drawSystem(i + 1);
     }
 }
@@ -91,5 +87,5 @@ void Arm::drawSystem(int i) {
  * All the hard work goes here...
  */
 void Arm::update(Vector3f dest) {
-    // DONE!
+    
 }
