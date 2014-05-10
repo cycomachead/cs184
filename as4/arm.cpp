@@ -12,34 +12,32 @@ Matrix3f crossProductMatrix(Vector3f cross) {
     return mat;
 }
 
-Matrix3f convertTo3(Matrix4f mat4) {
-    Matrix3f mat = *new Matrix3f();
-    mat << mat4(0, 0), mat4(0, 1), mat4(0, 2),
-           mat4(1, 0), mat4(1, 1), mat4(1, 2),
-           mat4(2, 0), mat4(2, 1), mat4(2, 2);
-    return mat;
-}
-
 /*
  * If no parent is provided, then this is the first arm in the series.
  * It's starting point would be the origin.
  */
-Arm::Arm(float len, Transformation transform) {
+Arm::Arm(float len, float x, float y, float radian) {
+    _x = x;
+    _y = y;
+    _radian = radian;
     this->inPos  = new Vector3f(0.0f, 0.0f, 0.0f);
     this->length = len;
 
-    this->setLocal(transform);
+    this->setLocal();
     this->outPos = this->getLocalOutPos();
 
 }
 
-Arm::Arm(Arm* paren, float len, Transformation transform) {
+Arm::Arm(Arm* paren, float len, float x, float y, float radian) {
+    _x = x;
+    _y = y;
+    _radian = radian;
     this->parent        = paren;
     this->parent->child = this;
 
     this->inPos         = &(this->parent->outPos);
     this->length        = len;
-    this->setLocal(transform);
+    this->setLocal();
     this->outPos = this->getLocalOutPos();
 }
 
@@ -104,9 +102,32 @@ void Arm::drawSystem(int i) {
  */
 void Arm::update(Vector3f dest) {
     Vector3f dp = this->outPos - dest;
-    Matrix3f jacob = crossProductMatrix(this->outPos);
-    this->localTransformation.rightMultiply(jacob);
-    jacob =  convertTo3(this->localTransformation.getMatrix());
+    Matrix3f J = makeJacobian();
+    Matrix3f pseudo = J.transpose() * (J * J.transpose()).inverse();
+    Vector3f difs = pseudo * dp;
+    _x = _x + difs[0];
+    _y = _y + difs[1];
+    _radian = _radian + difs[2];
+    this->setLocal();
+    this->outPos = this->getLocalOutPos();
+    if (this->parent != NULL) {
+        this->parent->update(*this->inPos);
+    }
+}
+
+/** Returns this arms jacobian. **/
+Matrix3f Arm::makeJacobian() {
+    Matrix3f J = crossProductMatrix(this->outPos);
+    J = J * this->localTransformation.getMatrix() * -1;
+    if (this->parent != NULL) {
+        J = this->parent->worldTransformation.getMatrix() * J;
+    }
+    Arm* child = this->child;
+    while (child != NULL) {
+        J = J * child->localTransformation.getMatrix();
+        child = child->child;
+    }
+    return J;
 }
 
 

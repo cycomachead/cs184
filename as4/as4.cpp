@@ -240,18 +240,10 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArmsAndRotation() {
-    t1 = *new Transformation();
-    t1.add_rotation(1, 0, 0, PI/4);
-    Arm* furthest = new Arm(1, t1);
-    t2 = *new Transformation();
-    t2.add_rotation(0, 1, 0, PI/4);
-    Arm* further = new Arm(furthest, 2, t2);
-    t3 = *new Transformation();
-    t3.add_rotation(1, 0, 0, PI/4);
-    Arm* far = new Arm(further, 3, t3);
-    t4 = *new Transformation();
-    t4.add_rotation(0, 1, 0, PI/4);
-    arm = *new Arm(far, 4, t4);
+    Arm* furthest = new Arm(1, 1, 0, PI/4);
+    Arm* further = new Arm(furthest, 2, 0, 1, PI/4);
+    Arm* far = new Arm(further, 3, 1, 0, PI/4);
+    arm = *new Arm(far, 4, 0, 1, PI/4);
 }
 
 //****************************************************

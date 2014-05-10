@@ -7,23 +7,19 @@
 using namespace Eigen;
 
 class Transformation {
-    Matrix4f _mat;
+    Matrix3f _mat;
 public:
     Transformation();
-    Transformation(Matrix4f mat);
-    void add_rotation(float x, float y, float z, float radian);
-    void add_translation(float x, float y, float z);
-    void add_scaling(float x, float y, float z);
+    Transformation(Matrix3f mat);
+    void add_rotation(float x, float y, float radian);
     void add_transformation(Transformation& trans);
     Transformation& invt();
     Transformation& inv();
-    Vector4f operator*(Vector4f v);
+    Transformation& transpose();
     Vector3f operator*(Vector3f v);
-    void rightMultiply(Matrix4f right);
-    void leftMultiply(Matrix4f left);
-    void rightMultiplyBy3f(Matrix3f right);
-    void leftMultiplyBy3f(Matrix3f left);
-    Matrix4f getMatrix();
+    void rightMultiply(Matrix3f right);
+    void leftMultiply(Matrix3f left);
+    Matrix3f getMatrix();
 };
 
 #endif

@@ -14,6 +14,11 @@ class Arm {
 private:
 
 public:
+    // Control
+    float _x;
+    float _y;
+    float _radian;
+
     // Links to other arms
     Arm* parent;
     Arm* child;
@@ -34,9 +39,9 @@ public:
         // empty constructor
     }
 
-    Arm(float, Transformation);
+    Arm(float, float, float, float);
 
-    Arm(Arm*, float, Transformation);
+    Arm(Arm*, float, float, float, float);
 
     // Setters and getters for stored matricies
     void setWorld(Transformation world) {
@@ -47,8 +52,9 @@ public:
         return this->worldTransformation;
     }
 
-    void setLocal(Transformation local) {
-        this->localTransformation = local;
+    void setLocal() {
+        this->localTransformation = *new Transformation();
+        this->localTransformation.add_rotation(_x, _y, _radian);
     }
 
     Transformation getLocal() {
@@ -58,6 +64,8 @@ public:
     Eigen::Vector3f getLocalOutPos();
 
     void update(Eigen::Vector3f);
+
+    Matrix3f makeJacobian();
 
     // Drawing uses GLUT and must be called from within a GLUT loop.
     void draw();
