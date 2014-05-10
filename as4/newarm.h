@@ -2,12 +2,12 @@
 #define NEWARM_H
 
 #include "as4.h"
-#include "transformation.h"
 
 using namespace Eigen;
 
 class Arm {
 
+public:
 	/** This pointer, points back to the origin. **/
 	Arm* _parent;
 	/** This pointer, points further out. **/
@@ -27,6 +27,7 @@ class Arm {
 	/** This is the transformation of everything beyond this arm. **/
 	Matrix4f _Wchild;
 
+	float _length;
 	Arm() {
 		//Empty constructor.
 	}
@@ -47,4 +48,4 @@ class Arm {
 
 };
 
-#end
+#endif
