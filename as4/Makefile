@@ -1,5 +1,5 @@
 CC = g++
-SOURCES = arm.cpp transformation.cpp
+SOURCES = newarm.cpp
 OBJECTS = $(SOURCES:cpp=o)
 ifeq ($(shell sw_vers 2>/dev/null | grep Mac | awk '{ print $$2}'),Mac)
 	CC = clang #-xc++ # Clang handles C++11 better on 10.8
@@ -20,7 +20,7 @@ RM = /bin/rm -f
 all: main
 
 main:
-	$(CC) as4.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as4
+	$(CC) -g as4.cpp $(SOURCES) $(INC) $(CFLAGS) $(LDFLAGS) -o as4
 
 clean:
 	$(RM) *.o as4 *.dSYM

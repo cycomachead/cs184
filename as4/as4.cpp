@@ -2,8 +2,7 @@
 // TOMO UEDA & MICHAEL BALL
 
 #include "as4.h"
-#include "arm.h"
-#include "transformation.h"
+#include "newarm.h"
 
 
 #include <unistd.h>
@@ -35,7 +34,6 @@ Viewport viewport;
 int LOGLEVEL;
 
 Arm arm;
-Transformation t1, t2, t3, t4;
 
 Vector3f rotation    = Vector3f(0.0f, 0.0f, 0.0f);
 Vector3f translation = Vector3f(0.0f, 0.0f, 0.0f);
@@ -153,7 +151,9 @@ void myDisplay() {
     glRotatef(rotation.y(), 1.0f, 0.0f, 0.0f);
     glRotatef(rotation.z(), 0.0f, 0.0f, 1.0f);
 
-    arm.drawSystem(0);
+    glDisable(GL_LIGHTING);
+
+    arm.draw();
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
@@ -240,19 +240,10 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArmsAndRotation() {
-    t1 = *new Transformation();
-    t1.add_rotation(1, 0, 0, PI/4);
-    Arm* furthest = new Arm(1, t1);
-    t2 = *new Transformation();
-    t2.add_rotation(0, 1, 0, PI/4);
-    Arm* further = new Arm(furthest, 2, t2);
-    t3 = *new Transformation();
-    t3.add_rotation(1, 0, 0, PI/4);
-    Arm* far = new Arm(further, 3, t3);
-    t4 = *new Transformation();
-    t4.add_rotation(0, 1, 0, PI/4);
-    arm = *new Arm(far, 4, t4);
-    // _arm = new Arm()
+    arm = *new Arm(4, 0, 1, PI/4);
+    arm.addChild(3, 0, 1, PI/4);
+    arm.addChild(2, 0, 1, PI/4);
+    arm.addChild(1, 0, 1, PI/4);
 }
 
 //****************************************************
@@ -267,7 +258,7 @@ int main(int argc, char *argv[]) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
     createArmsAndRotation();
-
+    // setupGlut();
     // Initalize theviewport size
     viewport.w = 800;
     viewport.h = 800;
