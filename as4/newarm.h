@@ -13,19 +13,19 @@ public:
 	/** This pointer, points further out. **/
 	Arm* _child;
 	/** This is the out position. **/
-	Vector4f _outboard;
+	Vector3f _outboard;
 	/** This is the inboard position. **/
-	Vector4f _inboard;
+	Vector3f _inboard;
 	/** This is the local transformation. **/
-	Matrix4f _M;
+	Matrix3f _M;
 	/** This is the world transformation. **/
-	Matrix4f _W;
+	Matrix3f _W;
 	/** This is phi and psi for the axis, angle representation. **/
 	float _x, _y, _radian;
 	/** This is the transformation up to the parent's transformation. **/
-	Matrix4f _Wparent;
+	Matrix3f _Wparent;
 	/** This is the transformation of everything beyond this arm. **/
-	Matrix4f _Wchild;
+	Matrix3f _Wchild;
 
 	float _length;
 	Arm() {
@@ -44,7 +44,12 @@ public:
 	void setWorldTransform();
 	void setWorldPoint();
 	void draw();
-	Matrix4f getTranslationToParent();
+	void update(Vector3f pe);
+	void translateToParent();
+	void translateToOrigin();
+	void updateWparentWchild();
+	Matrix3f getPseudoInverseJacobian(Vector3f);
+	Vector3f getEndEffector();
 
 
 };
