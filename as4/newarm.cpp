@@ -12,7 +12,8 @@ Arm::Arm(float length, float x, float y, float radian) {
 	_x = x;
 	_y = y;
 	_radian = radian;
-	_X = *new Vector4f(length, 0.0f, 0.0f, 1.0f);
+	_outboard = *new Vector4f(length, 0.0f, 0.0f, 1.0f);
+	_inboard = *new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
 	setLocalTransform();
 	setWorldTransform();
 	setWorldPoint();
@@ -34,7 +35,8 @@ Arm::Arm(Arm* arm, float length, float x, float y, float radian) {
 	_x = x;
 	_y = y;
 	_radian = radian;
-	_X = *new Vector4f(length, 0.0f, 0.0f, 1.0f);
+	_outboard = *new Vector4f(length, 0.0f, 0.0f, 1.0f);
+	_inboard = *new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
 	_Wparent = _parent->_W;
 	_Wchild << 1, 0, 0, 0,
 	           0, 1, 0, 0,
@@ -61,26 +63,11 @@ void Arm::setLocalTransform() {
 	Matrix4f new_rotate;
     Matrix3f rx;
     Matrix3f identity;
-    Matrix4f translation;
     float s = sin(_radian);
     float c = cos(_radian);
     identity << 1, 0, 0,
                 0, 1, 0,
                 0, 0, 1;
-
-    /** Set translation. **/
-    if (_parent != NULL) {
-    	translation << 1, 0, 0, _parent->_p[0],
-    	               0, 1, 0, _parent->_p[1],
-    	               0, 0, 1, _parent->_p[2],
-    	               0, 0, 0, 1;
-    } else {
-    	translation << 1, 0, 0, 0,
-                       0, 1, 0, 0,
-                       0, 0, 1, 0,
-                       0, 0, 0, 1;
-    }
-
     /** Set rotation. **/
     rx << 0, -1*z, _y,
           z, 0, -1*_x,
@@ -89,15 +76,26 @@ void Arm::setLocalTransform() {
     Matrix3f rot3f = identity + (rx)*s + (rx)*(rx)*(1-c);
     Matrix4f rotation4f;
     rotation4f << rot3f(0, 0), rot3f(0, 1), rot3f(0, 2), 0,
-                           rot3f(1, 0), rot3f(1, 1), rot3f(1, 2), 0,
-                           rot3f(2, 0), rot3f(2, 1), rot3f(2, 2), 0,
-                           0, 0, 0, 1;
+                  rot3f(1, 0), rot3f(1, 1), rot3f(1, 2), 0,
+                  rot3f(2, 0), rot3f(2, 1), rot3f(2, 2), 0,
+                  0, 0, 0, 1;
+    _M = rotation4f;
+}
 
-    // cout << "Translation " << endl;
-    // cout << translation << endl;
-    // cout << "Rotation " << endl;
-    // cout << rotation4f << endl;
-    _M = translation * rotation4f;
+Matrix4f Arm::getTranslationToParent() {
+	Matrix4f translationOtoP;
+	if (_parent != NULL) {
+    	translationOtoP << 1, 0, 0, _parent->_outboard[0],
+    	               0, 1, 0, _parent->_outboard[1],
+    	               0, 0, 1, _parent->_outboard[2],
+    	               0, 0, 0, 1;
+    } else {
+    	translationOtoP << 1, 0, 0, 0,
+                       0, 1, 0, 0,
+                       0, 0, 1, 0,
+                       0, 0, 0, 1;
+    }
+    return translationOtoP;
 }
 
 void Arm::setWorldTransform() {
@@ -114,7 +112,11 @@ void Arm::setWorldTransform() {
 }
 
 void Arm::setWorldPoint() {
-	_p = _W * _X;
+	_outboard = _W * _outboard;
+	_inboard = _W * _inboard;
+	Matrix4f parentout = getTranslationToParent();
+	_outboard = parentout * _outboard;
+	_inboard = parentout * _inboard;
 }
 
 void Arm::draw() {
@@ -128,26 +130,8 @@ void Arm::draw() {
 		COLOR_RED;
 	}
 	glBegin(GL_LINES);
-	if (_parent == NULL) {
-		glVertex3f(0.0f, 0.0f, 0.0f);
-		// cout << "0.0f, 0.0f, 0.0f\n";
-	} else {
-		glVertex3f(_parent->_p[0], _parent->_p[1], _parent->_p[2]);
-		// cout << " parent \n";
-		// cout << _parent->_p << endl;
-		// cout << "===============\n";
-	}
-	glVertex3f(_p[0], _p[1], _p[2]);
-	// cout << " child \n";
-	// cout << _p << endl;
-	// cout << "===============\n";
-
-	// if (_parent != NULL) {
-	// 	cout << euclid(_parent->_p, _p) << endl;
-	// } else {
-	// 	Vector4f v(0, 0, 0, 0);
-	// 	cout << euclid(v, _p) << endl;
-	// }
+	glVertex3f(_inboard[0], _inboard[1], _inboard[2]);
+	glVertex3f(_outboard[0], _outboard[1], _outboard[2]);
 	glEnd();
 	if (_child != NULL) {
 		_child->draw();

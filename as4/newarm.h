@@ -13,11 +13,11 @@ public:
 	/** This pointer, points further out. **/
 	Arm* _child;
 	/** This is the out position. **/
-	Vector4f _p;
+	Vector4f _outboard;
+	/** This is the inboard position. **/
+	Vector4f _inboard;
 	/** This is the local transformation. **/
 	Matrix4f _M;
-	/** This is the original x to be transformed. **/
-	Vector4f _X;
 	/** This is the world transformation. **/
 	Matrix4f _W;
 	/** This is phi and psi for the axis, angle representation. **/
@@ -44,6 +44,7 @@ public:
 	void setWorldTransform();
 	void setWorldPoint();
 	void draw();
+	Matrix4f getTranslationToParent();
 
 
 };
