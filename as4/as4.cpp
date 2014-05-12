@@ -36,7 +36,7 @@ int LOGLEVEL;
 Arm arm;
 
 Vector3f rotation    = Vector3f(0.0f, 0.0f, 0.0f);
-Vector3f translation = Vector3f(0.0f, 0.0f, 0.0f);
+Vector3f translation = Vector3f(0.0f, 0.0f, -20.0f);
 
 //****************************************************
 // Basic Functions
@@ -154,6 +154,8 @@ void myDisplay() {
     glDisable(GL_LIGHTING);
 
     arm.draw();
+    Vector3f v(0.414214, 0, -7.24264);
+    arm.update(v);
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
