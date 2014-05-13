@@ -4,6 +4,29 @@
 #include "as4.h"
 
 using namespace Eigen;
+void print(Vector3f vec);
+void print(Matrix3f mat);
+class Arm;
+
+class Jacob {
+	//this is 4 arms in one.
+public:
+	Arm* _arm;
+	Arm* _arm2;
+	Arm* _arm3;
+	Arm* _arm4;
+	Matrix<double, 3, 12> _jacobian;
+	Matrix<double, 12, 1> _dr;
+	Matrix<double, 3, 1> _dp;
+
+	Jacob() {
+		//Empty Constructor
+	};
+	Jacob(Arm*);
+
+	void makedr(Vector3f);
+
+};
 
 class Arm {
 
@@ -26,6 +49,8 @@ public:
 	Matrix3f _Wparent;
 	/** This is the transformation of everything beyond this arm. **/
 	Matrix3f _Wchild;
+	/** Jacobian calculator that calculates the updates. **/
+	Jacob _jacob;
 
 	float _length;
 	Arm() {
@@ -48,7 +73,11 @@ public:
 	void translateToParent();
 	void translateToOrigin();
 	void updateWparentWchild();
-	Matrix3f getPseudoInverseJacobian(Vector3f);
+	void updateControl(Vector3f);
+	void constructM();
+	void finishUpdate();
+	void setJacob();
+	Matrix3f getJacobian(Vector3f);
 	Vector3f getEndEffector();
 
 
