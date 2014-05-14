@@ -286,7 +286,7 @@ Vector3f Arm::getEndEffector() {
 }
 
 Matrix3f Arm::getJacobian(Vector3f pe) {
-	Matrix3f j = -_Wparent * makeCross(_Wchild * pe);
+	Matrix3f j = -_W * makeCross(_Wchild * pe);
 	// JacobiSVD<MatrixXf> svd(j, ComputeThinU | ComputeThinV);
 	// Vector3f sing = svd.singularValues();
 	// Matrix3f pseudo = svd.matrixU() * invertDiag(sing) * svd.matrixV().transpose();
