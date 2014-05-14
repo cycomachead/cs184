@@ -103,10 +103,11 @@ void setupGlut() {
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
 
-    GLfloat ambient[] = { .5f, .5f, .5f, 1.f };
-    GLfloat diffuse[] = { .5f, .5f, .5f, .6f };
-    GLfloat litepos[] = { 0, 2, 3, 1 };
+    GLfloat ambient[]  = { .5f, .5f, .5f, 1.f };
+    GLfloat diffuse[]  = { .5f, .5f, .5f, .6f };
+    GLfloat litepos[]  = { 0, 2, 3, 1 };
     GLfloat litepos2[] = { 10, -20, 15, 1 };
+
 
     // gllighting
     glPushMatrix();
@@ -124,21 +125,22 @@ void setupGlut() {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_DEPTH_TEST);
-    GLfloat am2[]={.2,.2,.2,0.0};
+    GLfloat am2[]      = {.2, .2, .2, 0.0 };
     glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
-    GLfloat dif2[]={1.0,0.8,0.0,0.0};
+    GLfloat dif2[]     = { 1.0, 0.8, 0.0, 0.0};
     glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
-    GLfloat sp2[]={0.0,0.0,1.0,0.0};
+    GLfloat sp2[]      = { 0.0,0.0, 1.0, 0.0 };
     glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
     glMaterialf(GL_FRONT ,GL_SHININESS, 64.0);
-    GLfloat emission[] = { .5,0.0,0.0,0.0};
-    glMaterialfv(GL_BACK,GL_EMISSION,emission);
+    GLfloat emission[] = { .5, 0.0, 0.0, 0.0 };
+
+    glMaterialfv(GL_BACK, GL_EMISSION, emission);
 
 }
 
 //****************************************************
 // function that does the actual drawing of stuff
-//***************************************************
+//****************************************************
 
 void myDisplay() {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -161,10 +163,100 @@ void myDisplay() {
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
 
+// These functions animate the display of the arm.
+
+// Simple 2D circle motion for the arm
+void drawCircle() {
+    int step = 62;
+    float max = 2*PI;
+    vector<Vector3f> points = vector<Vector3f>();
+    glBegin(GL_POINTS);
+    glPointSize(4);
+    COLOR_YELLOW
+    for(float u = 0; u < max; u += (max/step)) {
+        Vector3f v = Vector3f( 8 * cos(u), 8 * sin(u), 8);
+        glVertex3f(v[0], v[1], v[2]);
+        points.push_back(v);
+    }
+    glEnd();
+
+    for(int i = 0; i < step; i += 1) {
+        arm.update(points.at(i));
+    }
+}
+
+// 2D Figure-8 motion for the arm
+void drawFigure8() {
+    int step = 62;
+    float max = 2*PI;
+    vector<Vector3f> points = vector<Vector3f>();
+    glBegin(GL_POINTS);
+    glPointSize(4);
+    COLOR_YELLOW
+    for(float u = 0; u < max; u += (max/step)) {
+        // Z should just creat some intersting movent....
+        Vector3f v = Vector3f( 8 * cos(u), 8 * sin(2 * u), 8 * sin(u));
+        glVertex3f(v[0], v[1], v[2]);
+        points.push_back(v);
+    }
+    glEnd();
+
+    for(int i = 0; i < step; i += 1) {
+        arm.update(points.at(i));
+    }
+}
+
+// 2D Ellipse motion for the arm
+// This tests out of reach goals
+void drawEllipse() {
+    int step = 62;
+    float max = 2*PI;
+    vector<Vector3f> points = vector<Vector3f>();
+    glBegin(GL_POINTS);
+    glPointSize(4);
+    COLOR_YELLOW
+    for(float u = 0; u < max; u += (max/step)) {
+        Vector3f v = Vector3f( 8 * cos(u), 15 * sin(u), 8);
+        glVertex3f(v[0], v[1], v[2]);
+        points.push_back(v);
+    }
+    glEnd();
+
+    for(int i = 0; i < step; i += 1) {
+        arm.update(points.at(i));
+    }
+}
+
+// 2D Heart motion for the arm
+// <3
+// Equation:
+// http://mathworld.wolfram.com/HeartCurve.html
+void drawHeart() {
+    int step = 62;
+    float max = 2*PI;
+    vector<Vector3f> points = vector<Vector3f>();
+    glBegin(GL_POINTS);
+    glPointSize(4);
+    COLOR_YELLOW
+    for(float t = 0; t < max; t += (max/step)) {
+        // Z should just creat some intersting movent....
+        Vector3f v = Vector3f(
+            16 * pow(sin(t), 3.0f), // x
+            13 * cos(t) - 5 * cos(2 * t) - 2 * cos(3 * t) - cos(4 * t), // y
+            8 * sin(t)); // z
+        glVertex3f(v[0], v[1], v[2]);
+        points.push_back(v);
+    }
+    glEnd();
+
+    for(int i = 0; i < step; i += 1) {
+        arm.update(points.at(i));
+    }
+}
 
 //****************************************************
 // handle keypresses
-//***************************************************
+//****************************************************
 void changeZoom(float amt) {
     translation[2] += amt;
 }
@@ -217,6 +309,16 @@ void keypress(unsigned char key, int x, int y) {
         rotate(4);
     } else if (key == 'x' or key == 'X') { // rotate Z
         rotate(5);
+    } else if (key == 'h' or key == 'H') {
+        drawHeart();
+    } else if (key == 'c' or key == 'C') {
+        drawCircle();
+    } else if (key == '8' or key == '*') {
+        drawFigure8();
+    } else if (key == 'e' or key == 'E') {
+        drawEllipse();
+    } else if (key == 'm' or key == 'M') {
+        // switch to mouse control
     }
 
     myDisplay();
@@ -247,6 +349,12 @@ void createArmsAndRotation() {
     arm.addChild(2, 0, 1, PI/4);
     arm.addChild(1, 0, 1, PI/4);
 }
+
+//****************************************************
+// handle mouse cursor as a goal
+//****************************************************
+
+// TODO
 
 //****************************************************
 // the usual stuff, nothing exciting here
