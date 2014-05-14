@@ -180,7 +180,7 @@ void myDisplay() {
 
     // Now tell the arm to trace these points
     for(int i = 0; i < destinations.size(); i += 1) {
-        //arm.update(destinations.at(i));
+        arm.update(destinations.at(i));
     }
 
     glFlush();
