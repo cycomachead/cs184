@@ -13,6 +13,9 @@
 using namespace std;
 using namespace Eigen;
 
+
+
+
 //****************************************************
 // Some Classes
 //****************************************************
@@ -156,8 +159,15 @@ void myDisplay() {
     glDisable(GL_LIGHTING);
 
     arm.draw();
-    Vector3f v(0.414214, 0, -7.24264);
+    Vector3f a = arm.getEndEffector();
+    glBegin(GL_POINTS);
+    COLOR_RED
+    glVertex3f(a(0), a(1), a(2));
+    glVertex3f(0.5, 0, -7.24264);
+    glEnd();
+    Vector3f v(0.5, 0, -7.24264);
     arm.update(v);
+    print(a);
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
@@ -348,6 +358,7 @@ void createArmsAndRotation() {
     arm.addChild(3, 0, 1, PI/4);
     arm.addChild(2, 0, 1, PI/4);
     arm.addChild(1, 0, 1, PI/4);
+    arm.setJacob();
 }
 
 //****************************************************
