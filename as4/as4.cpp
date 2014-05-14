@@ -37,6 +37,8 @@ Arm arm;
 Vector3f rotation    = Vector3f(0.0f, 0.0f, 0.0f);
 Vector3f translation = Vector3f(0.0f, 0.0f, -20.0f);
 
+vector<Vector3f> destinations = vector<Vector3f>();
+
 //****************************************************
 // Basic Functions
 //****************************************************
@@ -155,15 +157,31 @@ void myDisplay() {
     glDisable(GL_LIGHTING);
 
     arm.draw();
-    Vector3f a = arm.getEndEffector();
+    // Vector3f a = arm.getEndEffector();
+    // glBegin(GL_POINTS);
+    // COLOR_RED
+    // glVertex3f(a(0), a(1), a(2));
+    // glVertex3f(0.5, 0, -7.24264);
+    // glEnd();
+    // Vector3f v(0.5, 0, -7.24264);
+    // arm.update(v);
+    // print(a);
+
+    // Draw the points of the object we are trying to trace
+    glPointSize(5.0f);
+    COLOR_YELLOW
     glBegin(GL_POINTS);
-    COLOR_RED
-    glVertex3f(a(0), a(1), a(2));
-    glVertex3f(0.5, 0, -7.24264);
+    for(int i = 0; i < destinations.size(); i += 1) {
+        // Z should just creat some intersting movent....
+        Vector3f v = destinations.at(i);
+        glVertex3f(v[0], v[1], v[2]);
+    }
     glEnd();
-    Vector3f v(0.5, 0, -7.24264);
-    arm.update(v);
-    print(a);
+
+    // Now tell the arm to trace these points
+    for(int i = 0; i < destinations.size(); i += 1) {
+        //arm.update(destinations.at(i));
+    }
 
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
@@ -173,64 +191,41 @@ void myDisplay() {
 
 // Simple 2D circle motion for the arm
 void drawCircle() {
-    int step = 62;
+    int step = 91;
     float max = 2*PI;
-    vector<Vector3f> points = vector<Vector3f>();
-    glBegin(GL_POINTS);
-    glPointSize(4);
-    COLOR_YELLOW
-    for(float u = 0; u < max; u += (max/step)) {
-        Vector3f v = Vector3f( 8 * cos(u), 8 * sin(u), 8);
+    destinations.clear();
+    for(float t = 0; t < max; t += (max/step)) {
+        Vector3f v = Vector3f( 8 * cos(t), 8 * sin(t), -5);
         glVertex3f(v[0], v[1], v[2]);
-        points.push_back(v);
-    }
-    glEnd();
-
-    for(int i = 0; i < step; i += 1) {
-        arm.update(points.at(i));
+        destinations.push_back(v);
     }
 }
 
 // 2D Figure-8 motion for the arm
 void drawFigure8() {
-    int step = 62;
+    int step = 91;
     float max = 2*PI;
-    vector<Vector3f> points = vector<Vector3f>();
-    glBegin(GL_POINTS);
-    glPointSize(4);
-    COLOR_YELLOW
+    destinations.clear();
     for(float u = 0; u < max; u += (max/step)) {
         // Z should just creat some intersting movent....
         Vector3f v = Vector3f( 8 * cos(u), 8 * sin(2 * u), 8 * sin(u));
         glVertex3f(v[0], v[1], v[2]);
-        points.push_back(v);
-    }
-    glEnd();
-
-    for(int i = 0; i < step; i += 1) {
-        arm.update(points.at(i));
+        destinations.push_back(v);
     }
 }
 
 // 2D Ellipse motion for the arm
 // This tests out of reach goals
 void drawEllipse() {
-    int step = 62;
+    int step = 91;
     float max = 2*PI;
-    vector<Vector3f> points = vector<Vector3f>();
-    glBegin(GL_POINTS);
-    glPointSize(4);
-    COLOR_YELLOW
+    destinations.clear();
     for(float u = 0; u < max; u += (max/step)) {
-        Vector3f v = Vector3f( 8 * cos(u), 15 * sin(u), 8);
+        Vector3f v = Vector3f( 4 * cos(u), 8 * sin(u), sin(u));
         glVertex3f(v[0], v[1], v[2]);
-        points.push_back(v);
+        destinations.push_back(v);
     }
-    glEnd();
 
-    for(int i = 0; i < step; i += 1) {
-        arm.update(points.at(i));
-    }
 }
 
 // 2D Heart motion for the arm
@@ -238,12 +233,9 @@ void drawEllipse() {
 // Equation:
 // http://mathworld.wolfram.com/HeartCurve.html
 void drawHeart() {
-    int step = 62;
+    int step = 91;
     float max = 2*PI;
-    vector<Vector3f> points = vector<Vector3f>();
-    glBegin(GL_POINTS);
-    glPointSize(4);
-    COLOR_YELLOW
+    destinations.clear();
     for(float t = 0; t < max; t += (max/step)) {
         // Z should just creat some intersting movent....
         Vector3f v = Vector3f(
@@ -251,12 +243,7 @@ void drawHeart() {
             13 * cos(t) - 5 * cos(2 * t) - 2 * cos(3 * t) - cos(4 * t), // y
             8 * sin(t)); // z
         glVertex3f(v[0], v[1], v[2]);
-        points.push_back(v);
-    }
-    glEnd();
-
-    for(int i = 0; i < step; i += 1) {
-        arm.update(points.at(i));
+        destinations.push_back(v);
     }
 }
 

@@ -326,50 +326,51 @@ Jacob::Jacob(Arm* arm) {
 
 void Jacob::makedr(Vector3f pe) {
 	_dp = dif(pe, _arm->getEndEffector());
-	Matrix3f origin = _arm->getJacobian(pe);
+	Matrix3f origin  = _arm->getJacobian(pe);
 	Matrix3f origin2 = _arm2->getJacobian(pe);
 	Matrix3f origin3 = _arm3->getJacobian(pe);
 	Matrix3f origin4 = _arm4->getJacobian(pe);
 
-	_jacobian(0, 0) = origin(0, 0);
-	_jacobian(0, 1) = origin(0, 1);
-	_jacobian(0, 2) = origin(0, 2);
-	_jacobian(1, 0) = origin(1, 0);
-	_jacobian(1, 1) = origin(1, 1);
-	_jacobian(1, 2) = origin(1, 2);
-	_jacobian(2, 0) = origin(2, 0);
-	_jacobian(2, 1) = origin(2, 1);
-	_jacobian(2, 2) = origin(2, 2);
+	_jacobian(0, 0)  = origin(0, 0);
+	_jacobian(0, 1)  = origin(0, 1);
+	_jacobian(0, 2)  = origin(0, 2);
+	_jacobian(1, 0)  = origin(1, 0);
+	_jacobian(1, 1)  = origin(1, 1);
+	_jacobian(1, 2)  = origin(1, 2);
+	_jacobian(2, 0)  = origin(2, 0);
+	_jacobian(2, 1)  = origin(2, 1);
+	_jacobian(2, 2)  = origin(2, 2);
 
-	_jacobian(0, 3) = origin2(0, 0);
-	_jacobian(0, 4) = origin2(0, 1);
-	_jacobian(0, 5) = origin2(0, 2);
-	_jacobian(1, 3) = origin2(1, 0);
-	_jacobian(1, 4) = origin2(1, 1);
-	_jacobian(1, 5) = origin2(1, 2);
-	_jacobian(2, 3) = origin2(2, 0);
-	_jacobian(2, 4) = origin2(2, 1);
-	_jacobian(2, 5) = origin2(2, 2);
+	_jacobian(0, 3)  = origin2(0, 0);
+	_jacobian(0, 4)  = origin2(0, 1);
+	_jacobian(0, 5)  = origin2(0, 2);
+	_jacobian(1, 3)  = origin2(1, 0);
+	_jacobian(1, 4)  = origin2(1, 1);
+	_jacobian(1, 5)  = origin2(1, 2);
+	_jacobian(2, 3)  = origin2(2, 0);
+	_jacobian(2, 4)  = origin2(2, 1);
+	_jacobian(2, 5)  = origin2(2, 2);
 
-	_jacobian(0, 6) = origin3(0, 0);
-	_jacobian(0, 7) = origin3(0, 1);
-	_jacobian(0, 8) = origin3(0, 2);
-	_jacobian(1, 6) = origin3(1, 0);
-	_jacobian(1, 7) = origin3(1, 1);
-	_jacobian(1, 8) = origin3(1, 2);
-	_jacobian(2, 6) = origin3(2, 0);
-	_jacobian(2, 7) = origin3(2, 1);
-	_jacobian(2, 8) = origin3(2, 2);
+	_jacobian(0, 6)  = origin3(0, 0);
+	_jacobian(0, 7)  = origin3(0, 1);
+	_jacobian(0, 8)  = origin3(0, 2);
+	_jacobian(1, 6)  = origin3(1, 0);
+	_jacobian(1, 7)  = origin3(1, 1);
+	_jacobian(1, 8)  = origin3(1, 2);
+	_jacobian(2, 6)  = origin3(2, 0);
+	_jacobian(2, 7)  = origin3(2, 1);
+	_jacobian(2, 8)  = origin3(2, 2);
 
-	_jacobian(0, 9) = origin4(0, 0);
+	_jacobian(0, 9)  = origin4(0, 0);
 	_jacobian(0, 10) = origin4(0, 1);
 	_jacobian(0, 11) = origin4(0, 2);
-	_jacobian(1, 9) = origin4(1, 0);
+	_jacobian(1, 9)  = origin4(1, 0);
 	_jacobian(1, 10) = origin4(1, 1);
 	_jacobian(1, 11) = origin4(1, 2);
-	_jacobian(2, 9) = origin4(2, 0);
+	_jacobian(2, 9)  = origin4(2, 0);
 	_jacobian(2, 10) = origin4(2, 1);
 	_jacobian(2, 11) = origin4(2, 2);
+
 
 	print(_jacobian);
 
