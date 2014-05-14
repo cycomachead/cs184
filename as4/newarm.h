@@ -66,7 +66,7 @@ public:
 	    transformation. **/
 	void addChild(float, float, float, float);
 	void setLocalTransform();
-	void setWorldTransform();
+	// void setWorldTransform();
 	void setWorldPoint();
 	void draw();
 	void update(Vector3f pe);
@@ -77,7 +77,7 @@ public:
 	void constructM();
 	void finishUpdate();
 	void setJacob();
-	Matrix3f getJacobian(Vector3f);
+	Matrix3f getJacobian();
 	Vector3f getEndEffector();
 
 
