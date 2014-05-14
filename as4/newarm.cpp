@@ -13,57 +13,6 @@ Matrix3f makeCross(Vector3f x) {
     return cross;	                  
 }
 
-Matrix3f inline singular(Vector3f v) {
-	float x, y, z;
-	if (v(0) > -0.0001f && v(0) < 0.0001f) {
-		x = 0;
-	} else {
-		x = 1/v(0);
-	}
-	if (v(1) > -0.0001f && v(1) < 0.0001f) {
-		y = 0;
-	} else {
-		y = 1/v(1);
-	}
-	bool a =v(2) > -0.0001f;
-	bool b =v(2) < 0.0001f;
-	cout << a << endl;
-	cout << b << endl;
-	if(v(2) > -0.0001f && v(2) < 0.0001f) {
-		z = 0;
-	} else {
-		z = 1/v(2);
-	}
-	Matrix3f mat;
-	mat << x, 0, 0,
-	       0, y, 0,
-	       0, 0, z;
-	return mat;
-}
-
-Vector3f dif(Vector3f a, Vector3f b) {
-	Vector3f r;
-	if (abs(a(0) - b(0)) < .0001) {
-		r(0) = 0;
-	} else {
-		r(0) = a(0) - b(0);
-	}
-
-	if (abs(a(1) - b(1)) < .0001) {
-		r(1) = 0;
-	} else {
-		r(1) = a(1) - b(1);
-	}
-
-	if (abs(a(2) - b(2)) < .0001) {
-		r(2) = 0;
-	} else {
-		r(2) = a(2) - b(2);
-	}
-
-	return r;
-}
-
 void print(Vector3f vec) {
 	cout << endl;
 	cout << vec << endl;
@@ -76,19 +25,11 @@ void print(Matrix3f mat) {
 	cout << endl;
 }
 
-void print(Matrix<double, 3, 12> mat) {
-	cout << endl;
-	cout << mat << endl;
-	cout << endl;
-}
-
-Arm::Arm(float length, float x, float y, float radian) {
+Arm::Arm(float length, Vector3f r) {
 	_length = length;
 	_parent = NULL;
 	_child = NULL;
-	_x = x;
-	_y = y;
-	_radian = radian;
+	_r = r;
 	_outboard = *new Vector3f(length, 0.0f, 0.0f);
 	_inboard = *new Vector3f(0.0f, 0.0f, 0.0f);
 	_Wparent << 1, 0, 0,
@@ -103,13 +44,11 @@ Arm::Arm(float length, float x, float y, float radian) {
 }
 
 /** Sets arm as parent. This is currently the most childish one. **/
-Arm::Arm(Arm* arm, float length, float x, float y, float radian) {
+Arm::Arm(Arm* arm, float length, Vector3f r) {
 	_length = length;
 	_parent = arm;
 	_child = NULL;
-	_x = x;
-	_y = y;
-	_radian = radian;
+	_r = r;
 	_outboard = *new Vector3f(length, 0.0f, 0.0f);
 	_inboard = *new Vector3f(0.0f, 0.0f, 0.0f);
 	_Wparent = _parent->_W;
@@ -121,50 +60,49 @@ Arm::Arm(Arm* arm, float length, float x, float y, float radian) {
 	setWorldPoint();
 }
 
-void Arm::addChild(float length, float x, float y, float radian) {
+void Arm::addChild(float length, Vector3f r) {
 	if (_child != NULL) {
-		_child->addChild(length, x, y, radian);
+		_child->addChild(length, r);
 		updateWparentWchild();
 	} else {
-		Arm* child = new Arm(this, length, x, y, radian);
+		Arm* child = new Arm(this, length, r);
 		_child = child;
 		updateWparentWchild();
 	}
 }
 
 void Arm::setLocalTransform() {
-	float z = sqrt(1 - (sqr(_x) + sqr(_y)));
-	cout <<endl;
-	cout << _x << " " << _y << " " << z << " theta: " << _radian;
-	cout <<endl;
 	Matrix4f new_rotate;
-    Matrix3f rx;
     Matrix3f identity;
-    float s = sin(_radian);
-    float c = cos(_radian);
-    identity << 1, 0, 0,
-                0, 1, 0,
-                0, 0, 1;
-    /** Set rotation. **/
-    rx << 0, -z, _y,
-          z, 0, -_x,
-          -_y, _x, 0;
+    float s = sin(_r.norm());
+    float c = cos(_r.norm());
+    float x, y, z;
 
-    Matrix3f rot = identity + (rx)*s + (rx)*(rx)*(1-c);
+    if (_r(0) == 0) {
+    	x = 0;
+    } else {
+    	x = _r(0)/_r.norm();
+    }
+
+    if (_r(1) == 0) {
+    	y = 0;
+    } else {
+    	y = _r(1)/_r.norm();
+    }
+
+
+    if (_r(2) == 0) {
+    	z = 0;
+    } else {
+    	z = _r(2)/_r.norm();
+    }
+
+    Vector3f rhat(x, y, z);
+    Matrix3f rx = makeCross(rhat);
+    identity << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+    Matrix3f rot = identity + (rx)*c + (rx)*(rx)*(1-s);
     _M = rot;
-    cout << endl;
-    cout << "Transformation matrix";
-    print(_M);
-    cout << endl;
 }
-
-// void Arm::setWorldTransform() {
-// 	if (_parent != NULL) {
-// 		_W = _parent->_W * _M;
-// 	} else {
-// 		_W = _M;
-// 	}
-// }
 
 void Arm::setWorldPoint() {
 	translateToOrigin();
@@ -184,24 +122,6 @@ void Arm::translateToParent() {
 		_inboard = _parent->_outboard;
 	}
 }
-
-// void Arm::update(Vector3f pe) {
-// 	Vector3f p = getEndEffector();
-// 	Vector3f dp = dif(pe, p);
-// 	Matrix3f pseudoJ = getPseudoInverseJacobian(pe);
-// 	Vector3f dr = pseudoJ * dp;
-// 	print(dr);
-// 	_x = _x + dr[0];
-// 	_y = _y + dr[1];
-// 	_radian = _radian + dr[2];
-// 	setLocalTransform();
-// 	if (_child != NULL) {
-// 		_child->update(pe);
-// 	}
-// 	updateWparentWchild();
-// 	setWorldTransform();
-// 	setWorldPoint();
-// }
 
 void Arm::updateWparentWchild() {
 	Arm* pointUp = _parent;
@@ -232,38 +152,23 @@ void Arm::update(Vector3f pe) {
 
 void Arm::updateControl(Vector3f g) {
 	Vector3f p = getEndEffector();
-	Vector3f dp = dif(p, g);
-	cout << endl;
-	cout << "difference" << endl;
-	print(dp);
-	cout << endl;
+	print(p);
+	Vector3f dp = g - p;
+	print(g);
 	Matrix3f j = getJacobian();
-	JacobiSVD<MatrixXf> svd(j, ComputeThinU | ComputeThinV);
-	Vector3f sing = svd.singularValues();
-	j = svd.matrixU() * singular(sing) * svd.matrixV().transpose();
-	cout << j << endl;
-	cout << dp;
+	j = j.transpose() * (j * j.transpose()).inverse();
+	if (j(0, 0) != j(0, 0)) {
+		cout << " perturb " << endl;
+		perturb();
+		updateControl(g);
+		return;
+	}	
 	Vector3f dr = j * dp;
-	Vector3f zero(0, 0, 0);
-	cout << endl;
-	cout << "control change" << endl;
+	print(j);
+	print(dp);
 	print(dr);
-	cout << endl;
-	cout << "control before" << endl;
-	cout << _x << endl;
-	cout << _y << endl;
-	cout << _radian << endl;
-	cout << endl;
-	_x = _x - dr[2];
-	_y = _y - dr[0];
-	_radian = _radian - dr[1];
-
-	cout << endl;
-	cout << "control after" <<endl;
-	cout << _x << endl;
-	cout << _y << endl;
-	cout << _radian << endl;
-	cout << endl;
+	print(_r);
+	_r = _r + dr;
 }
 
 void Arm::constructM() {
@@ -326,6 +231,12 @@ void Arm::setJacob() {
 	_jacob = *new Jacob(this);
 }
 
+void Arm::perturb() {
+	Vector3f pert(.00000000001, .0000000001, .000001);
+	_r = _r + pert;
+	constructM();
+	finishUpdate();
+}
 
 Jacob::Jacob(Arm* arm) {
 	_arm = arm;
@@ -334,37 +245,10 @@ Jacob::Jacob(Arm* arm) {
 	// _arm4 = arm->_child->_child->_child;
 }
 
+
 void Jacob::makedr(Vector3f g) {
-	cout << endl;
-	cout << "real goal";
-	print(g);
-	cout <<endl;
-	Vector3f point = _arm->getEndEffector();
-	if (point(0) - g(0) > 0.1f) {
-		g(0) = point(0)  - .1;
-	} else if (point(0) - g(0) < -0.1f) {
-		g(0) = point(0) + .1;
-	}
-
-	if (point(1) - g(1) > 0.1f) {
-		g(1) = point(1) - .1;
-	} else if (point(1) - g(1) < -0.1f) {
-		g(1) = point(1) + .1;
-	}
-
-	if (point(2) - g(2) > .1) {
-		g(2) = point(2) - .1;
-	} else if (point(2) - g(2) < -0.1f) {
-		g(2) = point(2) + .1;
-	}
-	cout <<endl;
-	cout << "goal point";
-	print(g);
-	cout << endl;
+	// Vector3f point = _arm->getEndEffector();
 	_arm->updateControl(g);
-	// _arm2->updateControl(pe);
-	// _arm3->updateControl(pe);
-	// _arm4->updateControl(pe);
 
 	_arm->constructM();
 	_arm->finishUpdate();

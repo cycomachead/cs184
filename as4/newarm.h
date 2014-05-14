@@ -44,7 +44,7 @@ public:
 	/** This is the world transformation. **/
 	Matrix3f _W;
 	/** This is phi and psi for the axis, angle representation. **/
-	float _x, _y, _radian;
+	Vector3f _r;
 	/** This is the transformation up to the parent's transformation. **/
 	Matrix3f _Wparent;
 	/** This is the transformation of everything beyond this arm. **/
@@ -59,12 +59,12 @@ public:
 
 	/** This constructor will create the oldest parent.
 	    This arm will have no parent. **/
-	Arm(float, float, float, float);
+	Arm(float, Vector3f);
 	/** Sets arm as parent. **/
-	Arm(Arm*, float, float, float, float);
+	Arm(Arm*, float, Vector3f);
 	/** Concatenate a child with following float and local 
 	    transformation. **/
-	void addChild(float, float, float, float);
+	void addChild(float, Vector3f);
 	void setLocalTransform();
 	// void setWorldTransform();
 	void setWorldPoint();
@@ -79,6 +79,7 @@ public:
 	void setJacob();
 	Matrix3f getJacobian();
 	Vector3f getEndEffector();
+	void perturb();
 
 
 };

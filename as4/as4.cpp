@@ -163,7 +163,7 @@ void myDisplay() {
     cout << "end effector" << endl;
     print(a);
     cout << endl;
-    Vector3f v(0, 0, 4);
+    Vector3f v(4.01, 0, 0);
     arm.update(v);
 
     cout << "===================================================" << endl;
@@ -252,7 +252,8 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArmsAndRotation() {
-    arm = *new Arm(4, 0, 0, 0);
+    Vector3f control(0, 0, 0);
+    arm = *new Arm(4, control);
     // arm.addChild(3, 0, 1, PI/4);
     // arm.addChild(2, 0, 1, PI/4);
     // arm.addChild(1, 0, 1, PI/4);
@@ -297,7 +298,7 @@ int main(int argc, char *argv[]) {
 
     glutReshapeFunc(myReshape);
     setupGlut();
-    glutIdleFunc(myFrameMove);
+    // glutIdleFunc(myFrameMove);
     glutMainLoop();
 
     return 0;
