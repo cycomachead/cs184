@@ -184,6 +184,7 @@ void myDisplay() {
     // Update the position if we can.
     if (destinations.size() > animCounter) {
         gotToPoint = arm.update(destinations.at(animCounter));
+        cout << "ARRIVED???   " << gotToPoint << endl;
         if (gotToPoint) {
             animCounter += 1;
         }
@@ -354,8 +355,8 @@ void createArmsAndRotation() {
     Vector3f control(0, 0, PI/4);
     arm = *new Arm(4, control);
     arm.addChild(3, control);
-    arm.addChild(2, control);
-    arm.addChild(1, control);
+    // arm.addChild(2, control);
+//     arm.addChild(1, control);
     arm.setJacob();
 }
 

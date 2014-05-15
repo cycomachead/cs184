@@ -231,8 +231,8 @@ void Arm::setJacob() {
 Jacob::Jacob(Arm* arm) {
 	_arm = arm;
 	_arm2 = arm->_child;
-	_arm3 = arm->_child->_child;
-	_arm4 = arm->_child->_child->_child;
+	// _arm3 = arm->_child->_child;
+	// _arm4 = arm->_child->_child->_child;
 }
 
 
@@ -268,22 +268,22 @@ bool Jacob::makedr(Vector3f g) {
 
 	Matrix3f J1 = _arm->getJacobian();
 	Matrix3f J2 = _arm2->getJacobian();
-	Matrix3f J3 = _arm3->getJacobian();
-	Matrix3f J4 = _arm4->getJacobian();
-	MatrixXf C(J1.rows(), J1.cols() + J2.cols() + J3.cols() + J4.cols());
-	C << J1, J2, J3, J4;
+	//Matrix3f J3 = // _arm3->getJacobian();
+	//Matrix3f J4 = // _arm4->getJacobian();
+	MatrixXf C(J1.rows(), J1.cols() + J2.cols()); // + J3.cols() + J4.cols());
+	C << J1, J2; // J3, J4;
 	MatrixXf Cplus = C.transpose() * (C * C.transpose()).inverse();
 	MatrixXf dr = (Cplus * dp) ;
 
 	Vector3f alpha(dr(0, 0), dr(1, 0), dr(2, 0));
 	Vector3f beta(dr(3, 0), dr(4, 0), dr(5, 0));
-	Vector3f gamma(dr(6, 0), dr(7, 0), dr(8, 0));
-	Vector3f delta(dr(9, 0), dr(10, 0), dr(11, 0));
+	//Vector3f gamma(dr(6, 0), dr(7, 0), dr(8, 0));
+	//Vector3f delta(dr(9, 0), dr(10, 0), dr(11, 0));
 
 	_arm->updateControl(alpha);
 	_arm2->updateControl(beta);
-	_arm3->updateControl(gamma);
-	_arm4->updateControl(delta);
+	// _arm3->updateControl(gamma);
+	// _arm4->updateControl(delta);
 
 	_arm->constructM();
 	_arm->finishUpdate();
