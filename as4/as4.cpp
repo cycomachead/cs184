@@ -338,11 +338,12 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArmsAndRotation() {
-    Vector3f control(0, 0, 0);
+    Vector3f control(1, 1, 1);
+    Vector3f v(0, 1, PI/4);
     arm = *new Arm(4, control);
-    // arm.addChild(3, 0, 1, PI/4);
-    // arm.addChild(2, 0, 1, PI/4);
-    // arm.addChild(1, 0, 1, PI/4);
+    arm.addChild(3, v);
+    arm.addChild(2, v);
+    arm.addChild(1, v);
     arm.setJacob();
 }
 

@@ -152,9 +152,9 @@ void Arm::update(Vector3f pe) {
 
 void Arm::updateControl(Vector3f g) {
 	Vector3f p = getEndEffector();
-	print(p);
+	//print(p);
 	Vector3f dp = g - p;
-	print(g);
+	//print(g);
 	Matrix3f j = getJacobian();
 	j = j.transpose() * (j * j.transpose()).inverse();
 	if (j(0, 0) != j(0, 0)) {
@@ -164,10 +164,10 @@ void Arm::updateControl(Vector3f g) {
 		return;
 	}
 	Vector3f dr = j * dp;
-	print(j);
-	print(dp);
-	print(dr);
-	print(_r);
+	//print(j);
+	//print(dp);
+	//print(dr);
+	//print(_r);
 	_r = _r + dr;
 }
 
@@ -249,7 +249,6 @@ Jacob::Jacob(Arm* arm) {
 void Jacob::makedr(Vector3f g) {
 	// Vector3f point = _arm->getEndEffector();
 	_arm->updateControl(g);
-
 	_arm->constructM();
 	_arm->finishUpdate();
 
