@@ -1,5 +1,5 @@
 CC = g++
-SOURCES = arm.cpp transformation.cpp
+SOURCES = newarm.cpp
 OBJECTS = $(SOURCES:cpp=o)
 ifeq ($(shell sw_vers 2>/dev/null | grep Mac | awk '{ print $$2}'),Mac)
 	CC = clang #-xc++ # Clang handles C++11 better on 10.8
@@ -15,7 +15,7 @@ endif
 
 RM = /bin/rm -f
 
-.PHONY: main clean
+.PHONY: main
 
 all: main
 
