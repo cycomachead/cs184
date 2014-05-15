@@ -19,6 +19,8 @@ public:
 	Matrix<double, 3, 12> _jacobian;
 	Matrix<double, 12, 1> _dr;
 	Matrix<double, 3, 1> _dp;
+    float prevError;
+    float stepSize = .1;
 
 	Jacob() {
 		//Empty Constructor
@@ -57,7 +59,7 @@ public:
 	Arm(float, Vector3f);
 	/** Sets arm as parent. **/
 	Arm(Arm*, float, Vector3f);
-	/** Concatenate a child with following float and local 
+	/** Concatenate a child with following float and local
 	    transformation. **/
 	void addChild(float, Vector3f);
 	void setLocalTransform();

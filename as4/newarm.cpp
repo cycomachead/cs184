@@ -5,6 +5,10 @@ float inline euclid(Vector4f x, Vector4f y) {
 	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
 }
 
+float inline euclid(Vector3f x, Vector3f y) {
+	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
+}
+
 Matrix3f makeCross(Vector4f x) {
 	Matrix3f cross;
 	cross << 0, -x[2], x[1],
@@ -183,16 +187,16 @@ Vector4f Arm::getEndEffector() {
 Matrix3f Arm::getJacobian() {
 	Vector3f out = convertTo3(_outboard);
 	Matrix3f trans;
-	trans << 1, 0, 0,
-	         0, 1, 0,
-	         0, 0, 1;
+    trans << 1, 0, 0,
+             0, 1, 0,
+             0, 0, 1;
 	Arm* arm = this;
 	while (arm->_parent != NULL) {
 		arm = arm->_parent;
-		trans = trans * _parent->_R;
+		trans = trans * arm->_R;
 	}
-	out = trans * out;
-	return -makeCross(out);
+    out = -out;
+	return trans * makeCross(out);
 }
 
 void Arm::draw() {
@@ -217,7 +221,8 @@ void Arm::draw() {
 float Arm::armLength() {
 	float len = _length;
 	if (_child != NULL) {
-		return len + _child->armLength();
+        len += _child->armLength();
+		return len;
 	}
 	return len;
 }
@@ -231,16 +236,17 @@ void Arm::setJacob() {
 Jacob::Jacob(Arm* arm) {
 	_arm = arm;
 	_arm2 = arm->_child;
-	// _arm3 = arm->_child->_child;
-	// _arm4 = arm->_child->_child->_child;
+	_arm3 = arm->_child->_child;
+	_arm4 = arm->_child->_child->_child;
 }
 
 
 bool Jacob::makedr(Vector3f g) {
-	float step = 0.05;
+	float step = stepSize;
 	Vector4f point = _arm->getEndEffector();
 	Vector3f dp = (g - convertTo3(point));
 	float x, y, z;
+
 	if (dp(0) != 0) {
     	dp(0) = dp(0)/dp.norm();
     }
@@ -249,18 +255,23 @@ bool Jacob::makedr(Vector3f g) {
     	dp(1) = dp(1)/dp.norm();
     }
 
-    if (g(2) == 0) {
+    if (dp(2) != 0) {
     	dp(2) = dp(2)/dp.norm();
     }
 
-	float len = _arm->armLength() - .01;
+	float len = _arm->armLength() - .1;
     g = dp * len;
-
+    cout << "G: " << endl;
+    print(g);
     dp = (g - convertTo3(point));
 
-	if (dp(0) > -.0001 && dp(0) < .0001 &&
-		dp(1) > -.0001 && dp(1) < .0001 &&
-		dp(2) > -.0001 && dp(2) < .0001) {
+    cout << "END EFFECTOR ";
+    print(_arm->getEndEffector());
+    cout << "DP";
+    print(dp);
+
+    float dist = euclid(convertTo3(point), g);
+	if (dist < 2) {
 		return true;
 	}
 
@@ -268,26 +279,34 @@ bool Jacob::makedr(Vector3f g) {
 
 	Matrix3f J1 = _arm->getJacobian();
 	Matrix3f J2 = _arm2->getJacobian();
-	//Matrix3f J3 = // _arm3->getJacobian();
-	//Matrix3f J4 = // _arm4->getJacobian();
-	MatrixXf C(J1.rows(), J1.cols() + J2.cols()); // + J3.cols() + J4.cols());
-	C << J1, J2; // J3, J4;
+	Matrix3f J3 = _arm3->getJacobian();
+	Matrix3f J4 = _arm4->getJacobian();
+	MatrixXf C(J1.rows(), J1.cols() + J2.cols() + J3.cols() + J4.cols());
+	C << J1, J2, J3, J4;
 	MatrixXf Cplus = C.transpose() * (C * C.transpose()).inverse();
 	MatrixXf dr = (Cplus * dp) ;
 
 	Vector3f alpha(dr(0, 0), dr(1, 0), dr(2, 0));
 	Vector3f beta(dr(3, 0), dr(4, 0), dr(5, 0));
-	//Vector3f gamma(dr(6, 0), dr(7, 0), dr(8, 0));
-	//Vector3f delta(dr(9, 0), dr(10, 0), dr(11, 0));
+	Vector3f gamma(dr(6, 0), dr(7, 0), dr(8, 0));
+	Vector3f delta(dr(9, 0), dr(10, 0), dr(11, 0));
 
 	_arm->updateControl(alpha);
 	_arm2->updateControl(beta);
-	// _arm3->updateControl(gamma);
-	// _arm4->updateControl(delta);
+	_arm3->updateControl(gamma);
+	_arm4->updateControl(delta);
 
 	_arm->constructM();
 	_arm->finishUpdate();
 
+    float currentError = (convertTo3(_arm->getEndEffector()) - g).norm();
+    if (currentError > prevError) {
+        if (stepSize / 2 > 0.001) {
+            stepSize /= 2;
+        }
+    } else {
+        stepSize *= 2;
+    }
 	return false;
 
 }
