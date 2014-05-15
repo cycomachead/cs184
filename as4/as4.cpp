@@ -39,6 +39,9 @@ Vector3f translation = Vector3f(0.0f, 0.0f, -20.0f);
 
 vector<Vector3f> destinations = vector<Vector3f>();
 
+int animCounter = 0;
+bool gotToPoint = false;
+
 //****************************************************
 // Basic Functions
 //****************************************************
@@ -175,12 +178,19 @@ void myDisplay() {
     }
     glEnd();
 
-    // Now tell the arm to trace these points
-    for(int i = 0; i < destinations.size(); i += 1) {
-        arm.update(destinations.at(i));
+    // Draw the current arm
+    arm.draw();
+
+    // Update the position if we can.
+    if (destinations.size() > animCounter) {
+        arm.update(destinations.at(animCounter));
+        animCounter += 1;
     }
 
-    cout << "===================================================" << endl;
+    if (animCounter >= destinations.size()) {
+        animCounter = 0;
+    }
+
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
@@ -189,11 +199,12 @@ void myDisplay() {
 
 // Simple 2D circle motion for the arm
 void drawCircle() {
+    animCounter = 0;
     int step = 91;
     float max = 2*PI;
     destinations.clear();
     for(float t = 0; t < max; t += (max/step)) {
-        Vector3f v = Vector3f( 8 * cos(t), 8 * sin(t), -5);
+        Vector3f v = Vector3f( 6 * cos(t), 6 * sin(t), 0);
         glVertex3f(v[0], v[1], v[2]);
         destinations.push_back(v);
     }
@@ -201,6 +212,7 @@ void drawCircle() {
 
 // 2D Figure-8 motion for the arm
 void drawFigure8() {
+    animCounter = 0;
     int step = 91;
     float max = 2*PI;
     destinations.clear();
@@ -215,6 +227,7 @@ void drawFigure8() {
 // 2D Ellipse motion for the arm
 // This tests out of reach goals
 void drawEllipse() {
+    animCounter = 0;
     int step = 91;
     float max = 2*PI;
     destinations.clear();
@@ -231,6 +244,7 @@ void drawEllipse() {
 // Equation:
 // http://mathworld.wolfram.com/HeartCurve.html
 void drawHeart() {
+    animCounter = 0;
     int step = 91;
     float max = 2*PI;
     destinations.clear();

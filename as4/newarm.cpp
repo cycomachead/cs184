@@ -238,6 +238,7 @@ Jacob::Jacob(Arm* arm) {
 	_arm4 = arm->_child->_child->_child;
 }
 
+
 void Jacob::makedr(Vector3f g) {
 	float k = 0.05;
 	Vector4f point = _arm->getEndEffector();
