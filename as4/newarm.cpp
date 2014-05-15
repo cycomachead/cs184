@@ -10,7 +10,7 @@ Matrix3f makeCross(Vector3f x) {
 	cross << 0, -x[2], x[1],
              x[2], 0, -x[0],
              -x[1], x[0], 0;
-    return cross;	                  
+    return cross;
 }
 
 void print(Vector3f vec) {
@@ -162,7 +162,7 @@ void Arm::updateControl(Vector3f g) {
 		perturb();
 		updateControl(g);
 		return;
-	}	
+	}
 	Vector3f dr = j * dp;
 	print(j);
 	print(dp);
