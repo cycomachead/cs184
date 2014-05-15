@@ -5,6 +5,7 @@
 
 using namespace Eigen;
 void print(Vector3f vec);
+void print(Vector4f vec);
 void print(Matrix3f mat);
 class Arm;
 
@@ -36,19 +37,19 @@ public:
 	/** This pointer, points further out. **/
 	Arm* _child;
 	/** This is the out position. **/
-	Vector3f _outboard;
+	Vector4f _outboard;
 	/** This is the inboard position. **/
-	Vector3f _inboard;
+	Vector4f _inboard;
 	/** This is the local transformation. **/
-	Matrix3f _M;
+	Matrix4f _M;
 	/** This is the world transformation. **/
-	Matrix3f _W;
+	Matrix3f _R;
 	/** This is phi and psi for the axis, angle representation. **/
 	Vector3f _r;
-	/** This is the transformation up to the parent's transformation. **/
-	Matrix3f _Wparent;
-	/** This is the transformation of everything beyond this arm. **/
-	Matrix3f _Wchild;
+	// /** This is the transformation up to the parent's transformation. **/
+	// Matrix3f _Wparent;
+	// /** This is the transformation of everything beyond this arm. **/
+	// Matrix3f _Wchild;
 	/** Jacobian calculator that calculates the updates. **/
 	Jacob _jacob;
 
@@ -77,8 +78,9 @@ public:
 	void constructM();
 	void finishUpdate();
 	void setJacob();
+	Arm* mostparent();
 	Matrix3f getJacobian();
-	Vector3f getEndEffector();
+	Vector4f getEndEffector();
 	void perturb();
 
 

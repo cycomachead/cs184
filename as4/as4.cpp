@@ -158,7 +158,7 @@ void myDisplay() {
 
     arm.draw();
 
-    Vector3f a = arm.getEndEffector();
+    Vector4f a = arm.getEndEffector();
     cout << endl;
     cout << "end effector" << endl;
     print(a);
@@ -252,11 +252,11 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArmsAndRotation() {
-    Vector3f control(0, 0, 0);
+    Vector3f control(0, 0, PI/4);
     arm = *new Arm(4, control);
-    // arm.addChild(3, 0, 1, PI/4);
-    // arm.addChild(2, 0, 1, PI/4);
-    // arm.addChild(1, 0, 1, PI/4);
+    arm.addChild(3, control);
+    arm.addChild(2, control);
+    arm.addChild(1, control);
     arm.setJacob();
 }
 
