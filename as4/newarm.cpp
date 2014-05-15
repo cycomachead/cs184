@@ -243,7 +243,7 @@ bool Jacob::makedr(Vector3f g) {
 	float x, y, z;
 	if (dp(0) != 0) {
     	dp(0) = dp(0)/dp.norm();
-    } 
+    }
 
     if (dp(1) != 0) {
     	dp(1) = dp(1)/dp.norm();

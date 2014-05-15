@@ -183,8 +183,10 @@ void myDisplay() {
 
     // Update the position if we can.
     if (destinations.size() > animCounter) {
-        arm.update(destinations.at(animCounter));
-        animCounter += 1;
+        gotToPoint = arm.update(destinations.at(animCounter));
+        if (gotToPoint) {
+            animCounter += 1;
+        }
     }
 
     if (animCounter >= destinations.size()) {
