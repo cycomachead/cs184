@@ -355,8 +355,8 @@ void createArmsAndRotation() {
     Vector3f control(0, 0, PI/4);
     arm = *new Arm(4, control);
     arm.addChild(3, control);
-    // arm.addChild(2, control);
-//     arm.addChild(1, control);
+    arm.addChild(2, control);
+    arm.addChild(1, control);
     arm.setJacob();
 }
 

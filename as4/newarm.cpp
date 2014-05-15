@@ -5,6 +5,11 @@ float inline euclid(Vector4f x, Vector4f y) {
 	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
 }
 
+float inline euclid(Vector3f x, Vector3f y) {
+	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
+}
+
+
 Matrix3f makeCross(Vector4f x) {
 	Matrix3f cross;
 	cross << 0, -x[2], x[1],
@@ -30,6 +35,38 @@ Vector4f convertTo4(Vector3f a) {
 Vector3f convertTo3(Vector4f a) {
 	Vector3f beta(a[0], a[1], a[2]);
 	return beta;
+}
+
+Matrix3f convertMTo3(Matrix4f rot) {
+	Matrix3f rot3f;
+	rot3f << rot(0, 0), rot(0, 1), rot(0, 2),
+             rot(1, 0), rot(1, 1), rot(1, 2),
+             rot(2, 0), rot(2, 1), rot(2, 2);
+    return rot3f;
+}
+
+Vector3f normal(Vector3f r) {
+	float x, y, z;
+	if (r(0) == 0) {
+    	x = 0;
+    } else {
+    	x = r(0)/r.norm();
+    }
+
+    if (r(1) == 0) {
+    	y = 0;
+    } else {
+    	y = r(1)/r.norm();
+    }
+
+    if (r(2) == 0) {
+    	z = 0;
+    } else {
+    	z = r(2)/r.norm();
+    }
+
+    Vector3f n(x, y, z);
+    return n;
 }
 
 void print(Vector3f vec) {
@@ -85,10 +122,10 @@ void Arm::addChild(float length, Vector3f r) {
 void Arm::setLocalTransform() {
 	Matrix4f new_rotate;
     Matrix3f identity;
+    cout << _r << endl;
     float s = sin(_r.norm());
     float c = cos(_r.norm());
     float x, y, z;
-
     if (_r(0) == 0) {
     	x = 0;
     } else {
@@ -106,35 +143,57 @@ void Arm::setLocalTransform() {
     } else {
     	z = _r(2)/_r.norm();
     }
-
     Vector3f rhat(x, y, z);
     Matrix3f rx = makeCross(rhat);
     identity << 1, 0, 0, 0, 1, 0, 0, 0, 1;
     Matrix3f rot = identity + (rx)*c + (rx)*(rx)*(1-s);
     _R = rot;
+
+    Matrix4f rot4f;
+    rot4f << rot(0, 0), rot(0, 1), rot(0, 2), 0,
+             rot(1, 0), rot(1, 1), rot(1, 2), 0,
+             rot(2, 0), rot(2, 1), rot(2, 2), 0,
+             0, 0, 0, 1;
+
+    Matrix4f trans;
+    if (_parent != NULL) {
+    	trans << 1, 0, 0, _parent->_length,
+    	         0, 1, 0, 0,
+    	         0, 0, 1, 0,
+    	         0, 0, 0, 1;
+    } else {
+    	trans << 1, 0, 0, 0,
+    	         0, 1, 0, 0,
+    	         0, 0, 1, 0,
+    	         0, 0, 0, 1;
+    }
+
+    _M = trans * rot4f;
 }
 
 void Arm::setWorldPoint() {
-	Vector3f in(0, 0, 0);
-	Vector3f out(_length, 0, 0);
+	Vector4f in(0, 0, 0, 1);
+	Vector4f out(_length, 0, 0, 1);
 	Arm* arm = mostparent();
-	Matrix3f trans;
-	trans << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+	// Matrix3f trans;
+	// trans << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+	Matrix4f trans;
+	trans << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
 	while (arm->_length != this->_length) {
-		trans = trans * arm->_R;
+		trans = trans * arm->_M;
 		if (arm->_child != NULL) {
 			arm = arm->_child;
 		}
 	}
-	trans = trans * _R;
-	_inboard = convertTo4(trans * in);
-	_outboard = convertTo4(trans * out);
-	if (_parent != NULL) {
-		_inboard = _inboard + _parent->_outboard;
-		_outboard = _outboard + _parent->_outboard;
-		_inboard(3) = 1;
-		_outboard(3) = 1;
-	}
+	trans = trans * _M;
+	_inboard = trans * in;
+	_outboard = trans * out;
+	// if (_parent != NULL) {
+	// 	_inboard = _inboard + _parent->_outboard;
+	// 	_outboard = _outboard + _parent->_outboard;
+	// 	_inboard(3) = 1;
+	// 	_outboard(3) = 1;
+	// }
 }
 
 Arm* Arm::mostparent() {
@@ -181,18 +240,27 @@ Vector4f Arm::getEndEffector() {
 
 
 Matrix3f Arm::getJacobian() {
-	Vector3f out = convertTo3(_outboard);
-	Matrix3f trans;
-	trans << 1, 0, 0,
-	         0, 1, 0,
-	         0, 0, 1;
+	Vector4f end = getEndEffector();
+	Matrix3f rot;
+	Matrix4f trans;
+	trans << 1, 0, 0, 0,
+	         0, 1, 0, 0,
+	         0, 0, 1, 0,
+	         0, 0, 0, 1;
+	rot << 1, 0, 0,
+	       0, 1, 0,
+	       0, 0, 1;
 	Arm* arm = this;
 	while (arm->_parent != NULL) {
 		arm = arm->_parent;
-		trans = trans * _parent->_R;
+		rot = rot * arm->_R;
 	}
-	out = trans * out;
-	return -makeCross(out);
+	while (arm->_parent != NULL) {
+		arm = arm->_parent;
+		trans = arm->_M * trans; 
+	}
+	Vector4f out =trans.inverse() * end;
+	return -rot * makeCross(out);
 }
 
 void Arm::draw() {
@@ -231,8 +299,8 @@ void Arm::setJacob() {
 Jacob::Jacob(Arm* arm) {
 	_arm = arm;
 	_arm2 = arm->_child;
-	// _arm3 = arm->_child->_child;
-	// _arm4 = arm->_child->_child->_child;
+	_arm3 = arm->_child->_child;
+	_arm4 = arm->_child->_child->_child;
 }
 
 
@@ -241,49 +309,37 @@ bool Jacob::makedr(Vector3f g) {
 	Vector4f point = _arm->getEndEffector();
 	Vector3f dp = (g - convertTo3(point));
 	float x, y, z;
-	if (dp(0) != 0) {
-    	dp(0) = dp(0)/dp.norm();
-    }
-
-    if (dp(1) != 0) {
-    	dp(1) = dp(1)/dp.norm();
-    }
-
-    if (g(2) == 0) {
-    	dp(2) = dp(2)/dp.norm();
-    }
-
-	float len = _arm->armLength() - .01;
+	dp = normal(dp);
+	float len = _arm->armLength() - .1;
     g = dp * len;
 
-    dp = (g - convertTo3(point));
+    dp = step * (g - convertTo3(point));
 
-	if (dp(0) > -.0001 && dp(0) < .0001 &&
-		dp(1) > -.0001 && dp(1) < .0001 &&
-		dp(2) > -.0001 && dp(2) < .0001) {
-		return true;
-	}
+    float dist = euclid(g, convertTo3(point));
 
-	dp = dp * step;
+    if (dist < 1) {
+    	return true;
+    }
+
 
 	Matrix3f J1 = _arm->getJacobian();
 	Matrix3f J2 = _arm2->getJacobian();
-	//Matrix3f J3 = // _arm3->getJacobian();
-	//Matrix3f J4 = // _arm4->getJacobian();
-	MatrixXf C(J1.rows(), J1.cols() + J2.cols()); // + J3.cols() + J4.cols());
-	C << J1, J2; // J3, J4;
+	Matrix3f J3 = _arm3->getJacobian();
+	Matrix3f J4 = _arm4->getJacobian();
+	MatrixXf C(J1.rows(), J1.cols() + J2.cols() + J3.cols() + J4.cols());
+	C << J1, J2, J3, J4;
 	MatrixXf Cplus = C.transpose() * (C * C.transpose()).inverse();
 	MatrixXf dr = (Cplus * dp) ;
 
 	Vector3f alpha(dr(0, 0), dr(1, 0), dr(2, 0));
 	Vector3f beta(dr(3, 0), dr(4, 0), dr(5, 0));
-	//Vector3f gamma(dr(6, 0), dr(7, 0), dr(8, 0));
-	//Vector3f delta(dr(9, 0), dr(10, 0), dr(11, 0));
+	Vector3f gamma(dr(6, 0), dr(7, 0), dr(8, 0));
+	Vector3f delta(dr(9, 0), dr(10, 0), dr(11, 0));
 
 	_arm->updateControl(alpha);
 	_arm2->updateControl(beta);
-	// _arm3->updateControl(gamma);
-	// _arm4->updateControl(delta);
+	_arm3->updateControl(gamma);
+	_arm4->updateControl(delta);
 
 	_arm->constructM();
 	_arm->finishUpdate();

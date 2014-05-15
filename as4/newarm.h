@@ -42,6 +42,7 @@ public:
 	Vector4f _inboard;
 	/** This is the world transformation. **/
 	Matrix3f _R;
+	Matrix4f _M;
 	/** This is phi and psi for the axis, angle representation. **/
 	Vector3f _r;
 	/** This updates our control. **/
