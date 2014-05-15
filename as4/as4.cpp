@@ -163,7 +163,7 @@ void myDisplay() {
     cout << "end effector" << endl;
     print(a);
     cout << endl;
-    Vector3f v(4.01, 0, 0);
+    Vector3f v(4.0, 0, 0);
     arm.update(v);
 
     cout << "===================================================" << endl;
@@ -298,7 +298,7 @@ int main(int argc, char *argv[]) {
 
     glutReshapeFunc(myReshape);
     setupGlut();
-    // glutIdleFunc(myFrameMove);
+    glutIdleFunc(myFrameMove);
     glutMainLoop();
 
     return 0;
