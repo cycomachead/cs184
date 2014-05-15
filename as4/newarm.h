@@ -25,7 +25,7 @@ public:
 	};
 	Jacob(Arm*);
 
-	void makedr(Vector3f);
+	bool makedr(Vector3f);
 
 };
 
@@ -64,7 +64,7 @@ public:
 	// void setWorldTransform();
 	void setWorldPoint();
 	void draw();
-	void update(Vector3f pe);
+	bool update(Vector3f pe);
 	void translateToParent();
 	void translateToOrigin();
 	void updateWparentWchild();
@@ -72,6 +72,7 @@ public:
 	void constructM();
 	void finishUpdate();
 	void setJacob();
+	float armLength();
 	Arm* mostparent();
 	Matrix3f getJacobian();
 	Vector4f getEndEffector();

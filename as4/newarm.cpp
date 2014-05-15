@@ -112,20 +112,6 @@ void Arm::setLocalTransform() {
     identity << 1, 0, 0, 0, 1, 0, 0, 0, 1;
     Matrix3f rot = identity + (rx)*c + (rx)*(rx)*(1-s);
     _R = rot;
-    Matrix4f rot4f;
-    rot4f << rot(0, 0), rot(0, 1), rot(0, 2), 0,
-             rot(1, 0), rot(1, 1), rot(1, 2), 0,
-             rot(2, 0), rot(2, 1), rot(2, 2), 0,
-             0, 0, 0, 1;
-    Matrix4f trans;
-    Vector3f l(_length, 0, 0);
-    Vector3f atran = rot * l;
-    trans << 1, 0, 0, atran(0),
-             0, 1, 0, atran(1),
-             0, 0, 1, atran(2),
-             0, 0, 0, 1;
-
-    // _M = trans * rot4f;
 }
 
 void Arm::setWorldPoint() {
@@ -158,8 +144,9 @@ Arm* Arm::mostparent() {
 	return this;
 }
 
-void Arm::update(Vector3f pe) {
-	_jacob.makedr(pe);
+/** Returns true if you should move on. Returns false if you should stay.**/
+bool Arm::update(Vector3f pe) {
+	return _jacob.makedr(pe);
 }
 
 void Arm::updateControl(Vector3f change) {
@@ -227,9 +214,19 @@ void Arm::draw() {
 	}
 }
 
+float Arm::armLength() {
+	float len = _length;
+	if (_child != NULL) {
+		return len + _child->armLength();
+	}
+	return len;
+}
+
 void Arm::setJacob() {
 	_jacob = *new Jacob(this);
 }
+
+
 
 Jacob::Jacob(Arm* arm) {
 	_arm = arm;
@@ -239,10 +236,36 @@ Jacob::Jacob(Arm* arm) {
 }
 
 
-void Jacob::makedr(Vector3f g) {
-	float k = 0.05;
+bool Jacob::makedr(Vector3f g) {
+	float step = 0.05;
 	Vector4f point = _arm->getEndEffector();
-	Vector3f dp = k*(g - convertTo3(point));
+	Vector3f dp = (g - convertTo3(point));
+	float x, y, z;
+	if (dp(0) != 0) {
+    	dp(0) = dp(0)/dp.norm();
+    } 
+
+    if (dp(1) != 0) {
+    	dp(1) = dp(1)/dp.norm();
+    }
+
+    if (g(2) == 0) {
+    	dp(2) = dp(2)/dp.norm();
+    }
+
+	float len = _arm->armLength() - .01;
+    g = dp * len;
+
+    dp = (g - convertTo3(point));
+
+	if (dp(0) > -.0001 && dp(0) < .0001 &&
+		dp(1) > -.0001 && dp(1) < .0001 &&
+		dp(2) > -.0001 && dp(2) < .0001) {
+		return true;
+	}
+
+	dp = dp * step;
+
 	Matrix3f J1 = _arm->getJacobian();
 	Matrix3f J2 = _arm2->getJacobian();
 	Matrix3f J3 = _arm3->getJacobian();
@@ -264,5 +287,7 @@ void Jacob::makedr(Vector3f g) {
 
 	_arm->constructM();
 	_arm->finishUpdate();
+
+	return false;
 
 }
