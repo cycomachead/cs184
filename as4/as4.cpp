@@ -156,16 +156,13 @@ void myDisplay() {
 
     glDisable(GL_LIGHTING);
 
-    arm.draw();
-    // Vector3f a = arm.getEndEffector();
-    // glBegin(GL_POINTS);
-    // COLOR_RED
-    // glVertex3f(a(0), a(1), a(2));
-    // glVertex3f(0.5, 0, -7.24264);
-    // glEnd();
-    // Vector3f v(0.5, 0, -7.24264);
+    // Vector4f a = arm.getEndEffector();
+    // cout << endl;
+    // cout << "end effector" << endl;
+    // cout << endl;
+    // Vector3f v(4.0, 0, 0);
     // arm.update(v);
-    // print(a);
+
 
     // Draw the points of the object we are trying to trace
     glPointSize(5.0f);
@@ -183,6 +180,7 @@ void myDisplay() {
         arm.update(destinations.at(i));
     }
 
+    cout << "===================================================" << endl;
     glFlush();
     glutSwapBuffers(); // swap buffers (we earlier set float buffer)
 }
@@ -337,11 +335,20 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArmsAndRotation() {
-    arm = *new Arm(4, 0, 1, PI/4);
-    arm.addChild(3, 0, 1, PI/4);
-    arm.addChild(2, 0, 1, PI/4);
-    arm.addChild(1, 0, 1, PI/4);
+    Vector3f control(0, 0, PI/4);
+    arm = *new Arm(4, control);
+    arm.addChild(3, control);
+    arm.addChild(2, control);
+    arm.addChild(1, control);
     arm.setJacob();
+}
+
+void myFrameMove() {
+  //nothing here for now
+#ifdef _WIN32
+  Sleep(10);                                   //give ~10ms back to OS (so as not to waste the CPU)
+#endif
+  glutPostRedisplay(); // forces glut to call the display function (myDisplay())
 }
 
 //****************************************************
@@ -380,6 +387,7 @@ int main(int argc, char *argv[]) {
 
     glutReshapeFunc(myReshape);
     setupGlut();
+    glutIdleFunc(myFrameMove);
     glutMainLoop();
 
     return 0;

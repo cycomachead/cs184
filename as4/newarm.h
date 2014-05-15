@@ -5,6 +5,7 @@
 
 using namespace Eigen;
 void print(Vector3f vec);
+void print(Vector4f vec);
 void print(Matrix3f mat);
 class Arm;
 
@@ -36,20 +37,14 @@ public:
 	/** This pointer, points further out. **/
 	Arm* _child;
 	/** This is the out position. **/
-	Vector3f _outboard;
+	Vector4f _outboard;
 	/** This is the inboard position. **/
-	Vector3f _inboard;
-	/** This is the local transformation. **/
-	Matrix3f _M;
+	Vector4f _inboard;
 	/** This is the world transformation. **/
-	Matrix3f _W;
+	Matrix3f _R;
 	/** This is phi and psi for the axis, angle representation. **/
-	float _x, _y, _radian;
-	/** This is the transformation up to the parent's transformation. **/
-	Matrix3f _Wparent;
-	/** This is the transformation of everything beyond this arm. **/
-	Matrix3f _Wchild;
-	/** Jacobian calculator that calculates the updates. **/
+	Vector3f _r;
+	/** This updates our control. **/
 	Jacob _jacob;
 
 	float _length;
@@ -59,14 +54,14 @@ public:
 
 	/** This constructor will create the oldest parent.
 	    This arm will have no parent. **/
-	Arm(float, float, float, float);
+	Arm(float, Vector3f);
 	/** Sets arm as parent. **/
-	Arm(Arm*, float, float, float, float);
+	Arm(Arm*, float, Vector3f);
 	/** Concatenate a child with following float and local 
 	    transformation. **/
-	void addChild(float, float, float, float);
+	void addChild(float, Vector3f);
 	void setLocalTransform();
-	void setWorldTransform();
+	// void setWorldTransform();
 	void setWorldPoint();
 	void draw();
 	void update(Vector3f pe);
@@ -77,8 +72,10 @@ public:
 	void constructM();
 	void finishUpdate();
 	void setJacob();
-	Matrix3f getJacobian(Vector3f);
-	Vector3f getEndEffector();
+	Arm* mostparent();
+	Matrix3f getJacobian();
+	Vector4f getEndEffector();
+	void perturb();
 
 
 };
