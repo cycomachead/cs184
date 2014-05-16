@@ -9,14 +9,15 @@ float inline euclid(Vector3f x, Vector3f y) {
 	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
 }
 
-Matrix3f makeCross(Vector4f x) {
-	Matrix3f cross;
-	cross << 0, -x[2], x[1],
-             x[2], 0, -x[0],
-             -x[1], x[0], 0;
-    return cross;
+Vector4f convertTo4(Vector3f a) {
+	Vector4f alpha(a[0], a[1], a[2], 1);
+	return alpha;
 }
 
+Vector3f convertTo3(Vector4f a) {
+	Vector3f beta(a[0], a[1], a[2]);
+	return beta;
+}
 
 Matrix3f makeCross(Vector3f x) {
 	Matrix3f cross;
@@ -26,14 +27,9 @@ Matrix3f makeCross(Vector3f x) {
     return cross;
 }
 
-Vector4f convertTo4(Vector3f a) {
-	Vector4f alpha(a[0], a[1], a[2], 1);
-	return alpha;
-}
-
-Vector3f convertTo3(Vector4f a) {
-	Vector3f beta(a[0], a[1], a[2]);
-	return beta;
+Matrix3f makeCross(Vector4f x) {
+    Vector3f v = convertTo3(x);
+    return makeCross(v);
 }
 
 void print(Vector3f vec) {
@@ -60,7 +56,7 @@ Arm::Arm(float length, Vector3f r) {
 	_child = NULL;
 	_r = r;
 	_outboard = *new Vector4f(length, 0.0f, 0.0f, 1.0f);
-	_inboard = *new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+	//_inboard = *new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
 	setLocalTransform();
 	setWorldPoint();
 }
@@ -73,7 +69,7 @@ Arm::Arm(Arm* arm, float length, Vector3f r) {
 	_child = NULL;
 	_r = r;
 	_outboard = *new Vector4f(length, 0.0f, 0.0f, 1.0f);
-	_inboard = *new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+	//_inboard = arm->_outboard;
 	setLocalTransform();
 	setWorldPoint();
 }
@@ -87,7 +83,6 @@ void Arm::addChild(float length, Vector3f r) {
 }
 
 void Arm::setLocalTransform() {
-	Matrix4f new_rotate;
     Matrix3f identity;
     float s = sin(_r.norm());
     float c = cos(_r.norm());
@@ -119,9 +114,9 @@ void Arm::setLocalTransform() {
 }
 
 void Arm::setWorldPoint() {
-	Vector3f in(0, 0, 0);
-	Vector3f out(_length, 0, 0);
-	Arm* arm = mostparent();
+    Vector3f in(0, 0, 0);
+    Vector3f out(_length, 0, 0);
+    Arm* arm = mostparent();
     Vector3f sum;
 
     if (_parent != NULL) {
@@ -130,8 +125,8 @@ void Arm::setWorldPoint() {
         sum = in;
     }
 
-    Matrix3f prodCk;
-    prodCk << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+    Matrix3f prodCk = Matrix3f::Identity();
+    // prodCk << 1, 0, 0, 0, 1, 0, 0, 0, 1;
     while (true) {
         prodCk = prodCk * arm->_R;
         if (this == mostparent() or arm == this) {
@@ -217,7 +212,7 @@ void Arm::draw() {
         in = Vector3f(0, 0, 0);
     }
 
-    COLOR_WHITE;
+    // COLOR_WHITE;
 	glBegin(GL_LINES);
 	glVertex3f(in[0], in[1], in[2]);
 	glVertex3f(_outboard[0], _outboard[1], _outboard[2]);
@@ -276,11 +271,6 @@ bool Jacob::makedr(Vector3f g) {
     // cout << "G: " << endl;
     // print(g);
     dp = (g - convertTo3(point));
-
-    // cout << "END EFFECTOR ";
-    // print(_arm->getEndEffector());
-    // cout << "DP";
-    // print(dp);
 
     float dist = euclid(convertTo3(point), g);
 	if (dist < 3) {

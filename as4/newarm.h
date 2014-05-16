@@ -41,7 +41,7 @@ public:
 	/** This is the out position. **/
 	Vector4f _outboard;
 	/** This is the inboard position. **/
-	Vector4f _inboard;
+	//Vector4f _inboard;
 	/** This is the world transformation. **/
 	Matrix3f _R;
 	/** This is phi and psi for the axis, angle representation. **/
