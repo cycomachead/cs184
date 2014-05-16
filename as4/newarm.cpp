@@ -1,14 +1,6 @@
 #include "newarm.h"
 using namespace Eigen;
 
-float inline euclid(Vector4f x, Vector4f y) {
-	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
-}
-
-float inline euclid(Vector3f x, Vector3f y) {
-	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
-}
-
 Vector4f convertTo4(Vector3f a) {
 	Vector4f alpha(a[0], a[1], a[2], 1);
 	return alpha;
@@ -17,6 +9,14 @@ Vector4f convertTo4(Vector3f a) {
 Vector3f convertTo3(Vector4f a) {
 	Vector3f beta(a[0], a[1], a[2]);
 	return beta;
+}
+
+float inline euclid(Vector3f x, Vector3f y) {
+	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
+}
+
+float inline euclid(Vector4f x, Vector4f y) {
+	return euclid(convertTo3(x), convertTo3(y));
 }
 
 Matrix3f makeCross(Vector3f x) {
@@ -126,7 +126,6 @@ void Arm::setWorldPoint() {
     }
 
     Matrix3f prodCk = Matrix3f::Identity();
-    // prodCk << 1, 0, 0, 0, 1, 0, 0, 0, 1;
     while (true) {
         prodCk = prodCk * arm->_R;
         if (this == mostparent() or arm == this) {
@@ -172,20 +171,30 @@ void Arm::finishUpdate() {
 	}
 }
 
+Matrix4f buildFunky(Matrix3f mat, Vector3f vec) {
+    Matrix4f ret;
+    ret << mat(0, 0), mat(0, 1), mat(0, 2), vec(0),
+           mat(1, 0), mat(1, 1), mat(1, 2), vec(1),
+           mat(2, 0), mat(2, 1), mat(2, 2), vec(2),
+           0,         0,         0,         1;
+    return ret;
+}
+
 Vector4f Arm::getEndEffector() {
 	if (_child == NULL) {
 		return _outboard;
 	}
-	return _child->getEndEffector();
+    Matrix3f mat = Matrix3f::Identity();
+    Vector3f v(_length, 0, 0);
+    if (_parent != NULL) {
+        mat = _R;
+    }
+	return buildFunky(mat, v) * _child->getEndEffector();
 }
-
 
 Matrix3f Arm::getJacobian() {
 	Vector3f out = convertTo3(_outboard);
-	Matrix3f trans;
-    trans << 1, 0, 0,
-             0, 1, 0,
-             0, 0, 1;
+	Matrix3f trans = Matrix3f::Identity();
 	Arm* arm = this;
 	while (arm->_parent != NULL) {
 		arm = arm->_parent;
