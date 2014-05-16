@@ -194,6 +194,9 @@ void myDisplay() {
     // Update the position if we can.
     if (destinations.size() > animCounter) {
         gotToPoint = arm.update(destinations.at(animCounter));
+        if (hits > 26) {
+            arm.debug();
+        }
         // cout << "ARRIVED???   " << gotToPoint << endl;
         if (gotToPoint) {
             cout << "ARRIVED???   " << gotToPoint << endl;
@@ -361,11 +364,11 @@ void specialkeypress(int key, int x, int y) {
 
 void createArmsAndRotation() {
     Vector3f control(0, 0, PI/4);
-    arm = *new Arm(1, control);
+    arm = *new Arm(2, control);
     //control(2) = PI/2;
-    arm.addChild(.75, control);
-    arm.addChild(.5, control);
-    arm.addChild(.25, control);
+    arm.addChild(1, control);
+    arm.addChild(1, control);
+    arm.addChild(1, control);
     arm.setJacob();
 }
 
