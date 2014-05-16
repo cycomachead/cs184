@@ -39,7 +39,8 @@ Vector3f translation = Vector3f(0.0f, 0.0f, -20.0f);
 
 vector<Vector3f> destinations = vector<Vector3f>();
 
-int animCounter = 90;
+int animCounter = 0;
+int stepSize = 91;
 bool gotToPoint = false;
 int hits = 0;
 
@@ -146,6 +147,9 @@ void setupGlut() {
 // function that does the actual drawing of stuff
 //****************************************************
 
+void resetCount() {
+    animCounter = 0;
+}
 void myDisplay() {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -193,13 +197,13 @@ void myDisplay() {
         // cout << "ARRIVED???   " << gotToPoint << endl;
         if (gotToPoint) {
             cout << "ARRIVED???   " << gotToPoint << endl;
-            animCounter -= 1;
+            animCounter += 1;
             hits += 1;
         }
     }
 
-    if (animCounter == 0) {
-        animCounter = 91;
+    if (animCounter == 91) {
+        resetCount();
     }
 
     glFlush();
@@ -210,11 +214,10 @@ void myDisplay() {
 
 // Simple 2D circle motion for the arm
 void drawCircle() {
-    animCounter = 90;
-    int step = 91;
+    resetCount();
     float max = 2*PI;
     destinations.clear();
-    for(float t = 0; t < max; t += (max/step)) {
+    for(float t = 0; t < max; t += (max/stepSize)) {
         Vector3f v = Vector3f( 6 * cos(t), 6 * sin(t), 0);
         glVertex3f(v[0], v[1], v[2]);
         destinations.push_back(v);
@@ -223,11 +226,10 @@ void drawCircle() {
 
 // 2D Figure-8 motion for the arm
 void drawFigure8() {
-    animCounter = 90;
-    int step = 91;
+    resetCount();
     float max = 2*PI;
     destinations.clear();
-    for(float u = 0; u < max; u += (max/step)) {
+    for(float u = 0; u < max; u += (max/stepSize)) {
         // Z should just creat some intersting movent....
         Vector3f v = Vector3f( 8 * cos(u), 8 * sin(2 * u), 8 * sin(u));
         glVertex3f(v[0], v[1], v[2]);
@@ -238,11 +240,10 @@ void drawFigure8() {
 // 2D Ellipse motion for the arm
 // This tests out of reach goals
 void drawEllipse() {
-    animCounter = 90;
-    int step = 91;
+    resetCount();
     float max = 2*PI;
     destinations.clear();
-    for(float u = 0; u < max; u += (max/step)) {
+    for(float u = 0; u < max; u += (max/stepSize)) {
         Vector3f v = Vector3f( 4 * cos(u), 8 * sin(u), sin(u));
         glVertex3f(v[0], v[1], v[2]);
         destinations.push_back(v);
@@ -255,11 +256,10 @@ void drawEllipse() {
 // Equation:
 // http://mathworld.wolfram.com/HeartCurve.html
 void drawHeart() {
-    animCounter = 90;
-    int step = 91;
+    resetCount();
     float max = 2*PI;
     destinations.clear();
-    for(float t = 0; t < max; t += (max/step)) {
+    for(float t = 0; t < max; t += (max/stepSize)) {
         // Z should just creat some intersting movent....
         Vector3f v = Vector3f(
             16 * pow(sin(t), 3.0f), // x
@@ -360,10 +360,11 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArmsAndRotation() {
-    Vector3f control(1, 1, PI/3.6);
-    arm = *new Arm(4, control);
-    arm.addChild(3, control);
-    arm.addChild(2, control);
+    Vector3f control(0, 0, PI/4);
+    arm = *new Arm(1, control);
+    //control(2) = PI/2;
+    arm.addChild(1, control);
+    arm.addChild(1, control);
     arm.addChild(1, control);
     arm.setJacob();
 }
@@ -412,7 +413,7 @@ int main(int argc, char *argv[]) {
 
     glutReshapeFunc(myReshape);
     setupGlut();
-    glutIdleFunc(myFrameMove);
+    //glutIdleFunc(myFrameMove);
     glutMainLoop();
 
     return 0;

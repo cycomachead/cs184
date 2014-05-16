@@ -123,22 +123,53 @@ void Arm::setWorldPoint() {
 	Vector3f out(_length, 0, 0);
 	Arm* arm = mostparent();
 	Matrix3f trans;
-	trans << 1, 0, 0, 0, 1, 0, 0, 0, 1;
-	while (arm->_length != this->_length) {
-		trans = trans * arm->_R;
-		if (arm->_child != NULL) {
-			arm = arm->_child;
-		}
-	}
-	trans = trans * _R;
-	_inboard = convertTo4(trans * in);
-	_outboard = convertTo4(trans * out);
-	if (_parent != NULL) {
-		_inboard = _inboard + _parent->_outboard;
-		_outboard = _outboard + _parent->_outboard;
-		_inboard(3) = 1;
-		_outboard(3) = 1;
-	}
+    trans << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+    Vector3f sum;
+
+    if (_parent != NULL) {
+        sum = convertTo3(_parent->_outboard);
+    } else {
+        sum = in;
+    }
+
+    Matrix3f prodCk;
+    prodCk << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+    while (true) {
+        // if (arm->_parent == NULL) {
+//
+//}
+        // cout << "_R Matrix:";
+        // print(arm->_R);
+        prodCk = prodCk * arm->_R;
+        if (this == mostparent()) {
+            break;
+        }
+        if (arm == this) {
+            break;
+        }
+        arm = arm->_child;
+    }
+    Vector3f mult;
+    //prodCk = prodCk * _R;
+    mult = prodCk * out;
+
+    // while (arm->_length != this->_length) {
+    //     trans = trans * arm->_R;
+    //     if (arm->_child != NULL) {
+    //         arm = arm->_child;
+    //     }
+    // }
+    // trans = trans * _R;
+    // _inboard = convertTo4(trans * in);
+    _outboard = convertTo4(sum + mult);
+    if (_parent != NULL) {
+    //     _inboard = _inboard + _parent->_outboard;
+    //     _outboard = _outboard + _parent->_outboard;
+    //     _inboard(3) = 1;
+    //     _outboard(3) = 1;
+    }
+    cout << "outboard";
+    print(_outboard);
 }
 
 Arm* Arm::mostparent() {
@@ -186,6 +217,8 @@ Vector4f Arm::getEndEffector() {
 
 Matrix3f Arm::getJacobian() {
 	Vector3f out = convertTo3(_outboard);
+    cout << "OUTBOARD";
+    print(out);
 	Matrix3f trans;
     trans << 1, 0, 0,
              0, 1, 0,
@@ -209,8 +242,21 @@ void Arm::draw() {
 	} else if (_length == 4) {
 		COLOR_RED;
 	}
+    Vector3f in;
+    if (_parent != NULL) {
+        in = convertTo3(_parent->_outboard);
+    } else {
+        in = Vector3f(0, 0,0);
+    }
+
+    COLOR_WHITE;
 	glBegin(GL_LINES);
-	glVertex3f(_inboard[0], _inboard[1], _inboard[2]);
+	glVertex3f(in[0], in[1], in[2]);
+	glVertex3f(_outboard[0], _outboard[1], _outboard[2]);
+	glEnd();
+    COLOR_MAGENTA;
+	glBegin(GL_POINTS);
+	glVertex3f(in[0], in[1], in[2]);
 	glVertex3f(_outboard[0], _outboard[1], _outboard[2]);
 	glEnd();
 	if (_child != NULL) {
@@ -261,17 +307,17 @@ bool Jacob::makedr(Vector3f g) {
 
 	float len = _arm->armLength() - .1;
     g = dp * len;
-    cout << "G: " << endl;
-    print(g);
+    // cout << "G: " << endl;
+    // print(g);
     dp = (g - convertTo3(point));
 
-    cout << "END EFFECTOR ";
-    print(_arm->getEndEffector());
-    cout << "DP";
-    print(dp);
+    // cout << "END EFFECTOR ";
+    // print(_arm->getEndEffector());
+    // cout << "DP";
+    // print(dp);
 
     float dist = euclid(convertTo3(point), g);
-	if (dist < 2) {
+	if (dist < 3) {
 		return true;
 	}
 
