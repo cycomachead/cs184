@@ -36,38 +36,6 @@ Vector3f convertTo3(Vector4f a) {
 	return beta;
 }
 
-Matrix3f convertMTo3(Matrix4f rot) {
-	Matrix3f rot3f;
-	rot3f << rot(0, 0), rot(0, 1), rot(0, 2),
-             rot(1, 0), rot(1, 1), rot(1, 2),
-             rot(2, 0), rot(2, 1), rot(2, 2);
-    return rot3f;
-}
-
-Vector3f normal(Vector3f r) {
-	float x, y, z;
-	if (r(0) == 0) {
-    	x = 0;
-    } else {
-    	x = r(0)/r.norm();
-    }
-
-    if (r(1) == 0) {
-    	y = 0;
-    } else {
-    	y = r(1)/r.norm();
-    }
-
-    if (r(2) == 0) {
-    	z = 0;
-    } else {
-    	z = r(2)/r.norm();
-    }
-
-    Vector3f n(x, y, z);
-    return n;
-}
-
 void print(Vector3f vec) {
 	cout << endl;
 	cout << vec << endl;
@@ -121,10 +89,10 @@ void Arm::addChild(float length, Vector3f r) {
 void Arm::setLocalTransform() {
 	Matrix4f new_rotate;
     Matrix3f identity;
-    cout << _r << endl;
     float s = sin(_r.norm());
     float c = cos(_r.norm());
     float x, y, z;
+
     if (_r(0) == 0) {
     	x = 0;
     } else {
@@ -142,37 +110,17 @@ void Arm::setLocalTransform() {
     } else {
     	z = _r(2)/_r.norm();
     }
+
     Vector3f rhat(x, y, z);
     Matrix3f rx = makeCross(rhat);
     identity << 1, 0, 0, 0, 1, 0, 0, 0, 1;
     Matrix3f rot = identity + (rx)*c + (rx)*(rx)*(1-s);
     _R = rot;
-
-    Matrix4f rot4f;
-    rot4f << rot(0, 0), rot(0, 1), rot(0, 2), 0,
-             rot(1, 0), rot(1, 1), rot(1, 2), 0,
-             rot(2, 0), rot(2, 1), rot(2, 2), 0,
-             0, 0, 0, 1;
-
-    Matrix4f trans;
-    if (_parent != NULL) {
-    	trans << 1, 0, 0, _parent->_length,
-    	         0, 1, 0, 0,
-    	         0, 0, 1, 0,
-    	         0, 0, 0, 1;
-    } else {
-    	trans << 1, 0, 0, 0,
-    	         0, 1, 0, 0,
-    	         0, 0, 1, 0,
-    	         0, 0, 0, 1;
-    }
-
-    _M = trans * rot4f;
 }
 
 void Arm::setWorldPoint() {
-	Vector4f in(0, 0, 0, 1);
-	Vector4f out(_length, 0, 0, 1);
+	Vector3f in(0, 0, 0);
+	Vector3f out(_length, 0, 0);
 	Arm* arm = mostparent();
     Vector3f sum;
 
@@ -339,6 +287,7 @@ bool Jacob::makedr(Vector3f g) {
 		return true;
 	}
 
+	dp = dp * step;
 
 	Matrix3f J1 = _arm->getJacobian();
 	Matrix3f J2 = _arm2->getJacobian();
