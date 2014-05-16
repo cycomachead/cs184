@@ -217,8 +217,6 @@ Vector4f Arm::getEndEffector() {
 
 Matrix3f Arm::getJacobian() {
 	Vector3f out = convertTo3(_outboard);
-    cout << "OUTBOARD";
-    print(out);
 	Matrix3f trans;
     trans << 1, 0, 0,
              0, 1, 0,
@@ -228,7 +226,7 @@ Matrix3f Arm::getJacobian() {
 		arm = arm->_parent;
 		trans = trans * arm->_R;
 	}
-    out = -out;
+    //out = -out;
 	return trans * makeCross(out);
 }
 
@@ -246,7 +244,7 @@ void Arm::draw() {
     if (_parent != NULL) {
         in = convertTo3(_parent->_outboard);
     } else {
-        in = Vector3f(0, 0,0);
+        in = Vector3f(0, 0, 0);
     }
 
     COLOR_WHITE;
@@ -276,8 +274,6 @@ float Arm::armLength() {
 void Arm::setJacob() {
 	_jacob = *new Jacob(this);
 }
-
-
 
 Jacob::Jacob(Arm* arm) {
 	_arm = arm;
@@ -345,14 +341,14 @@ bool Jacob::makedr(Vector3f g) {
 	_arm->constructM();
 	_arm->finishUpdate();
 
-    float currentError = (convertTo3(_arm->getEndEffector()) - g).norm();
-    if (currentError > prevError) {
-        if (stepSize / 2 > 0.001) {
-            stepSize /= 2;
-        }
-    } else {
-        stepSize *= 2;
-    }
+    // float currentError = (convertTo3(_arm->getEndEffector()) - g).norm();
+    // if (currentError > prevError) {
+    //     if (stepSize / 2 > 0.001) {
+    //         stepSize /= 2;
+    //     }
+    // } else {
+    //     stepSize *= 2;
+    // }
 	return false;
 
 }

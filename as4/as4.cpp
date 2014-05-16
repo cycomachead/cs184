@@ -363,9 +363,9 @@ void createArmsAndRotation() {
     Vector3f control(0, 0, PI/4);
     arm = *new Arm(1, control);
     //control(2) = PI/2;
-    arm.addChild(1, control);
-    arm.addChild(1, control);
-    arm.addChild(1, control);
+    arm.addChild(.75, control);
+    arm.addChild(.5, control);
+    arm.addChild(.25, control);
     arm.setJacob();
 }
 
@@ -413,7 +413,7 @@ int main(int argc, char *argv[]) {
 
     glutReshapeFunc(myReshape);
     setupGlut();
-    //glutIdleFunc(myFrameMove);
+    glutIdleFunc(myFrameMove);
     glutMainLoop();
 
     return 0;
