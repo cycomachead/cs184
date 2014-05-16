@@ -9,7 +9,6 @@ float inline euclid(Vector3f x, Vector3f y) {
 	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
 }
 
-
 Matrix3f makeCross(Vector4f x) {
 	Matrix3f cross;
 	cross << 0, -x[2], x[1],
@@ -240,27 +239,18 @@ Vector4f Arm::getEndEffector() {
 
 
 Matrix3f Arm::getJacobian() {
-	Vector4f end = getEndEffector();
-	Matrix3f rot;
-	Matrix4f trans;
-	trans << 1, 0, 0, 0,
-	         0, 1, 0, 0,
-	         0, 0, 1, 0,
-	         0, 0, 0, 1;
-	rot << 1, 0, 0,
-	       0, 1, 0,
-	       0, 0, 1;
+	Vector3f out = convertTo3(_outboard);
+	Matrix3f trans;
+    trans << 1, 0, 0,
+             0, 1, 0,
+             0, 0, 1;
 	Arm* arm = this;
 	while (arm->_parent != NULL) {
 		arm = arm->_parent;
-		rot = rot * arm->_R;
+		trans = trans * arm->_R;
 	}
-	while (arm->_parent != NULL) {
-		arm = arm->_parent;
-		trans = arm->_M * trans; 
-	}
-	Vector4f out =trans.inverse() * end;
-	return -rot * makeCross(out);
+    out = -out;
+	return trans * makeCross(out);
 }
 
 void Arm::draw() {
@@ -285,7 +275,8 @@ void Arm::draw() {
 float Arm::armLength() {
 	float len = _length;
 	if (_child != NULL) {
-		return len + _child->armLength();
+        len += _child->armLength();
+		return len;
 	}
 	return len;
 }
@@ -305,21 +296,38 @@ Jacob::Jacob(Arm* arm) {
 
 
 bool Jacob::makedr(Vector3f g) {
-	float step = 0.05;
+	float step = stepSize;
 	Vector4f point = _arm->getEndEffector();
 	Vector3f dp = (g - convertTo3(point));
 	float x, y, z;
-	dp = normal(dp);
+
+	if (dp(0) != 0) {
+    	dp(0) = dp(0)/dp.norm();
+    }
+
+    if (dp(1) != 0) {
+    	dp(1) = dp(1)/dp.norm();
+    }
+
+    if (dp(2) != 0) {
+    	dp(2) = dp(2)/dp.norm();
+    }
+
 	float len = _arm->armLength() - .1;
     g = dp * len;
+    cout << "G: " << endl;
+    print(g);
+    dp = (g - convertTo3(point));
 
-    dp = step * (g - convertTo3(point));
+    cout << "END EFFECTOR ";
+    print(_arm->getEndEffector());
+    cout << "DP";
+    print(dp);
 
-    float dist = euclid(g, convertTo3(point));
-
-    if (dist < 1) {
-    	return true;
-    }
+    float dist = euclid(convertTo3(point), g);
+	if (dist < 2) {
+		return true;
+	}
 
 
 	Matrix3f J1 = _arm->getJacobian();
@@ -344,6 +352,14 @@ bool Jacob::makedr(Vector3f g) {
 	_arm->constructM();
 	_arm->finishUpdate();
 
+    float currentError = (convertTo3(_arm->getEndEffector()) - g).norm();
+    if (currentError > prevError) {
+        if (stepSize / 2 > 0.001) {
+            stepSize /= 2;
+        }
+    } else {
+        stepSize *= 2;
+    }
 	return false;
 
 }

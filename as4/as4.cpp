@@ -39,8 +39,9 @@ Vector3f translation = Vector3f(0.0f, 0.0f, -20.0f);
 
 vector<Vector3f> destinations = vector<Vector3f>();
 
-int animCounter = 0;
+int animCounter = 90;
 bool gotToPoint = false;
+int hits = 0;
 
 //****************************************************
 // Basic Functions
@@ -98,7 +99,6 @@ void myReshape(int w, int h) {
 
 void setupGlut() {
     // setup defaults
-    // Wireframe OFF
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glClearColor(.0f, .0f, .0f, .0f);
@@ -173,8 +173,14 @@ void myDisplay() {
     glBegin(GL_POINTS);
     for(int i = 0; i < destinations.size(); i += 1) {
         // Z should just creat some intersting movent....
+        if (i == animCounter) {
+            COLOR_MAGENTA
+        }
         Vector3f v = destinations.at(i);
         glVertex3f(v[0], v[1], v[2]);
+        if (i == animCounter) {
+            COLOR_YELLOW
+        }
     }
     glEnd();
 
@@ -184,14 +190,16 @@ void myDisplay() {
     // Update the position if we can.
     if (destinations.size() > animCounter) {
         gotToPoint = arm.update(destinations.at(animCounter));
-        cout << "ARRIVED???   " << gotToPoint << endl;
+        // cout << "ARRIVED???   " << gotToPoint << endl;
         if (gotToPoint) {
-            animCounter += 1;
+            cout << "ARRIVED???   " << gotToPoint << endl;
+            animCounter -= 1;
+            hits += 1;
         }
     }
 
-    if (animCounter >= destinations.size()) {
-        animCounter = 0;
+    if (animCounter == 0) {
+        animCounter = 91;
     }
 
     glFlush();
@@ -202,7 +210,7 @@ void myDisplay() {
 
 // Simple 2D circle motion for the arm
 void drawCircle() {
-    animCounter = 0;
+    animCounter = 90;
     int step = 91;
     float max = 2*PI;
     destinations.clear();
@@ -215,7 +223,7 @@ void drawCircle() {
 
 // 2D Figure-8 motion for the arm
 void drawFigure8() {
-    animCounter = 0;
+    animCounter = 90;
     int step = 91;
     float max = 2*PI;
     destinations.clear();
@@ -230,7 +238,7 @@ void drawFigure8() {
 // 2D Ellipse motion for the arm
 // This tests out of reach goals
 void drawEllipse() {
-    animCounter = 0;
+    animCounter = 90;
     int step = 91;
     float max = 2*PI;
     destinations.clear();
@@ -247,7 +255,7 @@ void drawEllipse() {
 // Equation:
 // http://mathworld.wolfram.com/HeartCurve.html
 void drawHeart() {
-    animCounter = 0;
+    animCounter = 90;
     int step = 91;
     float max = 2*PI;
     destinations.clear();
@@ -352,7 +360,7 @@ void specialkeypress(int key, int x, int y) {
 }
 
 void createArmsAndRotation() {
-    Vector3f control(0, 0, PI/4);
+    Vector3f control(1, 1, PI/3.6);
     arm = *new Arm(4, control);
     arm.addChild(3, control);
     arm.addChild(2, control);
@@ -361,9 +369,9 @@ void createArmsAndRotation() {
 }
 
 void myFrameMove() {
-  //nothing here for now
+  // nothing here for now
 #ifdef _WIN32
-  Sleep(10);                                   //give ~10ms back to OS (so as not to waste the CPU)
+  Sleep(10); //give ~10ms back to OS (so as not to waste the CPU)
 #endif
   glutPostRedisplay(); // forces glut to call the display function (myDisplay())
 }
