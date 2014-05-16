@@ -248,7 +248,7 @@ Matrix3f Arm::getJacobian() {
 		arm = arm->_parent;
 		trans = trans * arm->_R;
 	}
-    //out = -out;
+    // out = -out;
 	return trans * makeCross(out);
 }
 
