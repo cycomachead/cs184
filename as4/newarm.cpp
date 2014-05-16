@@ -122,8 +122,6 @@ void Arm::setWorldPoint() {
 	Vector3f in(0, 0, 0);
 	Vector3f out(_length, 0, 0);
 	Arm* arm = mostparent();
-	Matrix3f trans;
-    trans << 1, 0, 0, 0, 1, 0, 0, 0, 1;
     Vector3f sum;
 
     if (_parent != NULL) {
@@ -135,41 +133,13 @@ void Arm::setWorldPoint() {
     Matrix3f prodCk;
     prodCk << 1, 0, 0, 0, 1, 0, 0, 0, 1;
     while (true) {
-        // if (arm->_parent == NULL) {
-//
-//}
-        // cout << "_R Matrix:";
-        // print(arm->_R);
         prodCk = prodCk * arm->_R;
-        if (this == mostparent()) {
-            break;
-        }
-        if (arm == this) {
+        if (this == mostparent() or arm == this) {
             break;
         }
         arm = arm->_child;
     }
-    Vector3f mult;
-    //prodCk = prodCk * _R;
-    mult = prodCk * out;
-
-    // while (arm->_length != this->_length) {
-    //     trans = trans * arm->_R;
-    //     if (arm->_child != NULL) {
-    //         arm = arm->_child;
-    //     }
-    // }
-    // trans = trans * _R;
-    // _inboard = convertTo4(trans * in);
-    _outboard = convertTo4(sum + mult);
-    if (_parent != NULL) {
-    //     _inboard = _inboard + _parent->_outboard;
-    //     _outboard = _outboard + _parent->_outboard;
-    //     _inboard(3) = 1;
-    //     _outboard(3) = 1;
-    }
-    cout << "outboard";
-    print(_outboard);
+    _outboard = convertTo4(sum + (prodCk * out));
 }
 
 Arm* Arm::mostparent() {
