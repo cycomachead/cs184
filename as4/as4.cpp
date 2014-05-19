@@ -218,7 +218,7 @@ void drawCircle() {
     float max = 2*PI;
     destinations.clear();
     for(float t = 0; t < max; t += (max/stepSize)) {
-        Vector3f v = Vector3f( 4 * cos(t), 4 * sin(t), 0);
+        Vector3f v = Vector3f( 6 * cos(t), 6 * sin(t), 0);
         glVertex3f(v[0], v[1], v[2]);
         destinations.push_back(v);
     }

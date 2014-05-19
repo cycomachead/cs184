@@ -83,7 +83,7 @@ void Arm::addChild(float length, Vector3f r) {
 }
 
 void Arm::setLocalTransform() {
-    Matrix3f identity;
+    Matrix3f identity = Matrix3f::Identity();
     float s = sin(_r.norm());
     float c = cos(_r.norm());
     float x, y, z;
@@ -108,7 +108,6 @@ void Arm::setLocalTransform() {
 
     Vector3f rhat(x, y, z);
     Matrix3f rx = makeCross(rhat);
-    identity << 1, 0, 0, 0, 1, 0, 0, 0, 1;
     Matrix3f rot = identity + (rx)*c + (rx)*(rx)*(1-s);
     _R = rot;
 }
@@ -181,15 +180,33 @@ Matrix4f buildFunky(Matrix3f mat, Vector3f vec) {
 }
 
 Vector4f Arm::getEndEffector() {
-	if (_child == NULL) {
-		return _outboard;
-	}
+    if (_child == NULL) {
+        return _outboard;
+    }
+
+    Arm* end = this;
+    while (end->_child != NULL) {
+        end = end->_child;
+    }
+
+    Vector4f pend = end->_outboard;
+    
+    
     Matrix3f mat = Matrix3f::Identity();
     Vector3f v(_length, 0, 0);
+
     if (_parent != NULL) {
         mat = _R;
     }
-	return buildFunky(mat, v) * _child->getEndEffector();
+
+
+    return buildFunky(mat, v) * _child->getEndEffector();
+
+    // if (_child == NULL) {
+    //     return _outboard;
+    // }
+    //
+    // return _child->getEndEffector();
 }
 
 Matrix3f Arm::getJacobian() {
