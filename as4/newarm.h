@@ -16,11 +16,12 @@ public:
 	Arm* _arm2;
 	Arm* _arm3;
 	Arm* _arm4;
-	Matrix<double, 3, 12> _jacobian;
-	Matrix<double, 12, 1> _dr;
+	MatrixXf _jacobian;
+	MatrixXf _dr;
+	MatrixXf _inverse;
 	Matrix<double, 3, 1> _dp;
     float prevError;
-    float stepSize = .1;
+    float stepSize = .05;
 
 	Jacob() {
 		//Empty Constructor
@@ -41,7 +42,7 @@ public:
 	/** This is the out position. **/
 	Vector4f _outboard;
 	/** This is the inboard position. **/
-	//Vector4f _inboard;
+	Vector4f _inboard;
 	/** This is the world transformation. **/
 	Matrix3f _R;
 	/** This is phi and psi for the axis, angle representation. **/
@@ -76,8 +77,10 @@ public:
 	void setJacob();
 	float armLength();
 	Arm* mostparent();
+	Matrix4f getTranslation(float, float, float);
 	Matrix3f getJacobian();
 	Vector4f getEndEffector();
+	void debug();
 	void perturb();
 
 

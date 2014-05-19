@@ -6,11 +6,10 @@ Vector4f convertTo4(Vector3f a) {
 	return alpha;
 }
 
-Vector3f convertTo3(Vector4f a) {
-	Vector3f beta(a[0], a[1], a[2]);
-	return beta;
+Vector3f convertTo4(Vector4f a) {
+	Vector3f alpha(a[0], a[1], a[2]);
+	return alpha;
 }
-
 float inline euclid(Vector3f x, Vector3f y) {
 	return sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
 }
@@ -28,8 +27,14 @@ Matrix3f makeCross(Vector3f x) {
 }
 
 Matrix3f makeCross(Vector4f x) {
-    Vector3f v = convertTo3(x);
-    return makeCross(v);
+    return mmakeCross(convertTo3(x));
+}
+
+
+void print(MatrixXf mat) {
+	cout << endl;
+	cout << mat << endl;
+	cout << endl;
 }
 
 void print(Vector3f vec) {
@@ -56,7 +61,7 @@ Arm::Arm(float length, Vector3f r) {
 	_child = NULL;
 	_r = r;
 	_outboard = *new Vector4f(length, 0.0f, 0.0f, 1.0f);
-	//_inboard = *new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+	_inboard = *new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
 	setLocalTransform();
 	setWorldPoint();
 }
@@ -69,7 +74,7 @@ Arm::Arm(Arm* arm, float length, Vector3f r) {
 	_child = NULL;
 	_r = r;
 	_outboard = *new Vector4f(length, 0.0f, 0.0f, 1.0f);
-	//_inboard = arm->_outboard;
+	_inboard = *new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
 	setLocalTransform();
 	setWorldPoint();
 }
@@ -88,21 +93,15 @@ void Arm::setLocalTransform() {
     float c = cos(_r.norm());
     float x, y, z;
 
-    if (_r(0) == 0) {
-    	x = 0;
-    } else {
+    if (_r(0) != 0) {
     	x = _r(0)/_r.norm();
     }
 
-    if (_r(1) == 0) {
-    	y = 0;
-    } else {
+    if (_r(1) != 0) {
     	y = _r(1)/_r.norm();
     }
 
-    if (_r(2) == 0) {
-    	z = 0;
-    } else {
+    if (_r(2) != 0) {
     	z = _r(2)/_r.norm();
     }
 
@@ -113,9 +112,9 @@ void Arm::setLocalTransform() {
 }
 
 void Arm::setWorldPoint() {
-    Vector3f in(0, 0, 0);
-    Vector3f out(_length, 0, 0);
-    Arm* arm = mostparent();
+	Vector3f in(0, 0, 0);
+	Vector3f out(_length, 0, 0);
+	Arm* arm = mostparent();
     Vector3f sum;
 
     if (_parent != NULL) {
@@ -190,8 +189,8 @@ Vector4f Arm::getEndEffector() {
     }
 
     Vector4f pend = end->_outboard;
-    
-    
+
+
     Matrix3f mat = Matrix3f::Identity();
     Vector3f v(_length, 0, 0);
 
@@ -212,13 +211,46 @@ Vector4f Arm::getEndEffector() {
 Matrix3f Arm::getJacobian() {
 	Vector3f out = convertTo3(_outboard);
 	Matrix3f trans = Matrix3f::Identity();
+	Vector4f end = getEndEffector();
+	Matrix3f rot;
+	Matrix4f trans;
+	Matrix4f armtran;
+
+	// if (_parent!=NULL) {
+	// 	armtran = armtran * getTranslation(_parent->_length, 0, 0);
+	// 	trans = trans * armtran;
+	// } else {
+	// 	armtran = armtran * getTranslation(0, 0, 0);
+	// 	trans = trans * armtran;
+	// // }
+
+	// if (_parent == NULL) {
+	// 	return -makeCross(end);
+	// }
+
 	Arm* arm = this;
+	rot = rot * arm->_R;
+	while (arm->_child != NULL) {
+		arm = arm->_child;
+		rot = arm->_R * rot ;
+	}
+
+	arm = this;
+
 	while (arm->_parent != NULL) {
 		arm = arm->_parent;
-		trans = trans * arm->_R;
+		if (arm->_parent != NULL) {
+			armtran = arm->getTranslation(arm->_parent->_length, 0, 0);
+		} else {
+			armtran = arm->getTranslation(0, 0, 0);
+		}
+		trans = armtran * trans;
 	}
-    //out = -out;
-	return trans * makeCross(out);
+
+
+
+	Vector4f pei = trans * end;
+	return -rot * makeCross(pei);
 }
 
 void Arm::draw() {
@@ -238,7 +270,7 @@ void Arm::draw() {
         in = Vector3f(0, 0, 0);
     }
 
-    // COLOR_WHITE;
+    COLOR_WHITE;
 	glBegin(GL_LINES);
 	glVertex3f(in[0], in[1], in[2]);
 	glVertex3f(_outboard[0], _outboard[1], _outboard[2]);
@@ -266,11 +298,26 @@ void Arm::setJacob() {
 	_jacob = *new Jacob(this);
 }
 
+Matrix4f Arm::getTranslation(float x, float y, float z) {
+	Matrix4f alpha;
+	alpha << _R(0, 0), _R(0, 1), _R(0, 2), x,
+	         _R(1, 0), _R(1, 1), _R(1, 2), y,
+	         _R(2, 0), _R(2, 1), _R(2, 2), z,
+	         0, 0, 0, 1;
+	return alpha;
+}
+
 Jacob::Jacob(Arm* arm) {
 	_arm = arm;
 	_arm2 = arm->_child;
 	_arm3 = arm->_child->_child;
 	_arm4 = arm->_child->_child->_child;
+}
+
+void Arm::debug() {
+	//cout << _jacob._dr;
+	// print(_jacob._inverse);
+	// print(_jacob._dr);
 }
 
 
@@ -294,12 +341,16 @@ bool Jacob::makedr(Vector3f g) {
 
 	float len = _arm->armLength() - .1;
     g = dp * len;
-    // cout << "G: " << endl;
-    // print(g);
     dp = (g - convertTo3(point));
 
+
+    // cout << "END EFFECTOR ";
+    // print(_arm->getEndEffector());
+    // cout << "DP";
+    // print(dp);
+
     float dist = euclid(convertTo3(point), g);
-	if (dist < 3) {
+	if (dist < 1) {
 		return true;
 	}
 
@@ -311,8 +362,11 @@ bool Jacob::makedr(Vector3f g) {
 	Matrix3f J4 = _arm4->getJacobian();
 	MatrixXf C(J1.rows(), J1.cols() + J2.cols() + J3.cols() + J4.cols());
 	C << J1, J2, J3, J4;
+	_jacobian = C;
 	MatrixXf Cplus = C.transpose() * (C * C.transpose()).inverse();
+	_inverse = Cplus;
 	MatrixXf dr = (Cplus * dp) ;
+	_dr = dr;
 
 	Vector3f alpha(dr(0, 0), dr(1, 0), dr(2, 0));
 	Vector3f beta(dr(3, 0), dr(4, 0), dr(5, 0));

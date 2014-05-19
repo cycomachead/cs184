@@ -99,47 +99,47 @@ void myReshape(int w, int h) {
 }
 
 void setupGlut() {
-    // // setup defaults
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //
-    // glClearColor(.0f, .0f, .0f, .0f);
-    // glClearDepth(1.0f);
-    // glDepthFunc(GL_LESS);
-    // glEnable(GL_DEPTH_TEST);
-    // glShadeModel(GL_SMOOTH);
-    //
-    // GLfloat ambient[]  = { .5f, .5f, .5f, 1.f };
-    // GLfloat diffuse[]  = { .5f, .5f, .5f, .6f };
-    // GLfloat litepos[]  = { 0, 2, 3, 1 };
-    // GLfloat litepos2[] = { 10, -20, 15, 1 };
-    //
-    //
-    // // gllighting
-    // glPushMatrix();
-    // glLoadIdentity();
-    // glEnable(GL_LIGHTING);
-    // glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
-    // glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
-    // glLightfv(GL_LIGHT0, GL_POSITION, litepos);
-    // glEnable(GL_LIGHT0);
-    //
-    // glLightfv(GL_LIGHT1, GL_DIFFUSE,  diffuse);
-    // glLightfv(GL_LIGHT1, GL_POSITION, litepos2);
-    // glEnable(GL_LIGHT1);
-    // glPopMatrix();
-    //
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // glEnable(GL_DEPTH_TEST);
-    // GLfloat am2[]      = {.2, .2, .2, 0.0 };
-    // glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
-    // GLfloat dif2[]     = { 1.0, 0.8, 0.0, 0.0};
-    // glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
-    // GLfloat sp2[]      = { 0.0,0.0, 1.0, 0.0 };
-    // glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
-    // glMaterialf(GL_FRONT ,GL_SHININESS, 64.0);
-    // GLfloat emission[] = { .5, 0.0, 0.0, 0.0 };
-    //
-    // glMaterialfv(GL_BACK, GL_EMISSION, emission);
+    // setup defaults
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glClearColor(.0f, .0f, .0f, .0f);
+    glClearDepth(1.0f);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
+    glShadeModel(GL_SMOOTH);
+
+    GLfloat ambient[]  = { .5f, .5f, .5f, 1.f };
+    GLfloat diffuse[]  = { .5f, .5f, .5f, .6f };
+    GLfloat litepos[]  = { 0, 2, 3, 1 };
+    GLfloat litepos2[] = { 10, -20, 15, 1 };
+
+
+    // gllighting
+    glPushMatrix();
+    glLoadIdentity();
+    glEnable(GL_LIGHTING);
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  diffuse);
+    glLightfv(GL_LIGHT0, GL_POSITION, litepos);
+    glEnable(GL_LIGHT0);
+
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  diffuse);
+    glLightfv(GL_LIGHT1, GL_POSITION, litepos2);
+    glEnable(GL_LIGHT1);
+    glPopMatrix();
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_DEPTH_TEST);
+    GLfloat am2[]      = {.2, .2, .2, 0.0 };
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, am2);
+    GLfloat dif2[]     = { 1.0, 0.8, 0.0, 0.0};
+    glMaterialfv(GL_FRONT ,GL_DIFFUSE, dif2);
+    GLfloat sp2[]      = { 0.0,0.0, 1.0, 0.0 };
+    glMaterialfv(GL_FRONT,GL_SPECULAR, sp2);
+    glMaterialf(GL_FRONT ,GL_SHININESS, 64.0);
+    GLfloat emission[] = { .5, 0.0, 0.0, 0.0 };
+
+    glMaterialfv(GL_BACK, GL_EMISSION, emission);
 
 }
 
@@ -194,6 +194,9 @@ void myDisplay() {
     // Update the position if we can.
     if (destinations.size() > animCounter) {
         gotToPoint = arm.update(destinations.at(animCounter));
+        if (hits > 26) {
+            arm.debug();
+        }
         // cout << "ARRIVED???   " << gotToPoint << endl;
         if (gotToPoint) {
             cout << "ARRIVED???   " << gotToPoint << endl;
@@ -361,8 +364,8 @@ void specialkeypress(int key, int x, int y) {
 
 void createArmsAndRotation() {
     Vector3f control(0, 0, PI/4);
-    arm = *new Arm(1, control);
-    //control(1) = PI/1;
+    arm = *new Arm(2, control);
+    //control(2) = PI/2;
     arm.addChild(1, control);
     arm.addChild(1, control);
     arm.addChild(1, control);
